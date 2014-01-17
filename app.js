@@ -27,11 +27,11 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 
-
-app.use(function(req, res, next){
-    res.db = monk('localhost:27017/users');
-    next();
-});
+//
+//app.use(function(req, res, next){
+//    res.db = monk('localhost:27017/users');
+//    next();
+//});
 
 
 
@@ -48,9 +48,12 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
-//Users Routes
+/***************** U S E R S ********************/
 app.get('/users', user.list);
 app.get('/users/:id', user.getOne);
+app.put('/users/:id', user.putOne);
+app.post('/users', user.create);
+app.delete('/users/:id', user.deleteOne);
 
 
 http.createServer(app).listen(app.get('port'), function(){
