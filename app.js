@@ -28,12 +28,15 @@ app.configure(function () {
     app.use(express.urlencoded());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
+
     app.use(express.session({ secret: 'keyboard cat' }));
     app.use(flash());
     /** PASSPORT *****/
+
     app.use(passport.initialize());
     app.use(passport.session());
   /*****************/
+
 });
 
 require('./routes')(app);
@@ -42,6 +45,7 @@ require('./lib/localStrategy')(passport, app);
 
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
