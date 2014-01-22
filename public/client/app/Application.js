@@ -3,25 +3,27 @@ Ext.define('BIFF.Application', {
 
     extend: 'Ext.app.Application',
 
-    views: [
-        // TODO: add views here
-    ],
 
     controllers: [
-        // TODO: add controllers here
+        'Routes', 'Users', 'Login'
     ],
 
     stores: [
         'Users'
     ],
     launch: function () {
+
+       // Ext.util.History.init();
+
+        this.getController('Routes').initPaths();
+
         var socket = io.connect('http://localhost');
         socket.on('roomjoin', function (data) {
             console.log('someone joined a room');
             //socket.emit('my other event', { my: 'data' });
         });
 
-        Ext.create('BIFF.view.Login').show()
+       // Ext.create('BIFF.view.Login').show()
 
     }
 });

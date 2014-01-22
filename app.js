@@ -29,13 +29,17 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.cookieParser());
 
+
+
+    app.use(express.static(path.join(__dirname, 'public')));
+
     app.use(express.session({ secret: 'keyboard cat' }));
     app.use(flash());
     /** PASSPORT *****/
 
     app.use(passport.initialize());
     app.use(passport.session());
-  /*****************/
+    /*****************/
 
 });
 
@@ -44,7 +48,6 @@ require('./lib/localStrategy')(passport, app);
 
 
 app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
 
 
 if ('development' == app.get('env')) {

@@ -7,7 +7,7 @@ module.exports = function (app) {
 
     /***************** L I S T ********************/
 
-    app.get('/users', function (req, res) {
+    app.get('/users', ensureAuthenticated, function (req, res) {
 
         collection.find({}, function (err, docs) {
             res.send(docs);
@@ -18,7 +18,7 @@ module.exports = function (app) {
 
     /***************** G E T ********************/
 
-    app.get('/users/:id', function (req, res) {
+    app.get('/users/:id',ensureAuthenticated, function (req, res) {
         collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
             if (e) return next(e)
             res.send(result)
@@ -28,7 +28,7 @@ module.exports = function (app) {
 
     /***************** P U T ********************/
 
-    app.put('/users/:id', function (req, res) {
+    app.put('/users/:id', ensureAuthenticated,function (req, res) {
         collection.updateById(req.params.id, req.body, function (err, result) {
             collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
                 if (e) return next(e)
@@ -40,7 +40,7 @@ module.exports = function (app) {
 
     /***************** P O S T ********************/
 
-    app.post('/users', function (req, res) {
+    app.post('/users', ensureAuthenticated, function (req, res) {
         collection.insert(req.body, {safe: true}, function (err, result) {
             if (err) {
                 res.send({'error': 'An error has occurred'});
@@ -54,7 +54,7 @@ module.exports = function (app) {
 
     /***************** D E L E T E ********************/
 
-    app.delete('/users/:id', function (req, res) {
+    app.delete('/users/:id',ensureAuthenticated, function (req, res) {
         collection.remove({_id: collection.id(req.params.id)}, {safe: true}, function (err, result) {
             if (err) {
                 res.send({'error': 'An error has occurred - ' + err});
@@ -63,5 +63,12 @@ module.exports = function (app) {
             }
         });
     });
+    function ensureAuthenticated(req, res, next) {
+        if (req.isAuthenticated()) {
+            console.log(req.user)
+            return next();
+        }
+        res.send(403, "Invalid username or password.");
+    }
 
 }

@@ -1,51 +1,21 @@
 Ext.define('BIFF.view.Login', {
-    extend: 'Ext.window.Window',
-
-
-    width: 250,
-    y: 200,
-    closable: false,
-    frame: false,
-    border: false,
-    resizable: false,
-    draggable: false,
-    shadow: false,
-    ui: 'plain',
+    extend: 'Ext.panel.Panel',
+    xtype:'login',
 
     initComponent: function () {
-        this.buildApp();
-        this.callParent();
-        this.initListeners();
-        this.show();
-        this.down('textfield').focus(true, 500);
-
-    },
-
-    // Build app
-    buildApp: function () {
         var cp = Ext.create('Ext.state.CookieProvider', {
         });
 
         Ext.state.Manager.setProvider(cp);
 
+
         this.items = [
 
-            {
-                height: 90,
-                xtype: 'container',
-                cls: 'login-logo',
-                //TODO 4.2 logon margin bottom
-                margin: '0 0 30 0'
-            },
             {
                 xtype: 'form',
                 layout: 'anchor',
                 buttonAlign: 'left',
                 border: false,
-                bodyStyle: {
-                    background: 'transparent',
-                    border: '0px'
-                },
                 defaults: {
                     xtype: 'textfield',
                     hideLabel: true,
@@ -62,7 +32,6 @@ Ext.define('BIFF.view.Login', {
                         name: 'username',
                         maxLength: 60,
                         emptyText: 'Användarnamn',
-                        cls: 'login-name',
                         stateful: true,
                         stateId: 'SignonStateId',
                         stateEvents: ['valid', 'blur'],
@@ -77,7 +46,6 @@ Ext.define('BIFF.view.Login', {
                     },
                     {
                         emptyText: 'Lösenord',
-                        cls: 'login-pass',
                         name: 'password',
                         maxLength: 60,
                         inputType: 'password'
@@ -97,6 +65,11 @@ Ext.define('BIFF.view.Login', {
                 }
             }
         ];
+
+        this.callParent();
+        this.initListeners();
+
+        this.down('textfield').focus(true, 500);
 
     },
 
@@ -121,19 +94,15 @@ Ext.define('BIFF.view.Login', {
         var form = this.down('form');
         form.getForm().submit({
             url: '/login',
-            params: {
-                width: window.outerWidth,
-                height: window.outerHeight
-            },
             scope: this,
             success: function (form, action) {
-                this.hide();
-                window.location = window.location.href;
+                //this.hide();
+                window.location = '/client/#/users';
             },
             failure: function (response, action) {
                 mask.hide();
-                response.findField(action.result.errorField).focus(true, 200);
-                response.findField(action.result.errorField).markInvalid(action.result.message);
+                //response.findField(action.result.errorField).focus(true, 200);
+                //response.findField(action.result.errorField).markInvalid(action.result.message);
             }
         });
     }

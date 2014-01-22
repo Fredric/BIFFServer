@@ -5,6 +5,6 @@ Ext.define('BIFF.store.Users',{
     ],
     model:'BIFF.model.User',
     autoSync:true,
-    autoLoad:true
+    autoLoad:false
 
 })

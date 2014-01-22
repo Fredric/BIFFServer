@@ -1,6 +1,6 @@
-Ext.define('BIFF.view.users.Manage', {
+Ext.define('BIFF.view.Users', {
     extend: 'Ext.grid.Panel',
-    xtype: 'usermanager',
+    xtype: 'users',
     requires: [
         'Ext.grid.plugin.RowEditing'
     ],
@@ -12,6 +12,7 @@ Ext.define('BIFF.view.users.Manage', {
 
     columns: [
         {header: 'Name', dataIndex: 'username', editor: 'textfield'},
+        {header: 'Password', dataIndex: 'password', editor: 'textfield'},
         {header: 'Email', dataIndex: 'email', flex: 1,
             editor: {
                 xtype: 'textfield',
@@ -27,7 +28,7 @@ Ext.define('BIFF.view.users.Manage', {
             {
                 text: 'Add',
                 handler: function () {
-                    me.store.add({username: '', email: ''})
+                    me.store.add({username: '', email: '', password:''})
                 },
                 scope: me
             },
