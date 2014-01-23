@@ -30,7 +30,6 @@ app.configure(function () {
     app.use(express.cookieParser());
 
 
-
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use(express.session({ secret: 'keyboard cat' }));
@@ -45,6 +44,19 @@ app.configure(function () {
 
 require('./routes')(app);
 require('./lib/localStrategy')(passport, app);
+
+
+app.get('/', function (req, res) {
+    res.redirect('/clients/build/production/Login')
+});
+
+app.get('/success', function (req, res) {
+    res.redirect('/clients/build/production/BIFF/#/users')
+});
+
+app.get('/LoginLocal', function (req, res) {
+    res.redirect('/clients/build/production/BIFF/#/login')
+});
 
 
 app.use(app.router);
