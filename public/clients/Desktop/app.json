@@ -1,0 +1,9 @@
+{
+    "name": "BIFF",
+
+    "requires": [
+        'ext-theme-neptune'
+    ],
+
+    "id": "fa18600a-41ed-4dd0-90a4-2bcc729e7f63"
+}
