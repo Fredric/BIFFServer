@@ -5,7 +5,7 @@ Ext.define('BIFF.Application', {
 
 
     controllers: [
-        'Routes', 'Users', 'Login'
+        'Routes', 'Users', 'Login', 'Main', 'PassReset','PassChange'
     ],
 
     stores: [

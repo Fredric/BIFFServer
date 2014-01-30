@@ -16,6 +16,17 @@ Ext.define('BIFF.controller.Routes', {
 
         });
 
+        Path.map("#/reset").to(function () {
+
+            me.getController('PassReset').show();
+
+        });
+
+        Path.map("#/changepassword/:token").to(function () {
+
+            me.getController('PassChange').show(this.params.token);
+
+        });
 
         Path.root('#');
         Path.rescue(function () {

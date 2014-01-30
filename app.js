@@ -9,7 +9,9 @@ var express = require('express'),
     mongo = require('mongodb'),
     monk = require('monk'),
     flash = require('connect-flash'),
-    passport = require('passport');
+    passport = require('passport'),
+    partials = require('express-partials');
+
 
 //var httpProxy = require('http-proxy');
 //var routes = require('./routes');
@@ -23,6 +25,7 @@ app.configure(function () {
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
     app.use(express.favicon());
+    app.use(partials());
     app.use(express.logger('dev'));
     app.use(express.json());
     app.use(express.urlencoded());
@@ -44,10 +47,15 @@ app.configure(function () {
 
 require('./routes')(app);
 require('./lib/localStrategy')(passport, app);
+require('./lib/passreset')(app);
 
 
 app.get('/', function (req, res) {
-    res.redirect('/clients/build/production/Login')
+    if(req.isAuthenticated()){
+        res.redirect('/clients/build/production/BIFF/#/users')
+    }else{
+        res.redirect('/clients/build/production/Login')
+    }
 });
 
 app.get('/success', function (req, res) {
@@ -57,6 +65,11 @@ app.get('/success', function (req, res) {
 app.get('/LoginLocal', function (req, res) {
     res.redirect('/clients/build/production/BIFF/#/login')
 });
+
+app.get('/test',function(req,res,next){
+  res.render('login.ejs')
+  // -> render layout.ejs with index.ejs as `body`.
+})
 
 
 app.use(app.router);
