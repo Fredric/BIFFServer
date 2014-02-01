@@ -82,7 +82,7 @@ Ext.define('BIFF.view.PassChange', {
             scope: this,
             success: function (form, action) {
 
-                debugger
+
             },
             failure: function () {
                 console.log('callbak')

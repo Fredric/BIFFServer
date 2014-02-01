@@ -4,23 +4,22 @@ Ext.define('BIFF.controller.Users', {
     views: [
         'Users'
     ],
+    stores: [
+        'Users'
+    ],
     refs: [
-            {
-                ref: 'viewport',
-                selector: 'viewport',
-
-            },
-            {
-                ref: 'users',
-                selector: 'users',
-                autoCreate: true,
-                xtype:'users'
-            }
-        ],
+        {
+            ref: 'users',
+            selector: 'users',
+            autoCreate: true,
+            xtype: 'users'
+        }
+    ],
     show: function () {
-        var users = this.getViewport().add(this.getUsers());
-        this.getViewport().layout.setActiveItem(users)
-        users.getStore().load();
+        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        viewport.layout.setActiveItem(viewport.add(this.getUsers()));
+
+        this.getUsersStore().load();
 
 
     }

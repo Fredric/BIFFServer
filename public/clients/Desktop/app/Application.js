@@ -2,20 +2,25 @@ Ext.define('BIFF.Application', {
     name: 'BIFF',
 
     extend: 'Ext.app.Application',
-
+    requires: [
+        'Ext.ux.Router'
+    ],
 
     controllers: [
-        'Routes', 'Users', 'Login', 'Main', 'PassReset','PassChange'
+        'Users', 'Login', 'Main', 'PassReset', 'PassChange'
     ],
 
-    stores: [
-        'Users'
-    ],
+    routes: {
+        '/login': 'login#show',
+        '/users': 'users#show',
+        '/reset': 'passreset#show',
+        '/changepassword/:token': 'passChange#show',
+
+    },
+
+
     launch: function () {
 
-       // Ext.util.History.init();
-
-        this.getController('Routes').initPaths();
 
         var socket = io.connect('http://localhost');
         socket.on('roomjoin', function (data) {
@@ -23,7 +28,7 @@ Ext.define('BIFF.Application', {
             //socket.emit('my other event', { my: 'data' });
         });
 
-       // Ext.create('BIFF.view.Login').show()
+        // Ext.create('BIFF.view.Login').show()
 
     }
 });

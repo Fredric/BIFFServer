@@ -87,7 +87,7 @@ Ext.define('BIFF.view.PassReset', {
             scope: this,
             success: function (form, action) {
 
-                debugger
+
             },
             failure:function(){
                 console.log('callbak')

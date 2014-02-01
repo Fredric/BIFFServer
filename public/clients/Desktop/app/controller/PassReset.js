@@ -7,22 +7,16 @@ Ext.define('BIFF.controller.PassReset', {
 
     refs: [
         {
-            ref: 'viewport',
-            selector: 'viewport',
-
-        },
-        {
-            ref: 'passreset',
+            ref: 'passReset',
             selector: 'passreset',
             autoCreate: true,
-            xtype:'passreset'
+            xtype: 'passreset'
         }
     ],
 
     show: function () {
-
-        var passreset = this.getViewport().add(this.getPassreset());
-        this.getViewport().layout.setActiveItem(passreset)
+        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        viewport.layout.setActiveItem(viewport.add(this.getPassReset()));
     }
 
 });

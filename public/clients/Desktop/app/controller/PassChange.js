@@ -7,24 +7,16 @@ Ext.define('BIFF.controller.PassChange', {
 
     refs: [
         {
-            ref: 'viewport',
-            selector: 'viewport',
-
-        },
-        {
-            ref: 'passchange',
+            ref: 'passChange',
             selector: 'passchange',
             autoCreate: true,
             xtype:'passchange'
         }
     ],
 
-    show: function (token) {
-        console.log(token)
-        var passchange = this.getViewport().add(this.getPasschange());
-
-        this.getViewport().layout.setActiveItem(passchange)
-        passchange.getForm().findField('token').setValue(token);
+    show: function (params) {
+        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        viewport.layout.setActiveItem(viewport.add(this.getPassChange()));
     }
 
 });

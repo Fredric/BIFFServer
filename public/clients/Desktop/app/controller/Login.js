@@ -7,11 +7,6 @@ Ext.define('BIFF.controller.Login', {
 
     refs: [
         {
-            ref: 'viewport',
-            selector: 'viewport',
-
-        },
-        {
             ref: 'login',
             selector: 'login',
             autoCreate: true,
@@ -19,10 +14,9 @@ Ext.define('BIFF.controller.Login', {
         }
     ],
 
-    show: function () {
-
-        var login = this.getViewport().add(this.getLogin());
-        this.getViewport().layout.setActiveItem(login)
+    show: function (params) {
+        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        viewport.layout.setActiveItem(viewport.add(this.getLogin()));
     }
 
 });
