@@ -13,7 +13,7 @@ Ext.define('BIFF.Application', {
     routes: {
         '/login': 'login#show',
         '/users': 'users#show',
-        '/reset': 'passreset#show',
+        '/reset': 'passReset#show',
         '/changepassword/:token': 'passChange#show',
 
     },
