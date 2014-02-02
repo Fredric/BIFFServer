@@ -28,7 +28,7 @@ Ext.define('BIFF.view.PassReset', {
 
         this.items = [
             {
-                name: 'username',
+                name: 'email',
                 maxLength: 60,
                 allowBlank:false,
                 emptyText: 'Användarnamn',
