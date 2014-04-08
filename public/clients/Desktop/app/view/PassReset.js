@@ -20,29 +20,14 @@ Ext.define('BIFF.view.PassReset', {
 
 
     initComponent: function () {
-        var cp = Ext.create('Ext.state.CookieProvider', {
-        });
-
-        Ext.state.Manager.setProvider(cp);
-
 
         this.items = [
             {
                 name: 'email',
                 maxLength: 60,
                 allowBlank:false,
-                emptyText: 'Användarnamn',
-                stateful: true,
-                stateId: 'SignonStateId',
-                stateEvents: ['valid', 'blur'],
-                getState: function () {
-                    return {
-                        value: this.getValue()
-                    };
-                },
-                applyState: function (state) {
-                    this.setValue(state.value);
-                }
+                emptyText: 'E-mail'
+
             },
             {
                 xtype: 'button',
