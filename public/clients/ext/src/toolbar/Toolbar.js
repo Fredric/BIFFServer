@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Basic Toolbar class. Although the {@link Ext.container.Container#defaultType defaultType} for
  * Toolbar is {@link Ext.button.Button button}, Toolbar elements (child items for the Toolbar container)
@@ -225,6 +208,7 @@ Ext.define('Ext.toolbar.Toolbar', {
     ariaRole : 'toolbar',
 
     defaultType: 'button',
+    layout: undefined,
 
     /**
      * @cfg {Boolean} vertical
@@ -285,11 +269,38 @@ Ext.define('Ext.toolbar.Toolbar', {
      *         ]
      *     });
      */
+    defaultButtonUI: 'default-toolbar',
+
+    /**
+     * @cfg {String}
+     * Default UI for form field items.
+     */
+    defaultFieldUI: 'default',
+
+    /**
+     * @cfg {String}
+     * Default UI for Buttons if the toolbar has a UI of 'footer'
+     */
+    defaultFooterButtonUI: 'default',
+
+    /**
+     * @cfg {String}
+     * Default UI for Form Fields if the toolbar has a UI of 'footer'
+     */
+    defaultFooterFieldUI: 'default',
 
     // @private
     trackMenus: true,
 
     itemCls: Ext.baseCSSPrefix + 'toolbar-item',
+
+    /**
+     * @event overflowchange
+     * Fires after the overflow state has changed.
+     * @param {Number} lastHiddenCount The number of overflowing items that used to be hidden.
+     * @param {Number} hiddenCount The number of overflowing items that are hidden now.
+     * @param {Array} The hidden items
+     */
 
     statics: {
         shortcuts: {
@@ -338,15 +349,6 @@ Ext.define('Ext.toolbar.Toolbar', {
         }
 
         me.callParent();
-
-        /**
-         * @event overflowchange
-         * Fires after the overflow state has changed.
-         * @param {Number} lastHiddenCount The number of overflowing items that used to be hidden.
-         * @param {Number} hiddenCount The number of overflowing items that are hidden now.
-         * @param {Array} The hidden items
-         */
-        me.addEvents('overflowchange');
     },
 
     getRefItems: function(deep) {
@@ -402,11 +404,11 @@ Ext.define('Ext.toolbar.Toolbar', {
     // @private
     lookupComponent: function(c) {
         var args = arguments;
-        if (typeof c == 'string') {
+        if (typeof c === 'string') {
             var T = Ext.toolbar.Toolbar,
                 shortcut = T.shortcutsHV[this.vertical ? 1 : 0][c] || T.shortcuts[c];
 
-            if (typeof shortcut == 'string') {
+            if (typeof shortcut === 'string') {
                 c = {
                     xtype: shortcut
                 };
@@ -451,14 +453,14 @@ Ext.define('Ext.toolbar.Toolbar', {
     // @private
     onBeforeAdd: function(component) {
         var me = this,
-            isButton = component.isButton;
+            isFooter = me.ui === 'footer';
 
-        if (isButton && me.defaultButtonUI && component.ui === 'default' &&
-            !component.hasOwnProperty('ui')) {
-            component.ui = me.defaultButtonUI;
-        } else if ((isButton || component.isFormField) && me.ui !== 'footer') {
-            component.ui = component.ui + '-toolbar';
-            component.addCls(component.baseCls + '-toolbar');
+        if (component.ui === 'default' && !component.hasOwnProperty('ui')) {
+            if (component.isButton) {
+                component.ui = isFooter? me.defaultFooterButtonUI : me.defaultButtonUI;
+            } else if (component.isFormField) {
+                component.ui = isFooter ? me.defaultFooterFieldUI : me.defaultFieldUI;
+            }
         }
 
         // Any separators needs to know if is vertical or not
@@ -487,7 +489,7 @@ Ext.define('Ext.toolbar.Toolbar', {
 
     // @private
     onButtonOver: function(btn){
-        if (this.activeMenuBtn && this.activeMenuBtn != btn) {
+        if (this.activeMenuBtn && this.activeMenuBtn !== btn) {
             this.activeMenuBtn.hideMenu();
             btn.showMenu();
             this.activeMenuBtn = btn;

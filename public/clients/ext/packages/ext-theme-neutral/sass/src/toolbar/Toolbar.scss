@@ -139,6 +139,11 @@
     .#{$prefix}toolbar-item {
         margin: 0 $toolbar-footer-horizontal-spacing 0 0;
     }
+    @if $include-rtl {
+        .#{$prefix}rtl.#{$prefix}toolbar-item {
+            margin: 0 0 0 $toolbar-footer-horizontal-spacing;
+        }
+    }
 }
 
 .#{$prefix}toolbar-spacer {
@@ -166,7 +171,7 @@
     border-style: solid;
     border-color: $toolbar-scroller-border-color;
     border-width: $toolbar-scroller-border-width;
-    margin-top: $toolbar-scroller-margin-top;
+    margin: $toolbar-scroller-margin;
 }
 
 .#{$prefix}toolbar-scroll-left-hover {
@@ -180,7 +185,7 @@
     border-style: solid;
     border-color: $toolbar-scroller-border-color;
     border-width: $toolbar-scroller-border-width;
-    margin-top: $toolbar-scroller-margin-top;
+    margin: $toolbar-scroller-margin;
 }
 
 .#{$prefix}toolbar-scroll-right-hover {

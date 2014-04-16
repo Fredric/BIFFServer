@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * The Ext.grid.plugin.RowEditing plugin injects editing at a row level for a Grid. When editing begins,
  * a small floating dialog will be shown for the appropriate row. Each editable column will show a field
@@ -37,7 +20,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *         data: [
  *             {"name":"Lisa", "email":"lisa@simpsons.com", "phone":"555-111-1224"},
  *             {"name":"Bart", "email":"bart@simpsons.com", "phone":"555-222-1234"},
- *             {"name":"Homer", "email":"home@simpsons.com", "phone":"555-222-1244"},
+ *             {"name":"Homer", "email":"homer@simpsons.com", "phone":"555-222-1244"},
  *             {"name":"Marge", "email":"marge@simpsons.com", "phone":"555-222-1254"}
  *         ]
  *     });
@@ -113,7 +96,7 @@ Ext.define('Ext.grid.plugin.RowEditing', {
 
     /**
      * @private
-     * AbstractComponent calls destroy on all its plugins at destroy time.
+     * Component calls destroy on all its plugins at destroy time.
      */
     destroy: function() {
         Ext.destroy(this.editor);
@@ -166,7 +149,6 @@ Ext.define('Ext.grid.plugin.RowEditing', {
         return false;
     },
 
-    // @private
     cancelEdit: function() {
         var me = this;
 
@@ -180,7 +162,6 @@ Ext.define('Ext.grid.plugin.RowEditing', {
         return true;
     },
 
-    // @private
     completeEdit: function() {
         var me = this;
 
@@ -189,21 +170,12 @@ Ext.define('Ext.grid.plugin.RowEditing', {
             me.fireEvent('edit', me, me.context);
         }
     },
-    
-    onEnterKey: function() {
-        if (this.getEditor().getForm().isValid()) {
-            this.completeEdit();
-        }    
-    },
 
-    // @private
     validateEdit: function() {
         this.getContextFieldValues();
-        this.editing = this.callParent(arguments) && this.getEditor().completeEdit();
-        return this.editing;
+        return this.callParent(arguments) && this.getEditor().completeEdit();
     },
 
-    // @private
     getEditor: function() {
         var me = this;
 
@@ -225,7 +197,7 @@ Ext.define('Ext.grid.plugin.RowEditing', {
 
         for (i = 0; i < len; i++) {
             item = editors[i];
-            name = item.name;
+            name = item.dataIndex;
 
             newValues[name]      = item.getValue();
             originalValues[name] = record.get(name);
@@ -327,16 +299,24 @@ Ext.define('Ext.grid.plugin.RowEditing', {
         }
     },
 
-    // @private
-    onColumnRemove: function(ct, column) {
-        if (column.isHeader) {
-            var me = this,
-                editor = me.getEditor();
+    // Ensure editors are cleaned up.
+    beforeGridHeaderDestroy: function(headerCt) {
+        var columns = this.grid.getColumnManager().getColumns(),
+            len = columns.length,
+            i,
+            column,
+            field;
 
-            if (editor) {
-                editor.onColumnRemove(ct, column);
+        for (i = 0; i < len; i++) {
+            column = columns[i];
+
+            // If it has a field accessor, then destroy any field, and remove the accessors.
+            if (column.hasEditor) {
+                if (column.hasEditor() && (field = column.getEditor())) {
+                    field.destroy();
+                }
+                this.removeFieldAccessors(column);
             }
-            me.removeFieldAccessors(column);
         }
     },
 
@@ -398,7 +378,7 @@ Ext.define('Ext.grid.plugin.RowEditing', {
 
         if (editor) {
             // Remove the old editor and destroy it.
-            editor.removeColumnEditor(column, true);
+            editor.destroyColumnEditor(column);
         }
 
         me.callParent(arguments);

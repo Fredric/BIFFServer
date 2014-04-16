@@ -27,13 +27,15 @@ Ext.define('Ext.ux.ajax.XmlSimlet', {
         var me = this,
             data = me.getData(ctx),
             page = me.getPage(ctx, data),
-            reader = ctx.xhr.options.proxy && ctx.xhr.options.proxy.reader,
+            proxy = ctx.xhr.options.operation.getProxy(),
+            reader = proxy && proxy.getReader(),
+            model = reader && reader.getModel(),
             ret = me.callParent(arguments), // pick up status/statusText
             response = {
                 data: page,
                 reader: reader,
-                fields: reader && reader.model && reader.model.getFields(),
-                root: reader && reader.root,
+                fields: model && model.fields,
+                root: reader && reader.getRootProperty(),
                 record: reader && reader.record
             },
             tpl, xml, doc;

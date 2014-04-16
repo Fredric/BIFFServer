@@ -36,20 +36,18 @@ Ext.define('Ext.ux.grid.menu.ListMenu', {
 
     plain: true,
 
+    /**
+     * @event checkchange
+     * Fires when there is a change in checked items from this list
+     * @param {Object} item Ext.menu.CheckItem
+     * @param {Object} checked The checked value that was set
+     */
+
     constructor: function (cfg) {
         var me = this,
             gridStore;
             
         me.selected = [];
-        me.addEvents(
-            /**
-             * @event checkchange
-             * Fires when there is a change in checked items from this list
-             * @param {Object} item Ext.menu.CheckItem
-             * @param {Object} checked The checked value that was set
-             */
-            'checkchange'
-        );
 
         me.callParent(arguments);
 
@@ -138,7 +136,7 @@ Ext.define('Ext.ux.grid.menu.ListMenu', {
 
         for (i = 0, len = me.options.length; i < len; i++) {
             value = me.options[i];
-            switch (Ext.type(value)) {
+            switch (Ext.typeOf(value)) {
                 case 'array': 
                     options.push(value);
                     break;
@@ -154,12 +152,10 @@ Ext.define('Ext.ux.grid.menu.ListMenu', {
 
         me.store = Ext.create('Ext.data.ArrayStore', {
             fields: [me.idField, me.labelField],
-            data:   options,
-            listeners: {
-                load: me.onLoad,
-                scope:  me
-            }
+            data:   options
         });
+        
+        me.onLoad(me.store, me.store.getRange());
 
         me.loaded = true;
         me.autoStore = true;

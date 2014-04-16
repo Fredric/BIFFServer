@@ -152,6 +152,14 @@
  * @param {number} [$split-height=$button-medium-split-height]
  * The height of a {@link Ext.button.Split Split Button}'s arrow
  *
+ * @param {number} [$split-spacing-right=$button-medium-split-spacing-right]
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is right-aligned.  
+ *
+ * @param {number} [$split-spacing-bottom=$button-medium-split-spacing-bottom]
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is bottom-aligned.  
+ *
  * @param {boolean} [$include-ui-menu-arrows=$button-include-ui-menu-arrows]
  * True to include the UI name in the file name of the {@link #cfg-menu}
  * arrow icon. Set this to false to share the same arrow bewteen multiple UIs.
@@ -235,6 +243,8 @@
     $arrow-height: $button-medium-arrow-height,
     $split-width: $button-medium-split-width,
     $split-height: $button-medium-split-height,
+    $split-spacing-right: $button-medium-split-spacing-right,
+    $split-spacing-bottom: $button-medium-split-spacing-bottom,
     $include-ui-menu-arrows:  $button-include-ui-menu-arrows,
     $include-ui-split-arrows: $button-include-ui-split-arrows,
     $include-split-noline-arrows: $button-include-split-noline-arrows,
@@ -516,6 +526,8 @@
         $arrow-height: $arrow-height,
         $split-width: $split-width,
         $split-height: $split-height,
+        $split-spacing-right: $split-spacing-right,
+        $split-spacing-bottom: $split-spacing-bottom,
         $include-ui-menu-arrows:  $include-ui-menu-arrows,
         $include-ui-split-arrows: $include-ui-split-arrows,
         $include-split-noline-arrows: $include-split-noline-arrows,
@@ -679,6 +691,14 @@
  * @param {number} [$split-height=$button-medium-split-height]
  * The height of a {@link Ext.button.Split Split Button}'s arrow
  *
+ * @param {number} [$split-spacing-right=$button-medium-split-spacing-right]
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is right-aligned.  
+ *
+ * @param {number} [$split-spacing-bottom=$button-medium-split-spacing-bottom]
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is bottom-aligned.  
+ *
  * @param {boolean} [$include-ui-menu-arrows=$button-include-ui-menu-arrows]
  * True to include the UI name in the file name of the {@link #cfg-menu}
  * arrow icon. Set this to false to share the same arrow bewteen multiple UIs.
@@ -762,6 +782,8 @@
     $arrow-height: $button-medium-arrow-height,
     $split-width: $button-medium-split-width,
     $split-height: $button-medium-split-height,
+    $split-spacing-right: $button-medium-split-spacing-right,
+    $split-spacing-bottom: $button-medium-split-spacing-bottom,
     $include-ui-menu-arrows:  $button-include-ui-menu-arrows,
     $include-ui-split-arrows: $button-include-ui-split-arrows,
     $include-split-noline-arrows: $button-toolbar-include-split-noline-arrows,
@@ -1043,6 +1065,8 @@
         $arrow-height: $arrow-height,
         $split-width: $split-width,
         $split-height: $split-height,
+        $split-spacing-right: $split-spacing-right,
+        $split-spacing-bottom: $split-spacing-bottom,
         $include-ui-menu-arrows:  $include-ui-menu-arrows,
         $include-ui-split-arrows: $include-ui-split-arrows,
         $include-split-noline-arrows: $include-split-noline-arrows,

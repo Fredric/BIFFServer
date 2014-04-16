@@ -45,8 +45,12 @@
         <x-run-compass-watch directory="${watch.sass.dir}"/>
     </target>
 
-    <target name="-before-watch" depends="init"/>
-    <target name="-watch" depends="app-build-impl.build">
+    <target name="-before-watch"/>
+    <target name="-watch">
+        <x-ant-call target="${build.trigger.targets}"/>
+        <x-ant-call target="web-start" unless="skip.web.start">
+            <param name="enable.background.server" value="true"/>
+        </x-ant-call>
         <x-ant-call target="${build.watcher.targets}"/>
     </target>
     <target name="-after-watch" depends="init"/>

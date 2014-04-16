@@ -99,7 +99,7 @@ Ext.define('Ext.ux.DataTip', function(DataTip) {
                 if (host.ownerLockable) {
                     me.host = host.ownerLockable;
                 }
-                me.delegate = me.delegate || me.view.getDataRowSelector();
+                me.delegate = me.delegate || me.view.rowSelector;
                 me.on('beforeshow', beforeViewTipShow);
             } else if (host.isXType('dataview')) {
                 me.view = me.host;

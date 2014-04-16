@@ -1,5 +1,12 @@
 Ext.define('BIFF.view.Viewport', {
-    extend: 'Ext.container.Viewport',
+    extend: 'Ext.panel.Panel',
+    itemId:'bodycardpanel',
+    dockedItems:[
+        {
+            xtype:'appheader',
+            dock:'top'
+        }
+    ],
     layout: 'card'
 
 });

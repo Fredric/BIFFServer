@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * FieldContainer is a derivation of {@link Ext.container.Container Container} that implements the
  * {@link Ext.form.Labelable Labelable} mixin. This allows it to be configured so that it is rendered with
@@ -123,7 +106,9 @@ Ext.define('Ext.form.FieldContainer', {
     componentLayout: 'fieldcontainer',
 
     componentCls: Ext.baseCSSPrefix + 'form-fieldcontainer',
-    
+
+    shrinkWrap: true,
+
     // Used by the layout system, typically the scrolling el is the targetEl, however we need
     // to let it know we're using something different
     customOverflowEl: 'containerEl',
@@ -182,10 +167,6 @@ Ext.define('Ext.form.FieldContainer', {
         me.initMonitor();
     },
     
-    getOverflowEl: function(){
-        return this.containerEl;    
-    },
-
     /**
      * @protected Called when a {@link Ext.form.Labelable} instance is added to the container's subtree.
      * @param {Ext.form.Labelable} labelable The instance that was added
@@ -308,7 +289,7 @@ Ext.define('Ext.form.FieldContainer', {
             }
 
             if (oldError !== me.getActiveError()) {
-                me.doComponentLayout();
+                me.updateLayout();
             }
         }
     },

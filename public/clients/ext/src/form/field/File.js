@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @docauthor Jason Johnston <jason@sencha.com>
  *
@@ -69,12 +52,21 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *     });
  */
 Ext.define('Ext.form.field.File', {
-    extend: 'Ext.form.field.Trigger',
+    extend: 'Ext.form.field.Text',
     alias: ['widget.filefield', 'widget.fileuploadfield'],
     alternateClassName: ['Ext.form.FileUploadField', 'Ext.ux.form.FileUploadField', 'Ext.form.File'],
     requires: [
-        'Ext.form.field.FileButton'
+        'Ext.form.field.FileButton',
+        'Ext.form.trigger.Component'
     ],
+
+
+    triggers: {
+        filebutton: {
+            type: 'component',
+            hideOnReadOnly : false
+        }
+    },
 
     //<locale>
     /**
@@ -108,7 +100,7 @@ Ext.define('Ext.form.field.File', {
 
     /**
      * @cfg {Object} buttonConfig
-     * A standard {@link Ext.button.Button} config object.
+     * Specify optional custom button {@link Ext.button.Button} config (eg. iconCls, text) for the upload button
      */
 
     /**
@@ -134,12 +126,19 @@ Ext.define('Ext.form.field.File', {
 
     // private
     extraFieldBodyCls: Ext.baseCSSPrefix + 'form-file-wrap',
+    // private
+    inputCls: Ext.baseCSSPrefix + 'form-text-file',
 
     /**
-     * @cfg {Boolean} readOnly
+     * @cfg {Boolean} [readOnly=true]
      * Unlike with other form fields, the readOnly config defaults to true in File field.
      */
     readOnly: true,
+
+    /**
+     * @inheritdoc
+     */
+    editable: false,
 
     submitValue: false,
 
@@ -149,49 +148,63 @@ Ext.define('Ext.form.field.File', {
      */
     triggerNoEditCls: '',
 
-    // private
-    componentLayout: 'triggerfield',
-
-    // private. Extract the file element, button outer element, and button active element.
+    // @private
+    // Extract the file element, button outer element, and button active element.
     childEls: ['browseButtonWrap'],
 
-    // private
+    // @private
+    applyTriggers: function(triggers) {
+        var me = this,
+            triggerCfg = (triggers || {}).filebutton;
+
+        if (triggerCfg) {
+            triggerCfg.component = Ext.apply({
+                xtype: 'filebutton',
+                ownerCt: me,
+                id: me.id + '-button',
+                ui: me.ui,
+                disabled: me.disabled,
+                text: me.buttonText,
+                style: me.buttonOnly ? '' : me.getButtonMarginProp() + me.buttonMargin + 'px',
+                inputName: me.getName(),
+                listeners: {
+                    scope: me,
+                    change: me.onFileChange
+                }
+            }, me.buttonConfig);
+
+            return me.callParent([triggers]);
+        }
+        // <debug>
+        else {
+            Ext.Error.raise(me.$className + ' requires a valid trigger config containing "filebutton" specification');
+        }
+        // </debug>
+    },
+
+    // @private
     onRender: function() {
         var me = this,
             id = me.id,
-            inputEl;
+            inputEl, button, buttonEl, trigger;
 
         me.callParent(arguments);
 
         inputEl = me.inputEl;
         inputEl.dom.name = ''; //name goes on the fileInput, not the text input
 
-        // render the button here. This isn't ideal, however it will be 
-        // rendered before layouts are resumed, also we modify the DOM
-        // below anyway
-        me.button = new Ext.form.field.FileButton(Ext.apply({
-            renderTo: id + '-browseButtonWrap',
-            ownerCt: me,
-            ownerLayout: me.componentLayout,
-            id: id + '-button',
-            ui: me.ui,
-            disabled: me.disabled,
-            text: me.buttonText,
-            style: me.buttonOnly ? '' : me.getButtonMarginProp() + me.buttonMargin + 'px',
-            inputName: me.getName(),
-            listeners: {
-                scope: me,
-                change: me.onFileChange
-            }
-        }, me.buttonConfig));
-        me.fileInputEl = me.button.fileInputEl;
+        trigger = me.getTrigger('filebutton');
+        button = me.button = trigger.component;
+        me.fileInputEl = button.fileInputEl;
+        buttonEl = button.el;
 
         if (me.buttonOnly) {
-            me.inputCell.setDisplayed(false);
+            me.inputWrap.setDisplayed(false);
+            me.shrinkWrap = 3;
         }
 
-        // Ensure the trigger cell is sized correctly upon render
-        me.browseButtonWrap.dom.style.width = (me.browseButtonWrap.dom.lastChild.offsetWidth + me.button.getEl().getMargin('lr')) + 'px';
+        // Ensure the trigger element is sized correctly upon render
+        trigger.el.setWidth(buttonEl.getWidth() + buttonEl.getMargin('lr'));
         if (Ext.isIE) {
             me.button.getEl().repaint();
         }
@@ -259,9 +272,7 @@ Ext.define('Ext.form.field.File', {
         this.button.enable();
     },
 
-    isFileUpload: function() {
-        return true;
-    },
+    isFileUpload: Ext.returnTrue,
 
     extractFileInput: function() {
         var me = this,
@@ -275,7 +286,7 @@ Ext.define('Ext.form.field.File', {
             // All other unrendered fields provide a value.
             fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.className = Ext.baseCSSPrefix + 'hide-display';
+            fileInput.className = Ext.baseCSSPrefix + 'hidden-display';
             fileInput.name = me.getName();
         }
         return fileInput;

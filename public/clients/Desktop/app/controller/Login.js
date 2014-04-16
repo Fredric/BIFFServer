@@ -1,6 +1,10 @@
 Ext.define('BIFF.controller.Login', {
     extend: 'Ext.app.Controller',
-
+    config : {
+        routes : {
+            'login' : 'show'
+        }
+    },
     views: [
         'Login'
     ],
@@ -15,7 +19,7 @@ Ext.define('BIFF.controller.Login', {
     ],
 
     show: function (params) {
-        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
         viewport.layout.setActiveItem(viewport.add(this.getLogin()));
     }
 

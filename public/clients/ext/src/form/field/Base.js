@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @docauthor Jason Johnston <jason@sencha.com>
  *
@@ -101,9 +84,14 @@ Ext.define('Ext.form.field.Base', {
         labelable: 'Ext.form.Labelable',
         field: 'Ext.form.field.Field'
     },
-    alias: 'widget.field',
+    xtype: 'field',
     alternateClassName: ['Ext.form.Field', 'Ext.form.BaseField'],
-    requires: ['Ext.util.DelayedTask', 'Ext.XTemplate', 'Ext.layout.component.field.Field'],
+    requires: [
+        'Ext.util.DelayedTask',
+        'Ext.XTemplate'
+    ],
+
+    shrinkWrap: true,
 
     /**
      * @cfg {Ext.XTemplate} fieldSubTpl
@@ -121,11 +109,13 @@ Ext.define('Ext.form.field.Base', {
             '<tpl if="disabled"> disabled="disabled"</tpl>',
             '<tpl if="tabIdx"> tabIndex="{tabIdx}"</tpl>',
             '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>',
-        ' class="{fieldCls} {typeCls} {editableCls} {inputCls}" autocomplete="off"/>',
+        ' class="{fieldCls} {typeCls} {typeCls}-{ui} {editableCls} {inputCls}" autocomplete="off"/>',
         {
             disableFormats: true
         }
     ],
+
+    defaultBindProperty: 'value',
 
     subTplInsertions: [
         /**
@@ -187,7 +177,7 @@ Ext.define('Ext.form.field.Base', {
      * @cfg {String} [focusCls='x-form-focus']
      * The CSS class to use when the field receives focus
      */
-    focusCls : 'form-focus',
+    focusCls: 'form-focus',
 
     /**
      * @cfg {String} dirtyCls
@@ -215,9 +205,13 @@ Ext.define('Ext.form.field.Base', {
      * a {@link Ext.form.Panel}, you can use the FormPanel's {@link Ext.form.Panel#pollForChanges} configuration to set up
      * such a task automatically.
      */
-    checkChangeEvents: Ext.isIE && (!document.documentMode || document.documentMode < 9) ?
+
+     // While input is supported in IE9, we use attachEvent for events, so we need to fall back here
+    checkChangeEvents: Ext.isIE && (!document.documentMode || document.documentMode <= 9) ?
                         ['change', 'propertychange', 'keyup'] :
                         ['change', 'input', 'textInput', 'keyup', 'dragdrop'],
+                        
+    ignoreChangeRe: /data\-errorqtip|style\.|className/,   
 
     /**
      * @cfg {Number} checkChangeBuffer
@@ -226,17 +220,13 @@ Ext.define('Ext.form.field.Base', {
      */
     checkChangeBuffer: 50,
 
-    componentLayout: 'field',
+    liquidLayout: true,
 
     /**
      * @cfg {Boolean} readOnly
      * true to mark the field as readOnly in HTML.
-     *
-     * **Note**: this only sets the element's readOnly DOM attribute. Setting `readOnly=true`, for example, will not
-     * disable triggering a ComboBox or Date; it gives you the option of forcing the user to choose via the trigger
-     * without typing in the text box. To hide the trigger use `{@link Ext.form.field.Trigger#hideTrigger hideTrigger}`.
      */
-    readOnly : false,
+    readOnly: false,
 
     /**
      * @cfg {String} readOnlyCls
@@ -263,12 +253,88 @@ Ext.define('Ext.form.field.Base', {
 
     baseCls: Ext.baseCSSPrefix + 'field',
 
+    fieldBodyCls: Ext.baseCSSPrefix + 'field-body',
+
     maskOnDisable: false,
     
     // Instructs the layout to stretch the inputEl to 100% width when laying
     // out under fixed conditions. Defaults to true for all fields except check/radio
     // Doesn't seem worth it to introduce a whole new layout class just for this flag
     stretchInputElFixed: true,
+
+    /**
+     * @event specialkey
+     * Fires when any key related to navigation (arrows, tab, enter, esc, etc.) is pressed. To handle other keys
+     * see {@link Ext.util.KeyMap}. You can check {@link Ext.event.Event#getKey} to determine which key was
+     * pressed. For example:
+     *
+     *     var form = new Ext.form.Panel({
+     *         ...
+     *         items: [{
+     *                 fieldLabel: 'Field 1',
+     *                 name: 'field1',
+     *                 allowBlank: false
+     *             },{
+     *                 fieldLabel: 'Field 2',
+     *                 name: 'field2',
+     *                 listeners: {
+     *                     specialkey: function(field, e){
+     *                         // e.HOME, e.END, e.PAGE_UP, e.PAGE_DOWN,
+     *                         // e.TAB, e.ESC, arrow keys: e.LEFT, e.RIGHT, e.UP, e.DOWN
+     *                         if (e.{@link Ext.event.Event#getKey getKey()} == e.ENTER) {
+     *                             var form = field.up('form').getForm();
+     *                             form.submit();
+     *                         }
+     *                     }
+     *                 }
+     *             }
+     *         ],
+     *         ...
+     *     });
+     *
+     * @param {Ext.form.field.Base} this
+     * @param {Ext.event.Event} e The event object
+     */
+
+    /**
+     * @event writeablechange
+     * Fires when this field changes its read-only status.
+     * @param {Ext.form.field.Base} this
+     * @param {Boolean} Read only flag
+     */
+
+     statics: {
+        /**
+         * Use a custom QuickTip instance separate from the main QuickTips singleton, so that we
+         * can give it a custom frame style. Responds to errorqtip rather than the qtip property.
+         * @static
+         */
+        initTip: function() {
+            var tip = this.tip;
+            if (!tip) {
+                tip = this.tip = Ext.create('Ext.tip.QuickTip', {
+                    //<debug>
+                    // tell the spec runner to ignore this element when checking if the dom is clean 
+                    sticky: true,
+                    //</debug>
+                    ui: 'form-invalid'
+                });
+                tip.tagConfig = Ext.apply({}, {attribute: 'errorqtip'}, tip.tagConfig);
+            }
+        },
+
+        /**
+         * Destroy the error tip instance.
+         * @static
+         */
+        destroyTip: function() {
+            var tip = this.tip;
+            if (tip) {
+                tip.destroy();
+                delete this.tip;
+            }
+        }
+    },
 
     // private
     initComponent : function() {
@@ -277,51 +343,6 @@ Ext.define('Ext.form.field.Base', {
         me.callParent();
 
         me.subTplData = me.subTplData || {};
-
-        me.addEvents(
-            /**
-             * @event specialkey
-             * Fires when any key related to navigation (arrows, tab, enter, esc, etc.) is pressed. To handle other keys
-             * see {@link Ext.util.KeyMap}. You can check {@link Ext.EventObject#getKey} to determine which key was
-             * pressed. For example:
-             *
-             *     var form = new Ext.form.Panel({
-             *         ...
-             *         items: [{
-             *                 fieldLabel: 'Field 1',
-             *                 name: 'field1',
-             *                 allowBlank: false
-             *             },{
-             *                 fieldLabel: 'Field 2',
-             *                 name: 'field2',
-             *                 listeners: {
-             *                     specialkey: function(field, e){
-             *                         // e.HOME, e.END, e.PAGE_UP, e.PAGE_DOWN,
-             *                         // e.TAB, e.ESC, arrow keys: e.LEFT, e.RIGHT, e.UP, e.DOWN
-             *                         if (e.{@link Ext.EventObject#getKey getKey()} == e.ENTER) {
-             *                             var form = field.up('form').getForm();
-             *                             form.submit();
-             *                         }
-             *                     }
-             *                 }
-             *             }
-             *         ],
-             *         ...
-             *     });
-             *
-             * @param {Ext.form.field.Base} this
-             * @param {Ext.EventObject} e The event object
-             */
-            'specialkey',
-
-            /**
-             * @event writeablechange
-             * Fires when this field changes its read-only status.
-             * @param {Ext.form.field.Base} this
-             * @param {Boolean} Read only flag
-             */
-            'writeablechange'
-        );
 
         // Init mixins
         me.initLabelable();
@@ -357,21 +378,22 @@ Ext.define('Ext.form.field.Base', {
             type = me.inputType,
             inputId = me.getInputId(),
             data;
-        
+
         data = Ext.apply({
-            id         : inputId,
-            cmpId      : me.id,
-            name       : me.name || inputId,
-            disabled   : me.disabled,
-            readOnly   : me.readOnly,
-            value      : me.getRawValue(),
-            type       : type,
-            fieldCls   : me.fieldCls,
-            fieldStyle : me.getFieldStyle(),
-            tabIdx     : me.tabIndex,
-            inputCls   : me.inputCls,
-            typeCls    : Ext.baseCSSPrefix + 'form-' + (type === 'password' ? 'text' : type),
-            role       : me.ariaRole
+            ui: me.ui,
+            id: inputId,
+            cmpId: me.id,
+            name: me.name || inputId,
+            disabled: me.disabled,
+            readOnly: me.readOnly,
+            value: me.getRawValue(),
+            type: type,
+            fieldCls: me.fieldCls,
+            fieldStyle: me.getFieldStyle(),
+            tabIdx: me.tabIndex,
+            inputCls: me.inputCls,
+            typeCls: Ext.baseCSSPrefix + 'form-' + (type === 'password' ? 'text' : type),
+            role: me.ariaRole
         }, me.subTplData);
 
         me.getInsertionRenderData(data, me.subTplInsertions);
@@ -397,9 +419,26 @@ Ext.define('Ext.form.field.Base', {
 
     /**
      * Gets the markup to be inserted into the outer template's bodyEl. For fields this is the actual input element.
+     * @protected
      */
     getSubTplMarkup: function() {
-        return this.getTpl('fieldSubTpl').apply(this.getSubTplData());
+        var me = this,
+            data = me.getSubTplData(),
+            preSubTpl = me.getTpl('preSubTpl'),
+            postSubTpl = me.getTpl('postSubTpl'),
+            markup = '';
+
+        if (preSubTpl) {
+            markup += preSubTpl.apply(data);
+        }
+
+        markup += me.getTpl('fieldSubTpl').apply(data);
+
+        if (postSubTpl) {
+            markup += postSubTpl.apply(data);
+        }
+
+        return markup;
     },
 
     initRenderTpl: function() {
@@ -436,6 +475,7 @@ Ext.define('Ext.form.field.Base', {
     // private
     onRender : function() {
         this.callParent(arguments);
+        Ext.form.field.Base.initTip();
         this.renderActiveError();
     },
 
@@ -483,7 +523,7 @@ Ext.define('Ext.form.field.Base', {
      */
     getRawValue: function() {
         var me = this,
-            v = (me.inputEl ? me.inputEl.getValue() : Ext.value(me.rawValue, ''));
+            v = (me.inputEl ? me.inputEl.getValue() : Ext.valueFrom(me.rawValue, ''));
         me.rawValue = v;
         return v;
     },
@@ -495,14 +535,31 @@ Ext.define('Ext.form.field.Base', {
      * @return {Object} value The field value that is set
      */
     setRawValue: function(value) {
-        var me = this;
-        value = Ext.value(me.transformRawValue(value), '');
-        me.rawValue = value;
+        var me = this,
+            rawValue = me.rawValue,
+            publishes;
 
-        // Some Field subclasses may not render an inputEl
-        if (me.inputEl) {
-            me.inputEl.dom.value = value;
+        if (!me.transformRawValue.$nullFn) {
+            value = me.transformRawValue(value);
         }
+
+        value = Ext.valueFrom(value, '');
+
+        if (rawValue === undefined || rawValue !== value) {
+            me.rawValue = value;
+
+            // Some Field subclasses may not render an inputEl
+            if (me.inputEl) {
+                me.bindPropertyChange(false);
+                me.inputEl.dom.value = value;
+                me.bindPropertyChange(true);
+            }
+
+            if (me.rendered && me.reference) {
+                me.publishState('rawValue', value);
+            }
+        }
+
         return value;
     },
     
@@ -529,7 +586,7 @@ Ext.define('Ext.form.field.Base', {
      * @return {Object} The converted raw value.
      */
     valueToRaw: function(value) {
-        return '' + Ext.value(value, '');
+        return '' + Ext.valueFrom(value, '');
     },
 
     /**
@@ -651,7 +708,7 @@ Ext.define('Ext.form.field.Base', {
     // private
     fireKey: function(e){
         if(e.isSpecialKey()){
-            this.fireEvent('specialkey', this, new Ext.EventObjectImpl(e));
+            this.fireEvent('specialkey', this, e);
         }
     },
 
@@ -662,17 +719,21 @@ Ext.define('Ext.form.field.Base', {
             onChangeTask,
             onChangeEvent,
             events = me.checkChangeEvents,
-            e,
-            eLen   = events.length,
-            event;
+            ignoreChangeRe = me.ignoreChangeRe,
+            eLen = events.length,
+            e, event;
 
         if (inputEl) {
-            me.mon(inputEl, Ext.EventManager.getKeyEvent(), me.fireKey,  me);
+            me.mon(inputEl, Ext.supports.SpecialKeyDownRepeat ? 'keydown' : 'keypress', me.fireKey,  me);
 
             // listen for immediate value changes
             onChangeTask = new Ext.util.DelayedTask(me.checkChange, me);
-            me.onChangeEvent = onChangeEvent = function() {
-                onChangeTask.delay(me.checkChangeBuffer);
+            me.onChangeEvent = onChangeEvent = function(e) {
+                // When using propertychange, we want to skip out on various values, since they won't cause
+                // the underlying value to change.
+                if (!(e.type == 'propertychange' && ignoreChangeRe.test(e.browserEvent.propertyName))) {
+                    onChangeTask.delay(me.checkChangeBuffer);
+                }
             };
 
             for (e = 0; e < eLen; e++) {
@@ -689,21 +750,23 @@ Ext.define('Ext.form.field.Base', {
     },
 
     doComponentLayout: function() {
-        var me = this,
-            inputEl = me.inputEl,
-            usesPropertychange = me.usesPropertychange,
-            ename = 'propertychange',
-            onChangeEvent = me.onChangeEvent;
-
         // In IE if propertychange is one of the checkChangeEvents, we need to remove
         // the listener prior to layout and re-add it after, to prevent it from firing
         // needlessly for attribute and style changes applied to the inputEl.
+        this.bindPropertyChange(false);
+        this.callParent(arguments);
+        this.bindPropertyChange(true);
+    },
+    
+    /**
+     * @private
+     */
+    bindPropertyChange: function(active) {
+        var me = this,
+            usesPropertychange = me.usesPropertychange;
+            
         if (usesPropertychange) {
-            me.mun(inputEl, ename, onChangeEvent);
-        }
-        me.callParent(arguments);
-        if (usesPropertychange) {
-            me.mon(inputEl, ename, onChangeEvent);
+            me[active ? 'mon' : 'mun'](me.inputEl, 'propertychange', me.onChangeEvent);
         }
     },
 
@@ -711,10 +774,15 @@ Ext.define('Ext.form.field.Base', {
      * @private Called when the field's dirty state changes. Adds/removes the {@link #dirtyCls} on the main element.
      * @param {Boolean} isDirty
      */
-    onDirtyChange: function(isDirty) {
-        this[isDirty ? 'addCls' : 'removeCls'](this.dirtyCls);
-    },
+    onDirtyChange: function (isDirty) {
+        var me = this;
 
+        me[isDirty ? 'addCls' : 'removeCls'](me.dirtyCls);
+
+        if (me.rendered && me.reference) {
+            me.publishState('dirty', isDirty);
+        }
+    },
 
     /**
      * Returns whether or not the field value is currently valid by {@link #getErrors validating} the
@@ -728,10 +796,8 @@ Ext.define('Ext.form.field.Base', {
             disabled = me.disabled,
             validate = me.forceValidation || !disabled;
             
-        
         return validate ? me.validateValue(me.processRawValue(me.getRawValue())) : disabled;
     },
-
 
     /**
      * Uses {@link #getErrors} to build an array of validation errors. If any errors are found, they are passed to
@@ -747,6 +813,7 @@ Ext.define('Ext.form.field.Base', {
         var me = this,
             errors = me.getErrors(value),
             isValid = Ext.isEmpty(errors);
+
         if (!me.preventMark) {
             if (isValid) {
                 me.clearInvalid();
@@ -812,9 +879,7 @@ Ext.define('Ext.form.field.Base', {
             
         if (me.rendered) {
             if (msgTarget == 'title' || msgTarget == 'qtip') {
-                if (me.rendered) {
-                    prop = msgTarget == 'qtip' ? 'data-errorqtip' : 'title';
-                }
+                prop = msgTarget == 'qtip' ? 'data-errorqtip' : 'title';
                 me.getActionEl().dom.setAttribute(prop, active || '');
             } else {
                 me.updateLayout();
@@ -828,10 +893,14 @@ Ext.define('Ext.form.field.Base', {
      */
     renderActiveError: function() {
         var me = this,
-            hasError = me.hasActiveError();
+            hasError = me.hasActiveError(),
+            invalidCls = me.invalidCls + '-field';
+
         if (me.inputEl) {
             // Add/remove invalid class
-            me.inputEl[hasError ? 'addCls' : 'removeCls'](me.invalidCls + '-field');
+            me.inputEl[hasError ? 'addCls' : 'removeCls']([
+                invalidCls, invalidCls + '-' + me.ui
+            ]);
         }
         me.mixins.labelable.renderActiveError.call(me);
     },
@@ -839,6 +908,41 @@ Ext.define('Ext.form.field.Base', {
 
     getActionEl: function() {
         return this.inputEl || this.el;
-    }
+    },
+    
+    privates: {
+        applyBind: function (bind, currentBindings) {
+            var me = this,
+                valueBinding = currentBindings && currentBindings.value,
+                bindings;
 
+            bindings = me.callParent([ bind, currentBindings ]);
+
+            if (bindings.value !== valueBinding && me.getInherited().modelValidation) {
+                me.updateValueBinding(bindings);
+            }
+
+            return bindings;
+        },
+
+        updateValueBinding: function (bindings) {
+            var me = this,
+                newBinding = bindings.value,
+                validationBinding = bindings.validation;
+            
+            if (validationBinding && validationBinding.autoVal) {
+                validationBinding.destroy();
+                bindings.validation = null;
+            }
+
+            if (newBinding && newBinding.bindValidation && !bindings.validation) {
+                validationBinding = newBinding.bindValidation('setValidation', me);
+
+                if (validationBinding) {
+                    bindings.validation = validationBinding;
+                    validationBinding.autoVal = true;
+                }
+            }
+        }
+    }
 });

@@ -122,6 +122,12 @@
  * the wrap border is controlled by the {@link #border} config. Only applicable when
  * `$ui-include-border-management-rules` is `true`.
  *
+ * @param {boolean} [$ui-ignore-frame-padding=$window-ignore-frame-padding]
+ * True to ignore the frame padding.  By default, the frame mixin adds extra padding when
+ * border radius is larger than border width.  This is intended to prevent the content
+ * from colliding with the rounded corners of the frame.  Set this to true to prevent
+ * the window frame from adding this extra padding.
+ *
  * @member Ext.window.Window
  */
 @mixin extjs-window-ui(
@@ -171,8 +177,9 @@
     // See the docs above
     $ui-force-header-border: $window-force-header-border,
     $ui-include-border-management-rules: $window-include-border-management-rules,
-    $ui-wrap-border-color: $window-wrap-border-color,
-    $ui-wrap-border-width: $window-wrap-border-width,
+    $ui-wrap-border-color: null,
+    $ui-wrap-border-width: null,
+    $ui-ignore-frame-padding: $window-ignore-frame-padding,
 
     // deprecated - use $ui instead
     $ui-label: null
@@ -183,6 +190,22 @@
             $ui: $ui-label;
         } @else {
             @warn "#{error('$ui is required')}";
+        }
+    }
+
+    @if is-null($ui-wrap-border-color) {
+        @if $ui == 'default' {
+            $ui-wrap-border-color: $window-wrap-border-color;
+        } @else {
+            $ui-wrap-border-color: $ui-border-color;
+        }
+    }
+
+    @if is-null($ui-wrap-border-width) {
+        @if $ui == 'default' {
+            $ui-wrap-border-width: $window-wrap-border-width;
+        } @else {
+            $ui-wrap-border-width: $ui-border-width;
         }
     }
 
@@ -203,7 +226,8 @@
             $border-radius: $ui-border-radius,
             $border-width: $ui-border-width,
             $padding: $ui-padding,
-            $background-color: $ui-background-color
+            $background-color: $ui-background-color,
+            $ignore-frame-padding: $ui-ignore-frame-padding
         );
     }
 
@@ -224,7 +248,6 @@
     .#{$prefix}window-header-#{$ui} {
         @if not is-null($ui-header-font-size) { font-size: $ui-header-font-size; }
         @if not is-null($ui-border-color) { border-color: $ui-border-color; }
-        zoom:1;
         background-color: $ui-header-background-color;
 
         .#{$prefix}tool-img {
@@ -396,7 +419,7 @@
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the header's background-color.
             @if $include-ie {
-                .#{$prefix}ie8m & {
+                .#{$prefix}ie8 & {
                     color: mix($ui-header-glyph-color, $ui-header-background-color, $ui-header-glyph-opacity * 100);
                 }
             }
@@ -570,4 +593,8 @@
     @include extjs-window-ui(
         $ui: 'default'
     );
+}
+
+.#{$prefix}window-body-plain {
+    background-color: transparent;
 }

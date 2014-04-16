@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Internal utility class that provides a unique cell context.
  * @private
@@ -58,22 +41,24 @@ Ext.define('Ext.grid.CellContext', {
     },
 
     setRow: function(row) {
-        var me = this;
+        var me = this,
+            dataSource = me.view.dataSource;
+        
         if (row !== undefined) {
             // Row index passed
             if (typeof row === 'number') {
-                me.row = Math.max(Math.min(row, me.view.dataSource.getCount() - 1), 0);
-                me.record = me.view.dataSource.getAt(row);
+                me.row = Math.max(Math.min(row, dataSource.getCount() - 1), 0);
+                me.record = dataSource.getAt(row);
             }
             // row is a Record
             else if (row.isModel) {
                 me.record = row;
-                me.row = me.view.indexOf(row);
+                me.row = dataSource.indexOf(row);
             }
             // row is a grid row
             else if (row.tagName) {
                 me.record = me.view.getRecord(row);
-                me.row = me.view.indexOf(me.record);
+                me.row = dataSource.indexOf(me.record);
             }
         }
     },
@@ -91,5 +76,9 @@ Ext.define('Ext.grid.CellContext', {
                 me.column = mgr.getHeaderIndex(col);
             }
         }
+    },
+
+    equal: function(other) {
+        return (other && other.isCellContext && other.view === this.view && other.record === this.record && other.columnHeader === this.columnHeader);
     }
 });

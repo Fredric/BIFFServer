@@ -1,25 +1,8 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
- * This feature is used to place a summary row at the bottom of the grid. If using a grouping, 
- * see {@link Ext.grid.feature.GroupingSummary}. There are 2 aspects to calculating the summaries, 
+ * This feature is used to place a summary row at the bottom of the grid. If using a grouping,
+ * see {@link Ext.grid.feature.GroupingSummary}. There are 2 aspects to calculating the summaries,
  * calculation and rendering.
- * 
+ *
  * ## Calculation
  * The summary value needs to be calculated for each column in the grid. This is controlled
  * by the summaryType option specified on the column. There are several built in summary types,
@@ -34,7 +17,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *
  * Alternatively, the summaryType can be a function definition. If this is the case,
  * the function is called with an array of records to calculate the summary value.
- * 
+ *
  * ## Rendering
  * Similar to a column, the summary also supports a summaryRenderer function. This
  * summaryRenderer is called before displaying a value. The function is optional, if
@@ -43,7 +26,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *  - value {Object} - The calculated value.
  *  - summaryData {Object} - Contains all raw summary values for the row.
  *  - field {String} - The name of the field we are calculating
- * 
+ *
  * ## Example Usage
  *
  *     @example
@@ -54,7 +37,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *             type: 'int'
  *         }]
  *     });
- *     
+ *
  *     Ext.create('Ext.grid.Panel', {
  *         width: 400,
  *         height: 200,
@@ -85,7 +68,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  *             text: 'Name',
  *             summaryType: 'count',
  *             summaryRenderer: function(value, summaryData, dataIndex) {
- *                 return Ext.String.format('{0} student{1}', value, value !== 1 ? 's' : ''); 
+ *                 return Ext.String.format('{0} student{1}', value, value !== 1 ? 's' : '');
  *             }
  *         }, {
  *             dataIndex: 'mark',
@@ -112,8 +95,11 @@ Ext.define('Ext.grid.feature.Summary', {
     dockedSummaryCls: Ext.baseCSSPrefix + 'docked-summary',
 
     panelBodyCls: Ext.baseCSSPrefix + 'summary-',
-    
+
     scrollPadProperty: 'padding-right',
+
+    // turn off feature events.
+    hasFeatureEvent: false,
 
     init: function(grid) {
         var me = this,
@@ -123,6 +109,7 @@ Ext.define('Ext.grid.feature.Summary', {
 
         if (me.dock) {
             grid.headerCt.on({
+                add: me.onStoreUpdate,
                 afterlayout: me.onStoreUpdate,
                 scope: me
             });
@@ -133,10 +120,10 @@ Ext.define('Ext.grid.feature.Summary', {
                         tableCls[tableCls.length] = view.ownerCt.colLinesCls;
                     }
                     me.summaryBar = grid.addDocked({
-                        childEls: ['innerCt'],
+                        childEls: ['innerCt', 'item'],
                         renderTpl: [
                             '<div id="{id}-innerCt" role="presentation">',
-                                '<table cellPadding="0" cellSpacing="0" class="' + tableCls.join(' ') + '">',
+                                '<table id="{id}-item" cellPadding="0" cellSpacing="0" class="' + tableCls.join(' ') + '">',
                                     '<tr class="' + me.summaryRowCls + '"></tr>',
                                 '</table>',
                             '</div>'
@@ -151,10 +138,7 @@ Ext.define('Ext.grid.feature.Summary', {
                 },
                 afterrender: function() {
                     grid.body.addCls(me.panelBodyCls + me.dock);
-                    view.mon(view.el, {
-                        scroll: me.onViewScroll,
-                        scope: me
-                    });
+                    view.on('scroll', me.onViewScroll, me);
                     me.onStoreUpdate();
                 },
                 single: true
@@ -162,14 +146,15 @@ Ext.define('Ext.grid.feature.Summary', {
 
             // Stretch the innerCt of the summary bar upon headerCt layout
             grid.headerCt.afterComponentLayout = Ext.Function.createSequence(grid.headerCt.afterComponentLayout, function() {
-                var width = this.getFullWidth(),
-                    innerCt = me.summaryBar.innerCt,
-                    scrollWidth;
-                    
-                if (view.hasVerticalScroll()) {
-                    scrollWidth = Ext.getScrollbarSize().width;
-                    width -= scrollWidth;
-                    innerCt.down('table').setStyle(me.scrollPadProperty, scrollWidth + 'px');
+                var width = this.getTableWidth(),
+                    innerCt = me.summaryBar.innerCt;
+
+                me.summaryBar.item.setWidth(width);
+
+                // "this" is the HeaderContainer. Its tooNarrow flag is set by its layout if the columns overflow.
+                // Must not measure+set in after layout phase, this is a write phase.
+                if (this.tooNarrow) {
+                    width += Ext.getScrollbarSize().width;
                 }
                 innerCt.setWidth(width);
             });
@@ -190,43 +175,46 @@ Ext.define('Ext.grid.feature.Summary', {
         });
     },
 
-    renderTFoot: function(values, out) {
+    renderTFoot: function(values, out, parent) {
         var view = values.view,
             me = view.findFeature('summary');
 
         if (me.showSummaryRow) {
-            out.push('<tfoot>');
-            me.outputSummaryRecord(me.createSummaryRecord(view), values, out);
-            out.push('</tfoot>');
+            me.outputSummaryRecord(me.createSummaryRecord(view), values, out, parent);
         }
     },
-    
+
     toggleSummaryRow: function(visible) {
         var me = this,
             bar = me.summaryBar;
-            
+
         me.callParent(arguments);
         if (bar) {
             bar.setVisible(me.showSummaryRow);
             me.onViewScroll();
         }
     },
-    
+
     vetoEvent: function(record, row, rowIndex, e) {
         return !e.getTarget(this.summaryRowSelector);
     },
 
     onViewScroll: function() {
-        this.summaryBar.el.dom.scrollLeft = this.view.el.dom.scrollLeft;
+        this.summaryBar.setScrollX(this.view.getScrollX());
     },
 
-    createSummaryRecord: function(view) {
+    createSummaryRecord: function (view) {
         var columns = view.headerCt.getVisibleGridColumns(),
-            info = {
-                records: view.store.getRange()
-            },
+            summaryRecord = this.summaryRecord,
             colCount = columns.length, i, column,
-            summaryRecord = this.summaryRecord || (this.summaryRecord = new view.store.model(null, view.id + '-summary-record'));
+            summaryValue, Model, modelData;
+        
+        if (!summaryRecord) {
+            Model = view.store.getModel();
+            modelData = {};
+            modelData[Model.idProperty] = view.id + '-summary-record';
+            summaryRecord = this.summaryRecord = new Model(modelData);
+        }
 
         // Set the summary field values
         summaryRecord.beginEdit();
@@ -239,8 +227,15 @@ Ext.define('Ext.grid.feature.Summary', {
                 column.dataIndex = column.id;
             }
 
-            summaryRecord.set(column.dataIndex, this.getSummary(view.store, column.summaryType, column.dataIndex, info));
+            // We need to capture this value because it could get overwritten when setting on the model if there
+            // is a convert() method on the model.
+            summaryValue = this.getSummary(view.store, column.summaryType, column.dataIndex);
+            summaryRecord.set(column.dataIndex, summaryValue);
+
+            // Capture the columnId:value for the summaryRenderer in the summaryData object.
+            this.setSummaryData(summaryRecord, column.id, summaryValue);
         }
+
         summaryRecord.endEdit(true);
         // It's not dirty
         summaryRecord.commit(true);
@@ -253,37 +248,29 @@ Ext.define('Ext.grid.feature.Summary', {
         var me = this,
             view = me.view,
             record = me.createSummaryRecord(view),
-            newRowDom = view.createRowElement(record, -1),
+            newRowDom = view.createRowElement(record, -1).firstChild.firstChild,
             oldRowDom, partner,
             p;
 
         if (!view.rendered) {
             return;
         }
-        
+
         // Summary row is inside the docked summaryBar Component
         if (me.dock) {
-            oldRowDom = me.summaryBar.el.down('.' + me.summaryRowCls, true);
+            p = me.summaryBar.item.dom.firstChild;
+            oldRowDom = p.firstChild;
         }
         // Summary row is a regular row in a THEAD inside the View.
         // Downlinked through the summary record's ID'
         else {
-            oldRowDom = me.view.getNode(record);
+            oldRowDom = me.view.getRow(record);
+            p = oldRowDom ? oldRowDom.parentNode : null;
         }
-        
-        if (oldRowDom) {
-            p = oldRowDom.parentNode;
+
+        if (p) {
             p.insertBefore(newRowDom, oldRowDom);
             p.removeChild(oldRowDom);
-
-            partner = me.lockingPartner;
-            // For locking grids...
-            // Update summary on other side (unless we have been called from the other side)
-            if (partner && partner.grid.rendered && !me.calledFromLockingPartner) {
-                partner.calledFromLockingPartner = true;
-                partner.onStoreUpdate();
-                partner.calledFromLockingPartner = false;
-            }
         }
         // If docked, the updated row will need sizing because it's outside the View
         if (me.dock) {
@@ -304,12 +291,7 @@ Ext.define('Ext.grid.feature.Summary', {
             column = columns[i];
             el = summaryEl.down(view.getCellSelector(column));
             if (el) {
-                if (column.hidden) {
-                    el.setDisplayed(false);
-                } else {
-                    el.setDisplayed(true);
-                    el.setWidth(column.width || (column.lastBox ? column.lastBox.width : 100));
-                }
+                el.setWidth(column.width || (column.lastBox ? column.lastBox.width : 100));
             }
         }
     }

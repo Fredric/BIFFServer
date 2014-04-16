@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Component layout for grid column headers which have a title element at the top followed by content.
  * @private
@@ -51,20 +34,21 @@ Ext.define('Ext.grid.ColumnComponentLayout', {
 
     // If not shrink wrapping, push height info down into child items
     publishInnerHeight: function(ownerContext, outerHeight) {
-        // TreePanels (and grids with hideHeaders: true) set their column container height to zero ti hide them.
-        // This is because they need to lay out in order to calculate widths for the columns (eg flexes).
-        // If there is no height to lay out, bail out early.
-        if (!outerHeight) {
-            return;
-        }
-
         var me = this,
             owner = me.owner,
-            innerHeight = outerHeight - ownerContext.getBorderInfo().height,
-            availableHeight = innerHeight,
-            textHeight,
-            titleHeight,
-            pt, pb;
+            innerHeight, availableHeight,
+            textHeight, titleHeight, paddingTop, paddingBottom;
+            
+        // TreePanels (and grids with hideHeaders: true) set their column container height to zero to hide them.
+        // This is because they need to lay out in order to calculate widths for the columns (eg flexes).
+        // If there is no height to lay out, bail out early.
+        if (owner.getOwnerHeaderCt().hiddenHeaders) {
+            ownerContext.setProp('innerHeight', 0);
+            return;
+        }
+        
+        innerHeight = outerHeight - ownerContext.getBorderInfo().height;
+        availableHeight = innerHeight;
 
         // We do not have enough information to get the height of the titleEl
         if (!owner.noWrap && !ownerContext.hasDomProp('width')) {
@@ -74,32 +58,23 @@ Ext.define('Ext.grid.ColumnComponentLayout', {
 
         // If we are not a container, but just have HTML content...
         if (ownerContext.hasRawContent) {
-            titleHeight = availableHeight;
-
             // Vertically center the header text and ensure titleContext occupies availableHeight
             textHeight = owner.textEl.getHeight();
             if (textHeight) {
                 availableHeight -= textHeight;
                 if (availableHeight > 0) {
-                    pt = Math.floor(availableHeight / 2);
-                    pb = availableHeight - pt;
-                    ownerContext.titleContext.setProp('padding-top', pt);
-                    ownerContext.titleContext.setProp('padding-bottom', pb);
+                    paddingTop = Math.floor(availableHeight / 2);
+                    paddingBottom = availableHeight - paddingTop;
+                    ownerContext.titleContext.setProp('padding-top', paddingTop);
+                    ownerContext.titleContext.setProp('padding-bottom', paddingBottom);
                 }
             }
         }
 
         // There are child items
         else {
-            titleHeight = owner.titleEl.getHeight();
-            ownerContext.setProp('innerHeight', innerHeight - titleHeight, false);
+            ownerContext.setProp('innerHeight', innerHeight - owner.titleEl.getHeight(), false);
         }
-        // Only IE6 and IEQuirks needs this.
-        // This is why we maintain titleHeight when setting it.
-        if ((Ext.isIE6 || Ext.isIEQuirks) && ownerContext.triggerContext) {
-            ownerContext.triggerContext.setHeight(titleHeight);
-        }
-
     },
 
     // We do not need the Direct2D sub pixel measurement here. Just the offsetHeight will do.
@@ -107,15 +82,6 @@ Ext.define('Ext.grid.ColumnComponentLayout', {
     // remove this override.
     measureContentHeight: function(ownerContext) {
         return ownerContext.el.dom.offsetHeight;
-    },
-
-    publishOwnerHeight: function(ownerContext, contentHeight) {
-        this.callParent(arguments);
-        // Only IE6 and IEQuirks needs this.
-        // This is why we maintain titleHeight when setting it.
-        if ((Ext.isIE6 || Ext.isIEQuirks) && ownerContext.triggerContext) {
-            ownerContext.triggerContext.setHeight(contentHeight);
-        }
     },
 
     // If not shrink wrapping, push width info down into child items

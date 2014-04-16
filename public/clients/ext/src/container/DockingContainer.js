@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  *
  */
@@ -51,7 +34,7 @@ Ext.define('Ext.container.DockingContainer', {
      *
      * To make default docking order match border layout, do this:
      *
-     *      Ext.panel.AbstractPanel.prototype.defaultDockWeights = { top: 1, bottom: 3, left: 5, right: 7 };
+     *      Ext.panel.Panel.prototype.defaultDockWeights = { top: 1, bottom: 3, left: 5, right: 7 };
      *
      * Changing these defaults as above or individually on this object will effect all Panels.
      * To change the defaults on a single panel, you should replace the entire object:
@@ -108,6 +91,7 @@ Ext.define('Ext.container.DockingContainer', {
     addDocked : function(items, pos) {
         var me = this,
             i = 0,
+            instanced,
             item, length;
 
         items = me.prepareItems(items);
@@ -127,7 +111,10 @@ Ext.define('Ext.container.DockingContainer', {
                 me.dockedItems.add(item);
             }
             
-            item.onAdded(me, i);
+            instanced = !!item.instancedCmp;
+            delete item.instancedCmp;
+            item.onAdded(me, i, instanced);
+            delete item.initOwnerCt;
             if (me.hasListeners.dockedadd) {
                 me.fireEvent('dockedadd', me, item, i);
             }
@@ -233,9 +220,11 @@ Ext.define('Ext.container.DockingContainer', {
         var me = this,
             items = me.dockedItems;
 
-        me.dockedItems = new Ext.util.AbstractMixedCollection(false, me.getComponentId);
-        if (items) {
-            me.addDocked(items);
+        if (!items || !items.isMixedCollection) {
+            me.dockedItems = new Ext.util.AbstractMixedCollection(false, me.getComponentId);
+            if (items) {
+                me.addDocked(items);
+            }
         }
     },
 

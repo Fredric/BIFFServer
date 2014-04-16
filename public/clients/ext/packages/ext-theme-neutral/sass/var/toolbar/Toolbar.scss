@@ -151,19 +151,19 @@ $toolbar-text-font-family: $font-family !default;
  * @var {number}
  * The default font-size of Toolbar text
  */
-$toolbar-text-font-size: ceil($font-size * .9) !default; //11px
+$toolbar-text-font-size: $font-size !default;
 
 /**
  * @var {number}
  * The default font-size of Toolbar text
  */
-$toolbar-text-font-weight: normal !default;
+$toolbar-text-font-weight: $font-weight !default;
 
 /**
  * @var {number/list}
  * The margin of Toolbar text
  */
-$toolbar-text-margin: 0 6px 0 4px;
+$toolbar-text-margin: 0 6px 0 4px !default;
 
 /**
  * @var {color}
@@ -208,7 +208,7 @@ $toolbar-scroller-border-color: #8db2e3 !default;
 $toolbar-scroller-border-width: 0 0 1px !default;
 
 // private
-$toolbar-scroller-margin-top: 0 !default;
+$toolbar-scroller-margin: 0 !default;
 
 /**
  * @var {string}

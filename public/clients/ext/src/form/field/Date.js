@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @docauthor Jason Johnston <jason@sencha.com>
  *
@@ -198,7 +181,7 @@ Ext.define('Ext.form.field.Date', {
      *
      * Defaults to {@link #format}.
      */
-    
+
     /**
      * @cfg {Boolean} useStrict
      * True to enforce strict date parsing to prevent the default Javascript "date rollover".
@@ -498,7 +481,7 @@ Ext.define('Ext.form.field.Date', {
     },
 
     // private
-    formatDate : function(date){
+    formatDate: function(date){
         return Ext.isDate(date) ? Ext.Date.dateFormat(date, this.format) : date;
     },
 
@@ -506,9 +489,11 @@ Ext.define('Ext.form.field.Date', {
         var me = this,
             format = Ext.String.format;
 
+        // Create floating Picker BoundList. It will acquire a floatParent by looking up
+        // its ancestor hierarchy (Pickers use their pickerField property as an upward link)
+        // for a floating component.
         return new Ext.picker.Date({
             pickerField: me,
-            ownerCt: me.ownerCt,
             renderTo: document.body,
             floating: true,
             hidden: true,
@@ -531,11 +516,12 @@ Ext.define('Ext.form.field.Date', {
             keyNavConfig: {
                 esc: function() {
                     me.collapse();
+                    me.focus();
                 }
             }
         });
     },
-    
+
     onDownArrow: function(e) {
         this.callParent(arguments);
         if (this.isExpanded) {
@@ -549,6 +535,7 @@ Ext.define('Ext.form.field.Date', {
         me.setValue(d);
         me.fireEvent('select', me, d);
         me.collapse();
+        me.focus(50);
     },
 
     /**
@@ -560,25 +547,12 @@ Ext.define('Ext.form.field.Date', {
         this.picker.setValue(Ext.isDate(value) ? value : new Date());
     },
 
-    /**
-     * @private
-     * Focuses the field when collapsing the Date picker.
-     */
-    onCollapse: function() {
-        this.focus(false, 60);
-    },
-
     // private
-    beforeBlur : function(){
+    beforeBlur: function(){
         var me = this,
-            v = me.parseDate(me.getRawValue()),
-            focusTask = me.focusTask;
+            v = me.rawToValue(me.getRawValue());
 
-        if (focusTask) {
-            focusTask.cancel();
-        }
-
-        if (v) {
+        if (Ext.isDate(v)) {
             me.setValue(v);
         }
     }

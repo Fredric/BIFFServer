@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * A base class for all menu items that require menu-related functionality such as click handling,
  * sub-menus, icons, etc.
@@ -47,9 +30,9 @@ Ext.define('Ext.menu.Item', {
      */
     isMenuItem: true,
 
-    mixins: {
-        queryable: 'Ext.Queryable'
-    },
+    mixins: [
+        'Ext.mixin.Queryable'
+    ],
 
     /**
      * @property {Boolean} activated
@@ -118,12 +101,16 @@ Ext.define('Ext.menu.Item', {
      * @cfg {String} icon
      * The path to an icon to display in this item.
      *
+     * There are no default icons that come with Ext JS.
+     *
      * Defaults to `Ext.BLANK_IMAGE_URL`.
      */
 
     /**
      * @cfg {String} iconCls
      * A CSS class that specifies a `background-image` to use as the icon for this item.
+     *
+     * There are no default icon classes that come with Ext JS.
      */
 
     /**
@@ -189,6 +176,7 @@ Ext.define('Ext.menu.Item', {
     indentRightIconCls: Ext.baseCSSPrefix + 'menu-item-indent-right-icon',
     indentRightArrowCls: Ext.baseCSSPrefix + 'menu-item-indent-right-arrow',
     linkCls: Ext.baseCSSPrefix + 'menu-item-link',
+    linkHrefCls: Ext.baseCSSPrefix + 'menu-item-link-href',
 
     childEls: [
         'itemEl', 'iconEl', 'textEl', 'arrowEl'
@@ -199,8 +187,8 @@ Ext.define('Ext.menu.Item', {
             '{text}',
         '<tpl else>',
             '<a id="{id}-itemEl"',
-                ' class="{linkCls} {indentCls}{childElCls}"',
-                ' href="{href}" role="presentation" ',
+                ' class="{linkCls}<tpl if="hasHref"> {linkHrefCls}</tpl>{childElCls}"',
+                ' href="{href}" role="menuitem" ',
                 '<tpl if="hrefTarget"> target="{hrefTarget}"</tpl>',
                 ' hidefocus="true"',
                 // For most browsers the text is already unselectable but Opera needs an explicit unselectable="on".
@@ -209,7 +197,7 @@ Ext.define('Ext.menu.Item', {
                     ' tabIndex="{tabIndex}"',
                 '</tpl>',
             '>',
-                '<span id="{id}-textEl" class="{textCls}{childElCls}" unselectable="on">{text}</span>',
+                '<span id="{id}-textEl" class="{textCls} {indentCls}{childElCls}" unselectable="on">{text}</span>',
                 '<tpl if="hasIcon">',
                     '<div role="presentation" id="{id}-iconEl" class="{baseIconCls}',
                         '{[values.rightIcon ? "-right" : ""]} {iconCls}',
@@ -244,7 +232,42 @@ Ext.define('Ext.menu.Item', {
      * @cfg {Function} handler
      * A function called when the menu item is clicked (can be used instead of {@link #click} event).
      * @cfg {Ext.menu.Item} handler.item The item that was clicked
-     * @cfg {Ext.EventObject} handler.e The underyling {@link Ext.EventObject}.
+     * @cfg {Ext.event.Event} handler.e The underyling {@link Ext.event.Event}.
+     */
+
+    /**
+     * @event activate
+     * Fires when this item is activated
+     * @param {Ext.menu.Item} item The activated item
+     */
+
+    /**
+     * @event click
+     * Fires when this item is clicked
+     * @param {Ext.menu.Item} item The item that was clicked
+     * @param {Ext.event.Event} e The underyling {@link Ext.event.Event}.
+     */
+
+    /**
+     * @event deactivate
+     * Fires when this tiem is deactivated
+     * @param {Ext.menu.Item} item The deactivated item
+     */
+
+    /**
+     * @event textchange
+     * Fired when the item's text is changed by the {@link #setText} method.
+     * @param {Ext.menu.Item} this
+     * @param {String} oldText
+     * @param {String} newText
+     */
+
+    /**
+     * @event iconchange
+     * Fired when the item's icon is changed by the {@link #setIcon} or {@link #setIconCls} methods.
+     * @param {Ext.menu.Item} this
+     * @param {String} oldIcon
+     * @param {String} newIcon
      */
 
     activate: function(skipCheck) {
@@ -337,6 +360,7 @@ Ext.define('Ext.menu.Item', {
             me.parentMenu.activeChild = menu;
             menu.parentItem = me;
             menu.parentMenu = me.parentMenu;
+            menu.constrainTo = document.body;
             menu.showBy(me, me.menuAlign);
         }
     },
@@ -367,48 +391,6 @@ Ext.define('Ext.menu.Item', {
             cls = [prefix + 'menu-item'],
             menu;
 
-        me.addEvents(
-            /**
-             * @event activate
-             * Fires when this item is activated
-             * @param {Ext.menu.Item} item The activated item
-             */
-            'activate',
-
-            /**
-             * @event click
-             * Fires when this item is clicked
-             * @param {Ext.menu.Item} item The item that was clicked
-             * @param {Ext.EventObject} e The underyling {@link Ext.EventObject}.
-             */
-            'click',
-
-            /**
-             * @event deactivate
-             * Fires when this tiem is deactivated
-             * @param {Ext.menu.Item} item The deactivated item
-             */
-            'deactivate',
-
-            /**
-             * @event textchange
-             * Fired when the item's text is changed by the {@link #setText} method.
-             * @param {Ext.menu.Item} this
-             * @param {String} oldText
-             * @param {String} newText
-             */
-            'textchange',
-
-            /**
-             * @event iconchange
-             * Fired when the item's icon is changed by the {@link #setIcon} or {@link #setIconCls} methods.
-             * @param {Ext.menu.Item} this
-             * @param {String} oldIcon
-             * @param {String} newIcon
-             */
-            'iconchange'
-        );
-
         if (me.plain) {
             cls.push(prefix + 'menu-item-plain');
         }
@@ -432,7 +414,7 @@ Ext.define('Ext.menu.Item', {
         var me = this,
             clickHideDelay = me.clickHideDelay;
 
-        if (!me.href) {
+        if (!me.href || me.disabled) {
             e.stopEvent();
         }
 
@@ -440,7 +422,15 @@ Ext.define('Ext.menu.Item', {
             return;
         }
 
-        if (me.hideOnClick) {
+        if (me.hideOnClick && 
+            // on mobile webkit, when the menu item has an href, a longpress will trigger
+            // the touch callout menu to show.  If this is the case, the tap event object's
+            // browser event type will be 'touchcancel', and we do not want to hide the menu.
+            e.browserEvent.type !== 'touchcancel' &&
+            // items with submenus are activated by touchstart on mobile browsers, so 
+            // we cannot hide the menu on "tap"
+            !(e.type === 'tap' && me.menu)) {
+
             if (!clickHideDelay) {
                 me.deferHideParentMenus();
             } else {
@@ -448,7 +438,7 @@ Ext.define('Ext.menu.Item', {
             }
         }
 
-        Ext.callback(me.handler, me.scope || me, [me, e]);
+        Ext.callback(me.handler, me.scope, [me, e], 0, me);
         me.fireEvent('click', me, e);
 
         if (!me.hideOnClick) {
@@ -531,6 +521,7 @@ Ext.define('Ext.menu.Item', {
         }
 
         Ext.applyIf(me.renderData, {
+            hasHref: !!me.href,
             href: me.href || '#',
             hrefTarget: me.hrefTarget,
             icon: me.icon,
@@ -550,6 +541,7 @@ Ext.define('Ext.menu.Item', {
             textCls: me.textCls,
             indentCls: indentCls.join(' '),
             linkCls: me.linkCls,
+            linkHrefCls: me.linkHrefCls,
             groupCls: me.group ? me.groupCls : '',
             tabIndex: me.tabIndex
         });
@@ -658,7 +650,7 @@ Ext.define('Ext.menu.Item', {
         me.text = text;
 
         if (me.rendered) {
-            el.update(text || '');
+            el.setHtml(text || '');
             // cannot just call layout on the component due to stretchmax
             me.ownerCt.updateLayout();
         }

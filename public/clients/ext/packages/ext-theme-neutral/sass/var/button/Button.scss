@@ -58,6 +58,20 @@ $button-small-text-padding: 4px !default;
 
 /**
  * @var {number}
+ * For small {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is right-aligned.
+ */
+$button-small-split-spacing-right: null !default;
+
+/**
+ * @var {number}
+ * For small {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is bottom-aligned.
+ */
+$button-small-split-spacing-bottom: null !default;
+
+/**
+ * @var {number}
  * The default font-size for a small {@link #scale} button
  */
 $button-small-font-size: ceil($font-size * .9) !default; //11px
@@ -90,7 +104,7 @@ $button-small-font-size-disabled: $button-small-font-size !default;
  * @var {string}
  * The default font-weight for a small {@link #scale} button
  */
-$button-small-font-weight: normal !default;
+$button-small-font-weight: $font-weight !default;
 
 /**
  * @var {string}
@@ -203,6 +217,20 @@ $button-medium-text-padding: 3px !default;
 
 /**
  * @var {number}
+ * For medium {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is right-aligned.
+ */
+$button-medium-split-spacing-right: null !default;
+
+/**
+ * @var {number}
+ * For medium {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is bottom-aligned.
+ */
+$button-medium-split-spacing-bottom: null !default;
+
+/**
+ * @var {number}
  * The default font-size for a medium {@link #scale} button
  */
 $button-medium-font-size: $font-size !default; //11px
@@ -235,7 +263,7 @@ $button-medium-font-size-disabled: $button-medium-font-size !default;
  * @var {string}
  * The default font-weight for a medium {@link #scale} button
  */
-$button-medium-font-weight: normal !default;
+$button-medium-font-weight: $font-weight !default;
 
 /**
  * @var {string}
@@ -348,6 +376,20 @@ $button-large-text-padding: 3px !default;
 
 /**
  * @var {number}
+ * For large {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is right-aligned.
+ */
+$button-large-split-spacing-right: null !default;
+
+/**
+ * @var {number}
+ * For large {@link #scale} buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is bottom-aligned.
+ */
+$button-large-split-spacing-bottom: null !default;
+
+/**
+ * @var {number}
  * The default font-size for a large {@link #scale} button
  */
 $button-large-font-size: $font-size !default; //11px
@@ -380,7 +422,7 @@ $button-large-font-size-disabled: $button-large-font-size !default;
  * @var {string}
  * The default font-weight for a large {@link #scale} button
  */
-$button-large-font-weight: normal !default;
+$button-large-font-weight: $font-weight !default;
 
 /**
  * @var {string}
@@ -636,7 +678,7 @@ $button-default-glyph-color: $button-default-color !default;
  * @var {color}
  * The opacity of the {@link #glyph} icon for the `default` button UI
  */
-$button-default-glyph-opacity: .5 !default;
+$button-default-glyph-opacity: 0.5 !default;
 
 /**
  * @var {color}
@@ -814,7 +856,7 @@ $button-toolbar-include-split-noline-arrows: false !default;
  * @var {number} $button-opacity-disabled
  * opacity to apply to the button's main element when the buton is disabled
  */
-$button-opacity-disabled: .5 !default;
+$button-opacity-disabled: 0.5 !default;
 
 /**
  * @var {number} $button-inner-opacity-disabled
@@ -824,9 +866,9 @@ $button-inner-opacity-disabled: 1 !default;
 
 /**
  * @var {number} $button-toolbar-opacity-disabled
- * opacity to apply to the toolbar button's main element when the buton is disabled
+ * opacity to apply to the toolbar button's main element when the button is disabled
  */
-$button-toolbar-opacity-disabled: .5 !default;
+$button-toolbar-opacity-disabled: 0.5 !default;
 
 /**
  * @var {number} $button-toolbar-inner-opacity-disabled
@@ -860,6 +902,12 @@ $include-button-default-large-ui: $include-button-default-ui !default;
 
 /**
  * @var {boolean}
+ * True to include the "default" button UI for buttons rendered inside a grid cell (Slightly smaller height than default)
+ */
+$include-button-cell-ui: $include-button-default-ui !default;
+
+/**
+ * @var {boolean}
  * True to include the "default-toolbar" button UI
  */
 $include-button-default-toolbar-ui: $include-default-uis !default;
@@ -881,3 +929,356 @@ $include-button-default-toolbar-medium-ui: $include-button-default-toolbar-ui !d
  * True to include the "default-toolbar" button UI for "large" scale buttons
  */
 $include-button-default-toolbar-large-ui: $include-button-default-toolbar-ui !default;
+
+/**
+ * @class Ext.cell.Button
+ */
+
+/**
+ * @var {number}
+ * The default width for a grid cell button's {@link #cfg-menu} arrow
+ */
+$button-cell-arrow-width: $button-arrow-width !default;
+
+/**
+ * @var {number}
+ * The default height for a grid cell button's {@link #cfg-menu} arrow
+ */
+$button-cell-arrow-height: $button-arrow-height !default;
+
+/**
+ * @var {number}
+ * The default width a grid cell {@link Ext.button.Split Split Button}'s arrow
+ */
+$button-cell-split-width: $button-split-width !default;
+
+/**
+ * @var {number}
+ * The default height a grid cell {@link Ext.button.Split Split Button}'s arrow
+ */
+$button-cell-split-height: $button-split-height !default;
+
+/**
+ * @var {number}
+ * The default space between a grid cell button's icon and text
+ */
+$button-cell-icon-spacing: $button-icon-spacing !default;
+
+/**
+ * @var {number}
+ * The default border-radius for a grid cell button
+ */
+$button-cell-border-radius: $button-small-border-radius !default;
+
+/**
+ * @var {number}
+ * The default border-width for a grid cell button
+ */
+$button-cell-border-width: $button-small-border-width !default;
+
+/**
+ * @var {number}
+ * The default padding for a grid cell button
+ */
+$button-cell-padding: $button-small-padding !default;
+
+/**
+ * @var {number}
+ * The default horizontal padding to add to the left and right of the text element for
+ * a grid cell button
+ */
+$button-cell-text-padding: $button-small-text-padding !default;
+
+/**
+ * @var {number}
+ * For grid cell buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is right-aligned.
+ */
+$button-cell-split-spacing-right: $button-small-split-spacing-right !default;
+
+/**
+ * @var {number}
+ * For grid cell buttons, the amount of space in between the split arrow, and
+ * the button text, when the split arrow is bottom-aligned.
+ */
+$button-cell-split-spacing-bottom: $button-small-split-spacing-bottom !default;
+
+/**
+ * @var {number}
+ * The default font-size for a grid cell button
+ */
+$button-cell-font-size: $button-small-font-size !default; //11px
+
+/**
+ * @var {number}
+ * The default font-size for a grid cell button when the cursor is over the button
+ */
+$button-cell-font-size-over: $button-cell-font-size !default;
+
+/**
+ * @var {number}
+ * The default font-size for a grid cell button when the button is focused
+ */
+$button-cell-font-size-focus: $button-cell-font-size-over !default;
+
+/**
+ * @var {number}
+ * The default font-size for a grid cell button when the button is pressed
+ */
+$button-cell-font-size-pressed: $button-cell-font-size !default;
+
+/**
+ * @var {number}
+ * The default font-size for a grid cell button when the button is disabled
+ */
+$button-cell-font-size-disabled: $button-cell-font-size !default;
+
+/**
+ * @var {string}
+ * The default font-weight for a grid cell button
+ */
+$button-cell-font-weight: $button-small-font-weight !default;
+
+/**
+ * @var {string}
+ * The default font-weight for a grid cell button when the cursor is over the button
+ */
+$button-cell-font-weight-over: $button-cell-font-weight !default;
+
+/**
+ * @var {string}
+ * The default font-weight for a grid cell button when the button is focused
+ */
+$button-cell-font-weight-focus: $button-cell-font-weight-over !default;
+
+/**
+ * @var {string}
+ * The default font-weight for a grid cell button when the button is pressed
+ */
+$button-cell-font-weight-pressed: $button-cell-font-weight !default;
+
+/**
+ * @var {string}
+ * The default font-weight for a grid cell button when the button is disabled
+ */
+$button-cell-font-weight-disabled: $button-cell-font-weight !default;
+
+/**
+ * @var {string}
+ * The default font-family for a grid cell button
+ */
+$button-cell-font-family: $button-small-font-family !default;
+
+/**
+ * @var {string}
+ * The default font-family for a grid cell button when the cursor is over the button
+ */
+$button-cell-font-family-over: $button-cell-font-family !default;
+
+/**
+ * @var {string}
+ * The default font-family for a grid cell button when the button is focused
+ */
+$button-cell-font-family-focus: $button-cell-font-family-over !default;
+
+/**
+ * @var {string}
+ * The default font-family for a grid cell button when the button is pressed
+ */
+$button-cell-font-family-pressed: $button-cell-font-family !default;
+
+/**
+ * @var {string}
+ * The default font-family for a grid cell button when the button is disabled
+ */
+$button-cell-font-family-disabled: $button-cell-font-family !default;
+
+/**
+ * @var {number}
+ * The default icon size for a grid cell button
+ */
+$button-cell-icon-size: $button-small-icon-size - 4px !default;
+
+/**
+ * @var {color}
+ * The base color for the `cell` button UI
+ */
+$button-cell-base-color: $button-default-base-color !default;
+
+/**
+ * @var {color}
+ * The base color for the `cell` button UI when the cursor is over the button
+ */
+$button-cell-base-color-over: $button-cell-base-color !default;
+
+/**
+ * @var {color}
+ * The base color for the `cell` button UI when the button is focused
+ */
+$button-cell-base-color-focus: $button-cell-base-color-over !default;
+
+/**
+ * @var {color}
+ * The base color for the `cell` button UI when the button is pressed
+ */
+$button-cell-base-color-pressed: $button-cell-base-color !default;
+
+/**
+ * @var {color}
+ * The base color for the `cell` button UI when the button is disabled
+ */
+$button-cell-base-color-disabled: $button-default-base-color-disabled !default;
+
+/**
+ * @var {color}
+ * The border-color for the `cell` button UI
+ */
+$button-cell-border-color: $button-default-border-color !default;
+
+/**
+ * @var {color}
+ * The border-color for the `cell` button UI when the cursor is over the button
+ */
+$button-cell-border-color-over: $button-default-border-color-over !default;
+
+/**
+ * @var {color}
+ * The border-color for the `cell` button UI when the button is focused
+ */
+$button-cell-border-color-focus: $button-default-border-color-focus !default;
+
+/**
+ * @var {color}
+ * The border-color for the `cell` button UI when the button is pressed
+ */
+$button-cell-border-color-pressed: $button-default-border-color-pressed !default;
+
+/**
+ * @var {color}
+ * The border-color for the `cell` button UI when the button is disabled
+ */
+$button-cell-border-color-disabled: $button-default-border-color-disabled !default;
+
+/**
+ * @var {color}
+ * The background-color for the `cell` button UI
+ */
+$button-cell-background-color: $button-cell-base-color !default;
+
+/**
+ * @var {color}
+ * The background-color for the `cell` button UI when the cursor is over the button
+ */
+$button-cell-background-color-over: $button-default-background-color-over !default;
+
+/**
+ * @var {color}
+ * The background-color for the `cell` button UI when the button is focused
+ */
+$button-cell-background-color-focus: $button-cell-background-color-over !default;
+
+/**
+ * @var {color}
+ * The background-color for the `cell` button UI when the button is pressed
+ */
+$button-cell-background-color-pressed: $button-cell-base-color-pressed !default;
+
+/**
+ * @var {color}
+ * The background-color for the `cell` button UI when the button is disabled
+ */
+$button-cell-background-color-disabled: $button-default-background-color-disabled !default;
+
+/**
+ * @var {string/list}
+ * The background-gradient for the `cell` button UI.  Can be either the name of a
+ * predefined gradient or a list of color stops. Used as the `$type` parameter for
+ * {@link Global_CSS#background-gradient}.
+ */
+$button-cell-background-gradient: $button-default-background-gradient !default;
+
+/**
+ * @var {string/list}
+ * The background-gradient for the `cell` button UI when the cursor is over the button.
+ * Can be either the name of a predefined gradient or a list of color stops. Used as the
+ * `$type` parameter for {@link Global_CSS#background-gradient}.
+ */
+$button-cell-background-gradient-over: $button-default-background-gradient-over !default;
+
+/**
+ * @var {string/list}
+ * The background-gradient for the `cell` button UI when the button is focused.  Can be
+ * either the name of a predefined gradient or a list of color stops. Used as the `$type`
+ * parameter for {@link Global_CSS#background-gradient}.
+ */
+$button-cell-background-gradient-focus: $button-cell-background-gradient-over !default;
+
+/**
+ * @var {string/list}
+ * The background-gradient for the `cell` button UI when the button is pressed.  Can be
+ * either the name of a predefined gradient or a list of color stops. Used as the `$type`
+ * parameter for {@link Global_CSS#background-gradient}.
+ */
+$button-cell-background-gradient-pressed: $button-default-background-gradient-pressed !default;
+
+/**
+ * @var {string/list}
+ * The background-gradient for the `cell` button UI when the button is disabled.  Can be
+ * either the name of a predefined gradient or a list of color stops. Used as the `$type`
+ * parameter for {@link Global_CSS#background-gradient}.
+ */
+$button-cell-background-gradient-disabled: $button-default-background-gradient-disabled !default;
+
+/**
+ * @var {color}
+ * The text color for the `cell` button UI
+ */
+$button-cell-color: $button-default-color !default;
+
+/**
+ * @var {color}
+ * The text color for the `cell` button UI when the cursor is over the button
+ */
+$button-cell-color-over: $button-cell-color !default;
+
+/**
+ * @var {color}
+ * The text color for the `cell` button UI when the button is focused
+ */
+$button-cell-color-focus: $button-cell-color-over !default;
+
+/**
+ * @var {color}
+ * The text color for the `cell` button UI when the button is pressed
+ */
+$button-cell-color-pressed: $button-cell-color !default;
+
+/**
+ * @var {color}
+ * The text color for the `cell` button UI when the button is disabled
+ */
+$button-cell-color-disabled: $button-cell-color !default;
+
+/**
+ * @var {color}
+ * The color of the {@link #glyph} icon for the `cell` button UI
+ */
+$button-cell-glyph-color: $button-cell-color !default;
+
+/**
+ * @var {color}
+ * The opacity of the {@link #glyph} icon for the `cell` button UI
+ */
+$button-cell-glyph-opacity: $button-default-glyph-opacity !default;
+
+/**
+ * @var {number} $button-opacity-disabled
+ * opacity to apply to the button's main element when the button is disabled
+ */
+$button-cell-opacity-disabled: $button-opacity-disabled !default;
+
+/**
+ * @var {number} $button-inner-opacity-disabled
+ * opacity to apply to the button's inner elements (icon and text) when the buton is disabled
+ */
+$button-cell-inner-opacity-disabled: $button-inner-opacity-disabled !default;

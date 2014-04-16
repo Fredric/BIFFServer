@@ -5,18 +5,23 @@
         <property name="enable.background.server" value="false"/>
         <x-sencha-command>
             <![CDATA[
-            fs
-                web
-                    -port=${build.web.port}
-                    -background=${enable.background.server}
-                    start
-                        -map=${build.web.root}
+            web
+                -port=${build.web.port}
+                -background=${enable.background.server}
+                start
+                    -map=${build.web.root}
             ]]>
         </x-sencha-command>
+        <if>
+            <x-is-true value="enable.browser.launch"/>
+            <then>
+                <x-launch-browser url="http://localhost:${build.web.port}"/>
+            </then>
+        </if>
     </target>
     <target name="-after-web-start"/>
     <target name="web-start"
-        depends="-init,-before-web-start,-web-start,-after-web-start"/>
+        depends="init,-before-web-start,-web-start,-after-web-start"/>
 
     <target name="-before-web-stop"/>
     <target name="-web-stop">

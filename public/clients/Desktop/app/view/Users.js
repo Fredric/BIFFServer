@@ -20,13 +20,6 @@ Ext.define('BIFF.view.Users', {
             }
         }
     ],
-    dockedItems:[
-        {
-            xtype:'appheader',
-            dock:'top',
-            height:40
-        }
-    ],
     initComponent: function () {
         var me = this;
         me.store = Ext.StoreMgr.lookup('Users');

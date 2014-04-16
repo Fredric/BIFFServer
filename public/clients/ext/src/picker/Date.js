@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * A date picker. This class is used by the Ext.form.field.Date field to allow browsing and selection of valid
  * dates in a popup next to the field, but may also be used with other components.
@@ -50,7 +33,6 @@ Ext.define('Ext.picker.Date', {
         'Ext.button.Split',
         'Ext.util.ClickRepeater',
         'Ext.util.KeyNav',
-        'Ext.EventObject',
         'Ext.fx.Manager',
         'Ext.picker.Month'
     ],
@@ -66,11 +48,9 @@ Ext.define('Ext.picker.Date', {
     renderTpl: [
         '<div id="{id}-innerEl" role="grid">',
             '<div role="presentation" class="{baseCls}-header">',
-                 // the href attribute is required for the :hover selector to work in IE6/7/quirks
-                '<a id="{id}-prevEl" class="{baseCls}-prev {baseCls}-arrow" href="#" role="button" title="{prevText}" hidefocus="on" ></a>',
+                '<a id="{id}-prevEl" class="{baseCls}-prev {baseCls}-arrow" role="button" title="{prevText}" hidefocus="on" ></a>',
                 '<div class="{baseCls}-month" id="{id}-middleBtnEl">{%this.renderMonthBtn(values, out)%}</div>',
-                 // the href attribute is required for the :hover selector to work in IE6/7/quirks
-                '<a id="{id}-nextEl" class="{baseCls}-next {baseCls}-arrow" href="#" role="button" title="{nextText}" hidefocus="on" ></a>',
+                '<a id="{id}-nextEl" class="{baseCls}-next {baseCls}-arrow" role="button" title="{nextText}" hidefocus="on" ></a>',
             '</div>',
             '<table id="{id}-eventEl" class="{baseCls}-inner" cellspacing="0" role="grid">',
                 '<thead role="presentation"><tr role="row">',
@@ -84,8 +64,8 @@ Ext.define('Ext.picker.Date', {
                     '<tpl for="days">',
                         '{#:this.isEndOfWeek}',
                         '<td role="gridcell" id="{[Ext.id()]}">',
-                            // the href attribute is required for the :hover selector to work in IE6/7/quirks
-                            '<a role="button" hidefocus="on" class="{parent.baseCls}-date" href="#"></a>',
+                            // The '#' is needed for keyboard navigation
+                            '<a href="#" role="button" hidefocus="on" class="{parent.baseCls}-date"></a>',
                         '</td>',
                     '</tpl>',
                 '</tr></tbody>',
@@ -360,6 +340,13 @@ Ext.define('Ext.picker.Date', {
 
     numDays: 42,
 
+    /**
+     * @event select
+     * Fires when a date is selected
+     * @param {Ext.picker.Date} this DatePicker
+     * @param {Date} date The selected date
+     */
+
     // private, inherit docs
     initComponent : function() {
         var me = this,
@@ -384,20 +371,22 @@ Ext.define('Ext.picker.Date', {
 
         me.callParent();
 
-        me.value = me.value ?
-                 clearTime(me.value, true) : clearTime(new Date());
-
-        me.addEvents(
-            /**
-             * @event select
-             * Fires when a date is selected
-             * @param {Ext.picker.Date} this DatePicker
-             * @param {Date} date The selected date
-             */
-            'select'
-        );
+        me.value = me.value ? clearTime(me.value, true) : clearTime(new Date());
 
         me.initDisabledDays();
+    },
+
+    // Keep the tree structure correct for Ext.form.field.Picker input fields which poke a 'pickerField' reference down into their pop-up pickers.
+    getRefOwner: function() {
+        return this.pickerField || this.callParent();
+    },
+
+    getRefItems: function() {
+        var results = [];
+        if (this.rendered) {
+            results.push(this.monthBtn, this.todayBtn);
+        }
+        return results;
     },
 
     beforeRender: function () {
@@ -409,12 +398,6 @@ Ext.define('Ext.picker.Date', {
         var me = this,
             days = new Array(me.numDays),
             today = Ext.Date.format(new Date(), me.format);
-
-        // If there's a Menu among our ancestors, then add the menu class.
-        // This is so that the MenuManager does not see a mousedown in this Component as a document mousedown, outside the Menu
-        if (me.up('menu')) {
-            me.addCls(Ext.baseCSSPrefix + 'menu');
-        }
 
         if (me.padding && !me.width) {
             me.cacheWidth();
@@ -470,7 +453,7 @@ Ext.define('Ext.picker.Date', {
             });
 
         me.self.prototype.width = widthEl.getWidth() + padding.left + padding.right;
-        widthEl.remove();
+        widthEl.destroy();
     },
 
     // Do the job of a container layout at this point even though we are not a Container.
@@ -494,7 +477,7 @@ Ext.define('Ext.picker.Date', {
 
         me.cells = me.eventEl.select('tbody td');
         me.textNodes = me.eventEl.query('tbody td a');
-        
+
         me.mon(me.eventEl, {
             scope: me,
             mousewheel: me.handleMouseWheel,
@@ -603,7 +586,9 @@ Ext.define('Ext.picker.Date', {
         }, me.keyNavConfig));
 
         if (me.showToday) {
-            me.todayKeyListener = me.eventEl.addKeyListener(Ext.EventObject.SPACE, me.selectToday,  me);
+            me.todayKeyListener = me.eventEl.addKeyListener(
+                Ext.event.Event.prototype.SPACE, me.selectToday,  me
+            );
         }
         me.update(me.value);
     },
@@ -615,7 +600,16 @@ Ext.define('Ext.picker.Date', {
 
         // The following code is like handleDateClick without the e.stopEvent()
         if (!me.disabled && t.dateValue && !Ext.fly(t.parentNode).hasCls(me.disabledCellCls)) {
-            me.doCancelFocus = me.focusOnSelect === false;
+
+            // Tab must not navigate. The owning pickerField focuses itself upon select.
+            // TODO: Remove coupling here. The event does need stopping if the owning field
+            // focuses itself. But there should be no knowledge of that here.
+            if (me.pickerField) {
+                e.stopEvent();
+            }
+
+            // Tabbing out, we never want to focus on select
+            me.doCancelFocus = true;
             me.setValue(new Date(t.dateValue));
             delete me.doCancelFocus;
             me.fireEvent('select', me, me.value);
@@ -812,14 +806,10 @@ Ext.define('Ext.picker.Date', {
         var picker = this.monthPicker,
             options = {
                 duration: 200,
-                callback: function(){
-                    if (isHide) {
-                        picker.hide();
-                    } else {
-                        picker.show();
-                    }
+                callback: function() {
+                    picker.setVisible(!isHide);
                 }
-            };
+            }, visible = picker.isVisible();
 
         if (isHide) {
             picker.el.slideOut('t', options);
@@ -839,7 +829,7 @@ Ext.define('Ext.picker.Date', {
         var me = this,
             picker = me.monthPicker;
 
-        if (picker) {
+        if (picker && picker.isVisible()) {
             if (me.shouldAnimate(animate)) {
                 me.runAnimation(true);
             } else {
@@ -853,6 +843,12 @@ Ext.define('Ext.picker.Date', {
         // Wrap in an extra call so we can prevent the button
         // being passed as an animation parameter.
         this.showMonthPicker();
+    },
+    
+    doHideMonthPicker: function() {
+        // Wrap in an extra call so we can prevent this
+        // being passed as an animation parameter
+        this.hideMonthPicker();
     },
 
     /**
@@ -868,14 +864,16 @@ Ext.define('Ext.picker.Date', {
             picker;
         
         if (me.rendered && !me.disabled) {
-            picker = me.createMonthPicker();
-            picker.setValue(me.getActive());
-            picker.setSize(el.getSize());
-            picker.setPosition(-el.getBorderWidth('l'), -el.getBorderWidth('t'));
-            if (me.shouldAnimate(animate)) {
-                me.runAnimation(false);
-            } else {
-                picker.show();
+            picker = me.createMonthPicker();            
+            if (!picker.isVisible()) {
+                picker.setValue(me.getActive());
+                picker.setSize(el.getSize());
+                picker.setPosition(-el.getBorderWidth('l'), -el.getBorderWidth('t'));
+                if (me.shouldAnimate(animate)) {
+                    me.runAnimation(false);
+                } else {
+                    picker.show();
+                }
             }
         }
         return me;
@@ -919,7 +917,8 @@ Ext.define('Ext.picker.Date', {
                 // hide the element if we're animating to prevent an initial flicker
                 picker.el.setStyle('display', 'none');
             }
-            me.on('beforehide', Ext.Function.bind(me.hideMonthPicker, me, [false]));
+            picker.hide();
+            me.on('beforehide', me.doHideMonthPicker, me);
         }
         return picker;
     },
@@ -989,7 +988,7 @@ Ext.define('Ext.picker.Date', {
     /**
      * Respond to the mouse wheel event
      * @private
-     * @param {Ext.EventObject} e
+     * @param {Ext.event.Event} e
      */
     handleMouseWheel : function(e){
         e.stopEvent();
@@ -1006,7 +1005,7 @@ Ext.define('Ext.picker.Date', {
     /**
      * Respond to a date being clicked in the picker
      * @private
-     * @param {Ext.EventObject} e
+     * @param {Ext.event.Event} e
      * @param {HTMLElement} t
      */
     handleDateClick : function(e, t){
@@ -1163,7 +1162,7 @@ Ext.define('Ext.picker.Date', {
                 // Extra element for ARIA purposes
                 me.todayElSpan = Ext.DomHelper.append(cell.firstChild, {
                     tag:'span',
-                    cls: Ext.baseCSSPrefix + 'hide-clip',
+                    cls: Ext.baseCSSPrefix + 'hidden-clip',
                     html:me.todayText
                 }, true);
             }

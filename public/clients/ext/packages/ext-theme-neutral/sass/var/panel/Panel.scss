@@ -81,7 +81,7 @@ $panel-body-font-size: $font-size !default;
  * @var {string}
  * The default font-weight of the Panel body
  */
-$panel-body-font-weight: normal !default;
+$panel-body-font-weight: $font-weight !default;
 
 /**
  * @var {string}
@@ -135,7 +135,7 @@ $panel-header-line-height: 16px !default;
  * @var {string}
  * The font-weight of Panel Headers
  */
-$panel-header-font-weight: bold !default;
+$panel-header-font-weight: $font-weight-bold !default;
 
 /**
  * @var {string}
@@ -370,3 +370,12 @@ $include-panel-default-ui: $include-default-uis !default;
  * True to include the "default-framed" panel UI
  */
 $include-panel-default-framed-ui: $include-default-uis !default;
+
+/**
+ * @var {boolean}
+ * True to ignore the frame padding.  By default, the frame mixin adds extra padding when
+ * border radius is larger than border width.  This is intended to prevent the content
+ * from colliding with the rounded corners of the frame.  Set this to true to prevent
+ * the panel frame from adding this extra padding.
+ */
+$panel-ignore-frame-padding: false !default;

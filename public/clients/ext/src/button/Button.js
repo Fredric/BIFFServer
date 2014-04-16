@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @docauthor Robert Dougan <rob@sencha.com>
  *
@@ -150,7 +133,6 @@ Ext.define('Ext.button.Button', {
     /* Begin Definitions */
     alias: 'widget.button',
     extend: 'Ext.Component',
-
     requires: [
         'Ext.button.Manager',
         'Ext.menu.Manager',
@@ -159,12 +141,17 @@ Ext.define('Ext.button.Button', {
         'Ext.util.TextMetrics',
         'Ext.util.KeyMap'
     ],
-    
-    mixins: {
-        queryable: 'Ext.Queryable'
-    },
+
+    mixins: [
+        'Ext.mixin.Queryable'
+    ],
 
     alternateClassName: 'Ext.Button',
+
+    config: {
+        text: null
+    },
+
     /* End Definitions */
 
     /*
@@ -203,13 +190,15 @@ Ext.define('Ext.button.Button', {
     /**
      * @cfg {String} icon
      * The path to an image to display in the button.
+     *
+     * There are no default icons that come with Ext JS.
      */
 
     /**
      * @cfg {Function} handler
      * A function called when the button is clicked (can be used instead of click event).
      * @cfg {Ext.button.Button} handler.button This button.
-     * @cfg {Ext.EventObject} handler.e The click event.
+     * @cfg {Ext.event.Event} handler.e The click event.
      */
 
     /**
@@ -309,6 +298,8 @@ Ext.define('Ext.button.Button', {
     /**
      * @cfg {String} iconCls
      * A css class which sets a background image to be used as the icon for this button.
+     *
+     * There are no default icon classes that come with Ext JS.
      */
 
     /**
@@ -398,10 +389,12 @@ Ext.define('Ext.button.Button', {
      hrefTarget: '_blank',
 
      /**
-     * @cfg {Boolean} destroyMenu
-     * Whether or not to destroy any associated menu when this button is destroyed. The menu
-     * will be destroyed unless this is explicitly set to false.
+     * @cfg {Boolean} [destroyMenu=true]
+     * Whether or not to destroy any associated menu when this button is destroyed.
+     * In addition, a value of `true` for this config will destroy the currently bound menu when a new
+     * menu is set in {@link #setMenu} unless overridden by that method's destroyMenu function argument.
      */
+     destroyMenu: true,
 
     /**
      * @cfg {Object} baseParams
@@ -416,9 +409,15 @@ Ext.define('Ext.button.Button', {
     
     ariaRole: 'button',
 
+    defaultBindProperty: 'text',
+
     childEls: [
         'btnEl', 'btnWrap', 'btnInnerEl', 'btnIconEl'
     ],
+
+    publishes: {
+        pressed:1
+    },
 
     // We have to keep "unselectable" attribute on all elements because it's not inheritable.
     // Without it, clicking anywhere on a button disrupts current selection and cursor position
@@ -526,6 +525,12 @@ Ext.define('Ext.button.Button', {
 
     frame: true,
 
+    autoEl: {
+        tag: 'a',
+        hidefocus: 'on',
+        unselectable: 'on'
+    },
+
     hasFrameTable: function () {
         // Instead of browser sniffing, it's easier to check for the presence of frameTable.
         // If present, we know that it's a browser that doesn't support CSS3BorderRadius.
@@ -541,139 +546,112 @@ Ext.define('Ext.button.Button', {
     doNavigate: function () {
         // Non-HTML5 browsers don't support a block element inside an A tag.
         // http://stackoverflow.com/questions/5682048/putting-a-table-inside-a-hyperlink-not-working-in-ie
+        // Note use this.getHref() to append any params to the url.
         if (this.hrefTarget === '_blank') {
-            window.open(this.href, this.hrefTarget);
+            window.open(this.getHref(), this.hrefTarget);
         } else {
-            location.href = this.href;
+            location.href = this.getHref();
         }
     },
 
     // A reusable object used by getTriggerRegion to avoid excessive object creation.
     _triggerRegion: {},
 
-    // inherit docs
+    /**
+     * @event click
+     * Fires when this button is clicked, before the configured {@link #handler} is invoked. Execution of the
+     * {@link #handler} may be vetoed by returning <code>false</code> to this event.
+     * @param {Ext.button.Button} this
+     * @param {Event} e The click event
+     */
+
+    /**
+     * @event toggle
+     * Fires when the 'pressed' state of this button changes (only if enableToggle = true)
+     * @param {Ext.button.Button} this
+     * @param {Boolean} pressed
+     */
+
+    /**
+     * @event mouseover
+     * Fires when the mouse hovers over the button
+     * @param {Ext.button.Button} this
+     * @param {Event} e The event object
+     */
+
+    /**
+     * @event mouseout
+     * Fires when the mouse exits the button
+     * @param {Ext.button.Button} this
+     * @param {Event} e The event object
+     */
+
+    /**
+     * @event menushow
+     * If this button has a menu, this event fires when it is shown
+     * @param {Ext.button.Button} this
+     * @param {Ext.menu.Menu} menu
+     */
+
+    /**
+     * @event menuhide
+     * If this button has a menu, this event fires when it is hidden
+     * @param {Ext.button.Button} this
+     * @param {Ext.menu.Menu} menu
+     */
+
+    /**
+     * @event menutriggerover
+     * If this button has a menu, this event fires when the mouse enters the menu triggering element
+     * @param {Ext.button.Button} this
+     * @param {Ext.menu.Menu} menu
+     * @param {Event} e
+     */
+
+    /**
+     * @event menutriggerout
+     * If this button has a menu, this event fires when the mouse leaves the menu triggering element
+     * @param {Ext.button.Button} this
+     * @param {Ext.menu.Menu} menu
+     * @param {Event} e
+     */
+
+    /**
+     * @event textchange
+     * Fired when the button's text is changed by the {@link #setText} method.
+     * @param {Ext.button.Button} this
+     * @param {String} oldText
+     * @param {String} newText
+     */
+
+    /**
+     * @event iconchange
+     * Fired when the button's icon is changed by the {@link #setIcon} or {@link #setIconCls} methods.
+     * @param {Ext.button.Button} this
+     * @param {String} oldIcon
+     * @param {String} newIcon
+     */
+
+    /**
+     * @event glyphchange
+     * Fired when the button's glyph is changed by the {@link #setGlyph} method.
+     * @param {Ext.button.Button} this
+     * @param {Number/String} newGlyph
+     * @param {Number/String} oldGlyph
+     */
+
     initComponent: function() {
         var me = this;
-
-        // the autoEl object can't be on the prototype because we add tabIndex and href
-        // properties to it conditionally.
-        me.autoEl = {
-            tag: 'a',
-            hidefocus: 'on',
-            unselectable: 'on'
-        };
 
         // Ensure no selection happens
         me.addCls(Ext.baseCSSPrefix + 'unselectable');
 
         me.callParent(arguments);
 
-        me.addEvents(
-            /**
-             * @event click
-             * Fires when this button is clicked, before the configured {@link #handler} is invoked. Execution of the
-             * {@link #handler} may be vetoed by returning <code>false</code> to this event.
-             * @param {Ext.button.Button} this
-             * @param {Event} e The click event
-             */
-            'click',
-
-            /**
-             * @event toggle
-             * Fires when the 'pressed' state of this button changes (only if enableToggle = true)
-             * @param {Ext.button.Button} this
-             * @param {Boolean} pressed
-             */
-            'toggle',
-
-            /**
-             * @event mouseover
-             * Fires when the mouse hovers over the button
-             * @param {Ext.button.Button} this
-             * @param {Event} e The event object
-             */
-            'mouseover',
-
-            /**
-             * @event mouseout
-             * Fires when the mouse exits the button
-             * @param {Ext.button.Button} this
-             * @param {Event} e The event object
-             */
-            'mouseout',
-
-            /**
-             * @event menushow
-             * If this button has a menu, this event fires when it is shown
-             * @param {Ext.button.Button} this
-             * @param {Ext.menu.Menu} menu
-             */
-            'menushow',
-
-            /**
-             * @event menuhide
-             * If this button has a menu, this event fires when it is hidden
-             * @param {Ext.button.Button} this
-             * @param {Ext.menu.Menu} menu
-             */
-            'menuhide',
-
-            /**
-             * @event menutriggerover
-             * If this button has a menu, this event fires when the mouse enters the menu triggering element
-             * @param {Ext.button.Button} this
-             * @param {Ext.menu.Menu} menu
-             * @param {Event} e
-             */
-            'menutriggerover',
-
-            /**
-             * @event menutriggerout
-             * If this button has a menu, this event fires when the mouse leaves the menu triggering element
-             * @param {Ext.button.Button} this
-             * @param {Ext.menu.Menu} menu
-             * @param {Event} e
-             */
-            'menutriggerout',
-
-            /**
-             * @event textchange
-             * Fired when the button's text is changed by the {@link #setText} method.
-             * @param {Ext.button.Button} this
-             * @param {String} oldText
-             * @param {String} newText
-             */
-            'textchange',
-
-            /**
-             * @event iconchange
-             * Fired when the button's icon is changed by the {@link #setIcon} or {@link #setIconCls} methods.
-             * @param {Ext.button.Button} this
-             * @param {String} oldIcon
-             * @param {String} newIcon
-             */
-            'iconchange',
-
-            /**
-             * @event glyphchange
-             * Fired when the button's glyph is changed by the {@link #setGlyph} method.
-             * @param {Ext.button.Button} this
-             * @param {Number/String} newGlyph
-             * @param {Number/String} oldGlyph
-             */
-            'glyphchange'
-        );
-
         if (me.menu) {
             // Flag that we'll have a splitCls
             me.split = true;
-
-            // retrieve menu by id or instantiate instance if needed
-            me.menu = Ext.menu.Manager.get(me.menu);
-
-            // Use ownerButton as the upward link. Menus *must have no ownerCt* - they are global floaters.
-            // Upward navigation is done using the up() method.
-            me.menu.ownerButton = me;
+            me.setMenu(me.menu, /*destroyMenu*/false);
         }
 
         // Accept url as a synonym for href
@@ -698,19 +676,8 @@ Ext.define('Ext.button.Button', {
         me.glyphCls = me.baseCls + '-glyph';
     },
 
-    // inherit docs
-    getActionEl: function() {
-        return this.el;
-    },
-
-    // inherit docs
     getFocusEl: function() {
         return this.el;
-    },
-
-    // See comments in onFocus
-    onDisable: function(){
-        this.callParent(arguments);
     },
 
     // @private
@@ -733,7 +700,7 @@ Ext.define('Ext.button.Button', {
 
         // Check whether the button has an icon or not, and if it has an icon, what is the alignment
         if (me.iconCls || me.icon || me.glyph) {
-            cls = [me.text ? 'icon-text-' + me.iconAlign : 'icon'];
+            cls = [me.text != null ? 'icon-text-' + me.iconAlign : 'icon'];
         } else if (me.text) {
             cls = ['noicon'];
         } else {
@@ -746,22 +713,28 @@ Ext.define('Ext.button.Button', {
         return cls;
     },
 
-    beforeRender: function () {
+    getElConfig: function() {
         var me = this,
-            autoEl = me.autoEl,
+            config = me.callParent(),
             href = me.getHref(),
             hrefTarget = me.hrefTarget;
 
-        if (!me.disabled) {
-            autoEl.tabIndex = me.tabIndex;
-        }
-
-        if (href) {
-            autoEl.href = href;
-            if (hrefTarget) {
-                autoEl.target = hrefTarget;
+        if (config.tag === 'a') {
+            if (!me.disabled) {
+                config.tabIndex = me.tabIndex;
+            }
+            if (href) {
+                config.href = href;
+                if (hrefTarget) {
+                    config.target = hrefTarget;
+                }
             }
         }
+        return config;
+    },
+
+    beforeRender: function () {
+        var me = this;
 
         me.callParent();
 
@@ -771,6 +744,61 @@ Ext.define('Ext.button.Button', {
 
         // Apply the renderData to the template args
         Ext.applyIf(me.renderData, me.getTemplateArgs());
+    },
+
+    /**
+     * Sets a new menu for this button. Pass a falsy value to unset the current menu.
+     * To destroy the previous menu for this button, explicitly pass `false` as the second argument. If this is not set, the destroy will depend on the
+     * value of {@link #cfg-destroyMenu}.
+     *
+     * @param {Ext.menu.Menu/String/Object/null} menu Accepts a menu component, a menu id or a menu config.
+     * @param {Boolean} destroyMenu By default, will destroy the previous set menu and remove it from the menu manager. Pass `false` to prevent the destroy.
+     */
+    setMenu: function (menu, destroyMenu) {
+        var me = this,
+            oldMenu = me.menu;
+
+        if (oldMenu && destroyMenu !== false && me.destroyMenu) {
+            oldMenu.destroy();
+        }
+
+        if (oldMenu) {
+            delete oldMenu.ownerButton;
+        }
+
+        if (menu) {
+            // Retrieve menu by id or instantiate instance if needed.
+            menu = Ext.menu.Manager.get(menu);
+
+            // Use ownerButton as the upward link. Menus *must have no ownerCt* - they are global floaters.
+            // Upward navigation is done using the up() method.
+            menu.ownerButton = me;
+
+            me.mon(menu, {
+                scope: me,
+                show: me.onMenuShow,
+                hide: me.onMenuHide
+            });
+
+            // If the button wasn't initially configured with a menu or has previously been unset then we need
+            // to poke the split classes onto the btnWrap dom element.
+            if (!oldMenu) {
+                me.split = true;
+                if (me.rendered) {
+                    me.btnWrap.addCls(me.getSplitCls());
+                    me.updateLayout();
+                }
+            }
+
+            me.menu = menu;
+        } else {
+            if (me.rendered) {
+                me.btnWrap.removeCls(me.getSplitCls());
+                me.updateLayout();
+            }
+            me.split = false;
+            me.menu = null;
+        }
     },
 
     // @private
@@ -807,17 +835,16 @@ Ext.define('Ext.button.Button', {
             };
         }
 
+        // Touch start events must be preventDefaulted when in disabled state
+        if (Ext.supports.Touch) {
+            btnListeners.touchstart = me.onTouchStart;
+        }
+
         // Check if the button has a menu
         if (me.menu) {
-            me.mon(me.menu, {
-                scope: me,
-                show: me.onMenuShow,
-                hide: me.onMenuHide
-            });
-
             me.keyMap = new Ext.util.KeyMap({
                 target: me.el,
-                key: Ext.EventObject.DOWN,
+                key: Ext.event.Event.prototype.DOWN,
                 handler: me.onDownKey,
                 scope: me
             });
@@ -849,6 +876,14 @@ Ext.define('Ext.button.Button', {
         }
 
         Ext.button.Manager.register(me);
+    },
+
+    /**
+     * @private
+     * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
+     */
+    getTdCls: function() {
+        return this.baseCls + '-' + this.ui + '-' + this.scale + '-cell';
     },
 
     /**
@@ -922,6 +957,22 @@ Ext.define('Ext.button.Button', {
 
     /**
      * Sets the href of the link dynamically according to the params passed, and any {@link #baseParams} configured.
+     *
+     *     var button = Ext.create('Ext.button.Button', {
+     *         renderTo   : document.body,
+     *         text       : 'Open',
+     *         href       : 'http://www.sencha.com',
+     *         baseParams : {
+     *             foo : 'bar'
+     *         }
+     *     });
+     *
+     *     button.setParams({
+     *         company : 'Sencha'
+     *     });
+     *
+     * When clicked, this button will open a new window with the url http://www.sencha.com/?foo=bar&company=Sencha because
+     * the button wased configured with the {@link #baseParams} to have `foo` = `'bar'` and then used {@link #setParams} to set the `company` parameter to `'Sencha'`.
      *
      * **Only valid if the Button was originally configured with a {@link #href}**
      *
@@ -1117,10 +1168,10 @@ Ext.define('Ext.button.Button', {
         if (me.rendered) {
             me.clearTip();
         }
-        if (me.menu && me.destroyMenu !== false) {
-            Ext.destroy(me.menu);
+        if (me.menu && me.destroyMenu) {
+            me.menu.destroy();
         }
-        Ext.destroy(me.btnInnerEl, me.repeater);
+        Ext.destroy(me.repeater);
         me.callParent();
     },
 
@@ -1147,26 +1198,24 @@ Ext.define('Ext.button.Button', {
      */
     setHandler: function(handler, scope) {
         this.handler = handler;
-        this.scope = scope;
+        if (arguments.length > 1) {
+            this.scope = scope;
+        }
         return this;
     },
 
-    /**
-     * Sets this Button's text
-     * @param {String} text The button text
-     * @return {Ext.button.Button} this
-     */
-    setText: function(text) {
-        text = text || '';
+    applyText: function(text) {
+        // Coerce to string. Maybe set to a numeric value.
+        text = text == null ? '' : String(text);
         var me = this,
             oldText = me.text || '';
 
         if (text != oldText) {
             me.text = text;
             if (me.rendered) {
-                me.btnInnerEl.update(text || '&#160;');
+                me.btnInnerEl.setHtml(text || '&#160;');
                 me.setComponentCls();
-                if (Ext.isStrict && Ext.isIE8) {
+                if (Ext.isIE8) {
                     // weird repaint issue causes it to not resize
                     me.el.repaint();
                 }
@@ -1174,7 +1223,6 @@ Ext.define('Ext.button.Button', {
             }
             me.fireEvent('textchange', me, oldText, text);
         }
-        return me;
     },
 
     /**
@@ -1198,6 +1246,15 @@ Ext.define('Ext.button.Button', {
     },
 
     /**
+     * Sets the `pressed` state of this button.
+     * @param {Boolean} [pressed=true] Pass `false` to clear the `pressed` state.
+     * @return {Ext.button.Button} this
+     */
+    setPressed: function (pressed) {
+        return this.toggle(pressed !== false);
+    },
+
+    /**
      * If a state it passed, it becomes the pressed state otherwise the current state is toggled.
      * @param {Boolean} [state] Force a particular state
      * @param {Boolean} [suppressEvent=false] True to stop events being fired when calling this method.
@@ -1214,6 +1271,10 @@ Ext.define('Ext.button.Button', {
             if (!suppressEvent) {
                 me.fireEvent('toggle', me, state);
                 Ext.callback(me.toggleHandler, me.scope || me, [me, state]);
+
+                if (me.reference && me.publishState) {
+                    me.publishState('pressed', state);
+                }
             }
         }
         return me;
@@ -1272,6 +1333,10 @@ Ext.define('Ext.button.Button', {
         this.onClick(e);
     },
 
+    onTouchStart: function(e) {
+        this.doPreventDefault(e);
+    },
+
     // @private
     onClick: function(e) {
         var me = this;
@@ -1279,7 +1344,9 @@ Ext.define('Ext.button.Button', {
 
         // Can be triggered by ENTER or SPACE keydown events which set the button property.
         // Only veto event handling if it's a mouse event with an alternative button.
-        if (e.type !== 'keydown' && e.button !== 0) {
+        // Checking e.button for a truthy value (instead of != 0) also allows touch events
+        // (tap) to continue, as they do not have a button property defined.
+        if (e.type !== 'keydown' && e.button) {
             return;
         }
         if (!me.disabled) {
@@ -1290,19 +1357,16 @@ Ext.define('Ext.button.Button', {
     },
     
     doPreventDefault: function(e) {
-        if (this.preventDefault || (this.disabled && this.getHref()) && e) {
+        if (e && (this.preventDefault || (this.disabled && this.getHref()))) {
             e.preventDefault();
         }
     },
 
     fireHandler: function(e) {
-        var me = this,
-            handler = me.handler;
+        var me = this;
 
         if (me.fireEvent('click', me, e) !== false) {
-            if (handler) {
-                handler.call(me.scope || me, me, e);
-            }
+            Ext.callback(me.handler, me.scope, [me, e], undefined, me);
         }
     },
 
@@ -1353,25 +1417,32 @@ Ext.define('Ext.button.Button', {
      */
     onMouseMove: function(e) {
         var me = this,
-            el = me.el,
-            over = me.overMenuTrigger,
-            overPosition, triggerRegion;
+            over = me.overMenuTrigger;
 
         if (me.split) {
-            overPosition = (me.arrowAlign === 'right') ?
-                e.getX() - me.getX() : e.getY() - el.getY();
-            triggerRegion = me.getTriggerRegion();
-
-            if (overPosition > triggerRegion.begin && overPosition < triggerRegion.end) {
+            if (me.isWithinTrigger(e)) {
                 if (!over) {
                     me.onMenuTriggerOver(e);
                 }
-            } else {
-                if (over) {
-                    me.onMenuTriggerOut(e);
-                }
+            } else if (over) {
+                me.onMenuTriggerOut(e);
             }
         }
+    },
+
+    /**
+     * @protected
+     * Returns true if the passed event's x/y coordinates are within the trigger region
+     * @param {Ext.event.Event} e
+     */
+    isWithinTrigger: function(e) {
+        var me = this,
+            el = me.el,
+            overPosition, triggerRegion;
+
+        overPosition = (me.arrowAlign === 'right') ?  e.getX() - me.getX() : e.getY() - el.getY();
+        triggerRegion = me.getTriggerRegion();
+        return overPosition > triggerRegion.begin && overPosition < triggerRegion.end;
     },
 
     /**
@@ -1398,13 +1469,16 @@ Ext.define('Ext.button.Button', {
      */
     getTriggerSize: function() {
         var me = this,
+            el = me.el,
             size = me.triggerSize,
             side, sideFirstLetter;
 
         if (size == null) { // Same as (size === null || size === undefined)
             side = me.arrowAlign;
             sideFirstLetter = side.charAt(0);
-            size = me.triggerSize = me.el.getFrameWidth(sideFirstLetter) + me.getBtnWrapFrameWidth(sideFirstLetter)
+            size = me.triggerSize = el.getPadding(sideFirstLetter) +
+                    el.getBorderWidth(sideFirstLetter) +
+                    me.getBtnWrapFrameWidth(sideFirstLetter);
             if (me.frameSize) {
                 size = me.triggerSize += me.frameSize[side];
             }
@@ -1416,7 +1490,8 @@ Ext.define('Ext.button.Button', {
      * @private
      */
     getBtnWrapFrameWidth: function(side) {
-        return this.btnWrap.getFrameWidth(side);
+        var btnWrap = this.btnWrap;
+        return btnWrap.getPadding(side) + btnWrap.getBorderWidth(side);
     },
 
     addOverCls: function() {
@@ -1435,7 +1510,7 @@ Ext.define('Ext.button.Button', {
      * @param e
      */
     onMouseEnter: function(e) {
-        // overCls is handled by AbstractComponent
+        // overCls is handled by Component
         this.fireEvent('mouseover', this, e);
     },
 
@@ -1446,7 +1521,7 @@ Ext.define('Ext.button.Button', {
      * @param e
      */
     onMouseLeave: function(e) {
-        // overCls is handled by AbstractComponent
+        // overCls is handled by Component
         this.fireEvent('mouseout', this, e);
     },
 
@@ -1485,7 +1560,6 @@ Ext.define('Ext.button.Button', {
         me.fireEvent('menutriggerout', me, me.menu, e);
     },
 
-    // inherit docs
     enable: function(silent) {
         var me = this;
 
@@ -1494,12 +1568,12 @@ Ext.define('Ext.button.Button', {
         me.removeClsWithUI('disabled');
         if (me.rendered) {
             me.el.dom.setAttribute('tabIndex', me.tabIndex);
+            me.el.dom.removeAttribute('disabled');
         }
 
         return me;
     },
 
-    // inherit docs
     disable: function(silent) {
         var me = this;
 
@@ -1509,12 +1583,7 @@ Ext.define('Ext.button.Button', {
         me.removeClsWithUI(me.overCls);
         if (me.rendered) {
             me.el.dom.removeAttribute('tabIndex');
-        }
-
-        // IE renders disabled text by layering gray text on top of white text, offset by 1 pixel. Normally this is fine
-        // but in some circumstances (such as using formBind) it gets confused and renders them side by side instead.
-        if (me.btnInnerEl && Ext.isIE7m) {
-            me.btnInnerEl.repaint();
+            me.el.dom.setAttribute('disabled', 'disabled');
         }
 
         return me;
@@ -1537,7 +1606,6 @@ Ext.define('Ext.button.Button', {
         me.setUI(ui);
     },
 
-    // inherit docs
     setUI: function(ui) {
         var me = this;
 

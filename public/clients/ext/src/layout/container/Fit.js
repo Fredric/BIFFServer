@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * This is a base class for layouts that contain a single item that automatically expands to fill the layout's
  * container. This class is intended to be extended or created via the layout:'fit'
@@ -223,10 +206,15 @@ Ext.define('Ext.layout.container.Fit', {
             }
         }
 
-        // Size the child items to the container (if non-shrinkWrap):
-        for (i = 0; i < length; ++i) {
-            info.index = i;
-            me.fitItem(childItems[i], info);
+        // If length === 0, it means we either have no child items, or the children are hidden
+        if (length > 0) {
+            // Size the child items to the container (if non-shrinkWrap):
+            for (i = 0; i < length; ++i) {
+                info.index = i;
+                me.fitItem(childItems[i], info);
+            }
+        } else {
+            info.contentWidth = info.contentHeight = 0;
         }
         
         if (shrinkWrapHeight || shrinkWrapWidth) {
@@ -313,6 +301,9 @@ Ext.define('Ext.layout.container.Fit', {
             if (info.targetSize.gotWidth) {
                 ++info.got;
                 this.setItemWidth(itemContext, info);
+            } else {
+                // Too early to position
+                return;
             }
         }
 
@@ -337,6 +328,9 @@ Ext.define('Ext.layout.container.Fit', {
             if (info.targetSize.gotHeight) {
                 ++info.got;
                 this.setItemHeight(itemContext, info);
+            } else {
+                // Too early to position
+                return;
             }
         }
 

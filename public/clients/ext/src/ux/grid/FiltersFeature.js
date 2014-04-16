@@ -94,7 +94,7 @@
 Ext.define('Ext.ux.grid.FiltersFeature', {
     extend: 'Ext.grid.feature.Feature',
     alias: 'feature.filters',
-    uses: [
+    requires: [
         'Ext.ux.grid.menu.ListMenu',
         'Ext.ux.grid.menu.RangeMenu',
         'Ext.ux.grid.filter.BooleanFilter',
@@ -198,9 +198,7 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
             beforedestroy: me.destroy
         });
 
-        // Add event and filters shortcut on grid panel
         grid.filters = me;
-        grid.addEvents('filterupdate');
         me.createFilters();
     },
 
@@ -218,8 +216,7 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
             hadFilters = me.filters.getCount(),
             grid = me.getGridPanel(),
             filters = me.createFiltersCollection(),
-            model = grid.store.model,
-            fields = model.prototype.fields,
+            Model = grid.getStore().getModel(),
             field,
             filter,
             state;
@@ -231,10 +228,10 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
 
         function add (dataIndex, config, filterable) {
             if (dataIndex && (filterable || config)) {
-                field = fields.get(dataIndex);
+                field = Model.getField(dataIndex);
                 filter = {
                     dataIndex: dataIndex,
-                    type: (field && field.type && field.type.type) || 'auto'
+                    type: (field && field.getType()) || 'auto'
                 };
 
                 if (Ext.isObject(config)) {
@@ -390,9 +387,7 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
             }
         }
         me.deferredUpdate.cancel();
-        if (me.local) {
-            me.reload();
-        }
+
         delete me.applyingState;
         delete state.filters;
     },
@@ -410,6 +405,7 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
                 filters[filter.dataIndex] = filter.getValue();
             }
         });
+
         return (state.filters = filters);
     },
 
@@ -419,6 +415,8 @@ Ext.define('Ext.ux.grid.FiltersFeature', {
      */
     destroy : function () {
         var me = this;
+        
+        me.deferredUpdate.cancel();
         Ext.destroyMembers(me, 'menuItem', 'sep');
         me.removeAll();
         me.clearListeners();

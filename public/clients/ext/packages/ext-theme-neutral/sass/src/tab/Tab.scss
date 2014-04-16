@@ -288,7 +288,8 @@
         $background-direction: top,
         $padding: $ui-padding,
         $table: true,
-        $img-ui: $ui + '-top'
+        $img-ui: $ui + '-top',
+        $frame-include-slicer-border-radius: $tab-vertical-ie9m-border-radius
     );
 
     @include x-frame(
@@ -301,7 +302,8 @@
         $background-direction: top,
         $padding: $ui-padding,
         $table: true,
-        $img-ui: $ui + '-top'
+        $img-ui: $ui + '-top',
+        $frame-include-slicer-border-radius: $tab-vertical-ie9m-border-radius
     );
 
     .#{$prefix}tab-#{$ui} {
@@ -340,8 +342,8 @@
             //  the partially transparent pixels of the glyph as black. To work around this,
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the tab's background-color.
-            @if $include-ie {
-                .#{$prefix}ie8m & {
+            @if $include-ie and $ui-background-color != transparent {
+                .#{$prefix}ie8 & {
                     color: mix($ui-glyph-color, $ui-background-color, $ui-glyph-opacity * 100);
                 }
             }
@@ -350,8 +352,9 @@
         @if $include-ie {
             // EXTJSIV-8765: vertical tabs get shifted to the left when focused.  To work
             // around this, we move the left padding to the tab-button el.
-            .#{$prefix}strict .#{$prefix}ie9 .#{$prefix}tab-bar-vertical & {
+            .#{$prefix}ie9 .#{$prefix}tab-bar-vertical & {
                 padding-left: 0;
+
 
                 .#{$prefix}tab-button {
                     padding-left: left($ui-padding);
@@ -515,8 +518,10 @@
             //  the partially transparent pixels of the glyph as black. To work around this,
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the tab's background-color.
-            .#{$prefix}ie8m & {
-                color: mix($ui-glyph-color-over, $ui-background-color-over, $ui-glyph-opacity * 100);
+            @if $ui-background-color != transparent {
+                .#{$prefix}ie8m & {
+                    color: mix($ui-glyph-color-over, $ui-background-color-over, $ui-glyph-opacity * 100);
+                }
             }
         }
     }
@@ -572,8 +577,10 @@
             //  the partially transparent pixels of the glyph as black. To work around this,
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the tab's background-color.
-            .#{$prefix}ie8m & {
-                color: mix($ui-glyph-color-active, $ui-background-color-active, $ui-glyph-opacity * 100);
+            @if $ui-background-color != transparent {
+                .#{$prefix}ie8 & {
+                    color: mix($ui-glyph-color-active, $ui-background-color-active, $ui-glyph-opacity * 100);
+                }
             }
         }
     }
@@ -657,8 +664,10 @@
             //  the partially transparent pixels of the glyph as black. To work around this,
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the tab's background-color.
-            .#{$prefix}ie8m & {
-                color: mix($ui-glyph-color-disabled, $ui-background-color-disabled, $ui-glyph-opacity-disabled * 100);
+            @if $ui-background-color != transparent {
+                .#{$prefix}ie8 & {
+                    color: mix($ui-glyph-color-disabled, $ui-background-color-disabled, $ui-glyph-opacity-disabled * 100);
+                }
             }
         }
     }
@@ -996,4 +1005,15 @@
     @include x-slicer(tab-#{$ui}-bottom-active);
     @include x-slicer(tab-#{$ui}-top-disabled);
     @include x-slicer(tab-#{$ui}-bottom-disabled);
+}
+
+@if not $tab-vertical-ie9m-border-radius {
+    // Disable border-radius in IE8/IE9, to work around an issue where the corners turn
+    // black when the element is rotated.
+    .#{$prefix}ie9 {
+        .#{$prefix}tab-right,
+        .#{$prefix}tab-left {
+            border-radius: 0;
+        }
+    }
 }

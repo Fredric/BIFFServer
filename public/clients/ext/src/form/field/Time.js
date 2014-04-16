@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Provides a time input field with a time dropdown and automatic time validation.
  *
@@ -133,8 +116,13 @@ Ext.define('Ext.form.field.Time', {
     //</locale>
 
     /**
-     * @cfg {Number} increment
+     * @cfg {Number} [increment=15]
      * The number of minutes between each time value in the list.
+     *
+     * Note that this only affects the *list of suggested times.*
+     *
+     * To enforce that only times on the list are valid, use {@link #snapToIncrement}. That will coerce
+     * any typed values to the nearest increment point upon blur.
      */
     increment: 15,
 
@@ -149,10 +137,12 @@ Ext.define('Ext.form.field.Time', {
      * Whether the Tab key should select the currently highlighted item.
      */
     selectOnTab: true,
-    
+
     /**
      * @cfg {Boolean} [snapToIncrement=false]
      * Specify as `true` to enforce that only values on the {@link #increment} boundary are accepted.
+     *
+     * Typed values will be coerced to the nearest {@link #increment} point on blur.
      */
     snapToIncrement: false,
 
@@ -178,30 +168,24 @@ Ext.define('Ext.form.field.Time', {
         var me = this,
             min = me.minValue,
             max = me.maxValue;
+        
         if (min) {
             me.setMinValue(min);
         }
         if (max) {
             me.setMaxValue(max);
         }
+        // Forcibly create the picker, since we need the store it creates
+        me.store = me.getPicker().store;
+        
         me.displayTpl = new Ext.XTemplate(
             '<tpl for=".">' +
                 '{[typeof values === "string" ? values : this.formatDate(values["' + me.displayField + '"])]}' +
                 '<tpl if="xindex < xcount">' + me.delimiter + '</tpl>' +
             '</tpl>', {
-            formatDate: Ext.Function.bind(me.formatDate, me)
+            formatDate: me.formatDate.bind(me)
         });
-        this.callParent();
-    },
-
-    /**
-     * @private
-     */
-    transformOriginalValue: function (value) {
-        if (Ext.isDefined(value)) {
-            return this.rawToValue(value) || value || null;
-        }
-        return value;
+        me.callParent();
     },
 
     /**
@@ -427,7 +411,6 @@ Ext.define('Ext.form.field.Time', {
             maxHeight: me.pickerMaxHeight
         }, me.listConfig);
         picker = me.callParent();
-        me.bindStore(picker.store);
         return picker;
     },
     
@@ -486,7 +469,10 @@ Ext.define('Ext.form.field.Time', {
                                }
                            }
                         }
-                        selModel.select(toSelect);
+
+                        if (toSelect.length) {
+                            selModel.select(toSelect);
+                        }
                     }
                 }
             }

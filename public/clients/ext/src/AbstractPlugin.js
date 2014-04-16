@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * The AbstractPlugin class is the base class from which user-implemented plugins should inherit.
  *
@@ -42,6 +25,12 @@ Ext.define('Ext.AbstractPlugin', {
      * `true` in this class to identify an object as an instantiated Plugin, or subclass thereof.
      */
     isPlugin: true,
+
+    /**
+     * @cfg {String|Array} stateEvents
+     * The configured list of stateEvents used to (optionally) participate in Owner Component's state management.
+     */
+    stateEvents : undefined,
 
     /**
      * Instantiates the plugin.
@@ -79,7 +68,7 @@ Ext.define('Ext.AbstractPlugin', {
     /**
      * @cfg {String} pluginId
      * A name for the plugin that can be set at creation time to then retrieve the plugin
-     * through {@link Ext.AbstractComponent#getPlugin getPlugin} method.  For example:
+     * through {@link Ext.Component#getPlugin getPlugin} method.  For example:
      *
      *     var grid = Ext.create('Ext.grid.Panel', {
      *         plugins: [{
@@ -102,6 +91,27 @@ Ext.define('Ext.AbstractPlugin', {
      * @param {Ext.Component} client The client Component which owns this plugin.
      */
     init: Ext.emptyFn,
+
+    /**
+     * @method
+     * The getState method is invoked by the client Component's State mixin when one or more of the the specified {@link #stateEvents} are raised.
+     *
+     * The supplied implementation is empty. If plugin Subclasses are to (optionally) participate in the client Component's
+     * state management, implementers should provide a suitable method which returns a state object.
+     * @return {Object} state
+     */
+    getState : null,
+
+    /**
+     * @method
+     * The applyState method is invoked by the client Component's State mixin after initComponent method has been run for the client.
+     *
+     * The supplied implementation is empty. If plugin Subclasses are to (optionally) participate in the client Component's
+     * state management, implementers should provide a suitable method to utilize it.
+     * @param {Object} state The current plugin state object to be applied.
+     * @param {Object} allState The current aggregate state of the Component and all plugins.
+     */
+    applyState : null,
 
     /**
      * @method
@@ -131,7 +141,7 @@ Ext.define('Ext.AbstractPlugin', {
     },
 
     // Private.
-    // Inject a ptype property so that AbstractComponent.findPlugin(ptype) works.
+    // Inject a ptype property so that Component.findPlugin(ptype) works.
     onClassExtended: function(cls, data, hooks) {
         var alias = data.alias;
 

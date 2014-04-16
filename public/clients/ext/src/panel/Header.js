@@ -1,26 +1,10 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Simple header class which is used for on {@link Ext.panel.Panel} and {@link Ext.window.Window}.
  */
 Ext.define('Ext.panel.Header', {
     extend: 'Ext.container.Container',
-    uses: ['Ext.panel.Tool', 'Ext.util.CSS', 'Ext.layout.component.Body', 'Ext.Img'],
+    requires: ['Ext.panel.Tool'],
+    uses: ['Ext.util.CSS', 'Ext.layout.component.Body', 'Ext.Img'],
     alias: 'widget.header',
 
     /**
@@ -41,7 +25,7 @@ Ext.define('Ext.panel.Header', {
      * May be `"left"`, `"right"` or `"center"`. Defaults to the browser's natural
      * behavior depending on the css direction property - `"left"` when direction
      * is ltr  and `"right"` when direction is rtl
-     * (see {@link Ext.AbstractComponent#rtl}).
+     * (see {@link Ext.Component#rtl}).
      */
 
     childEls: [
@@ -87,11 +71,15 @@ Ext.define('Ext.panel.Header', {
     /**
      * @cfg {String} iconCls
      * CSS class for an icon in the header. Used for displaying an icon to the left of a title.
+     *
+     * There are no default icon classes that come with Ext JS.
      */
 
     /**
      * @cfg {String} icon
      * Path to image for an icon in the header. Used for displaying an icon to the left of a title.
+     *
+     * There are no default icons that come with Ext JS.
      */
 
     /**
@@ -106,40 +94,43 @@ Ext.define('Ext.panel.Header', {
     // a class for styling that is shared between panel and window headers
     headerCls: Ext.baseCSSPrefix + 'header',
 
+    /**
+     * @event click
+     * Fires when the header is clicked. This event will not be fired
+     * if the click was on a {@link Ext.panel.Tool}
+     * @param {Ext.panel.Header} this
+     * @param {Ext.event.Event} e
+     */
+
+    /**
+     * @event dblclick
+     * Fires when the header is double clicked. This event will not
+     * be fired if the click was on a {@link Ext.panel.Tool}
+     * @param {Ext.panel.Header} this
+     * @param {Ext.event.Event} e
+     */
+
     initComponent: function() {
         var me = this,
             hasPosition = me.hasOwnProperty('titlePosition'),
             items = me.items,
-            titlePosition = hasPosition ? me.titlePosition : (items ? items.length : 0),
+            titlePosition = hasPosition ? me.titlePosition : 0,
             uiClasses = [me.orientation, me.getDockName()],
-            ownerCt = me.ownerCt;
-
-        me.addEvents(
-            /**
-             * @event click
-             * Fires when the header is clicked. This event will not be fired
-             * if the click was on a {@link Ext.panel.Tool}
-             * @param {Ext.panel.Header} this
-             * @param {Ext.EventObject} e
-             */
-            'click',
-
-            /**
-             * @event dblclick
-             * Fires when the header is double clicked. This event will not
-             * be fired if the click was on a {@link Ext.panel.Tool}
-             * @param {Ext.panel.Header} this
-             * @param {Ext.EventObject} e
-             */
-            'dblclick'
-        );
+            ownerCt = me.ownerCt,
+            itemPosition = me.itemPosition,
+            userItems;
 
         me.indicateDragCls = me.headerCls + '-draggable';
         me.title = me.title || '&#160;';
         me.tools = me.tools || [];
-        items = me.items = (items ? Ext.Array.slice(items) : []);
+        me.items = items = (items ? items.slice() : []);
         me.orientation = me.orientation || 'horizontal';
         me.dock = (me.dock) ? me.dock : (me.orientation == 'horizontal') ? 'top' : 'left';
+
+        if (itemPosition !== undefined) {
+            userItems = items.slice();
+            me.items = items = [];
+        }
 
         // test for border === false is needed because undefined is the same as true
         if (ownerCt ? (ownerCt.border === false && !ownerCt.frame) : me.border === false) {
@@ -218,6 +209,10 @@ Ext.define('Ext.panel.Header', {
         // Insert the titleComponent at the specified position
         me.insert(titlePosition, me.titleCmp);
 
+        if (itemPosition !== undefined) {
+            me.insert(itemPosition, userItems);
+        }
+
         me.on({
             dblclick: me.onDblClick,
             click: me.onClick,
@@ -286,11 +281,6 @@ Ext.define('Ext.panel.Header', {
                     ((frameTL) ? frameTL.getPadding('l') : me.el.getBorderWidth('l'))) + 'px';
                 frameBR.setStyle('background-position-x', xPos);
                 frameTR.setStyle('background-position-x', xPos);
-            }
-            if (Ext.isIE7 && Ext.isStrict && me.frame) {
-                // EXTJSIV-7283: framed header background is initally off in IE7 strict
-                // unless we repaint
-                me.el.repaint();
             }
         }
     },
@@ -474,7 +464,7 @@ Ext.define('Ext.panel.Header', {
 
         me.title = title;
         if (titleCmp.rendered) {
-            titleCmp.textEl.update(me.title || '&#160;');
+            titleCmp.textEl.setHtml(me.title || '&#160;');
             titleCmp.updateLayout();
         } else {
             me.titleCmp.on({
@@ -631,8 +621,8 @@ Ext.define('Ext.panel.Header', {
         for (i = 0; i < itemCount; ++i) {
             item = childItems[i];
 
-            afterCls  = item.afterTitleCls  || (item.afterTitleCls  = item.baseCls + '-after-title')
-            beforeCls = item.beforeTitleCls || (item.beforeTitleCls = item.baseCls + '-before-title')
+            afterCls  = item.afterTitleCls  || (item.afterTitleCls  = item.baseCls + '-after-title');
+            beforeCls = item.beforeTitleCls || (item.beforeTitleCls = item.baseCls + '-before-title');
 
             if (!me.title || i < titlePosition) {
                 if (syncGen) {

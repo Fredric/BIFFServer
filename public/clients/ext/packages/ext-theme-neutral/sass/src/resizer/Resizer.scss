@@ -4,7 +4,6 @@
     font-size: 1px;
     line-height: $resizer-handle-size;
     overflow: hidden;
-    zoom: 1;
     @include opacity(0);
     background-color: #fff;
 
@@ -104,19 +103,6 @@
     left: 0;
     bottom: 0;
     z-index: 101;
-}
-
-/*IE rounding error*/
-@if $include-ie {
-    .#{$prefix}ie {
-        .#{$prefix}resizable-handle-east {
-            margin-right: -1px; /*IE rounding error*/
-        }
-
-        .#{$prefix}resizable-handle-south {
-            margin-bottom: -1px;
-        }
-    }
 }
 
 // If the pinned config is set, then handles are visible

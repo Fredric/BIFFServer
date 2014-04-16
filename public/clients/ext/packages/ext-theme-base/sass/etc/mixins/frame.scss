@@ -29,7 +29,9 @@
     $include-frame-rtl: false,
     // an optional ui to use for images
     $img-ui: $ui,
-    $background-stretch: null
+    $background-stretch: null,
+    $ignore-frame-padding: false,
+    $frame-include-slicer-border-radius: $include-slicer-border-radius
 ) {
     $cls-ui: $cls;
     $cls-img-ui: null;
@@ -78,14 +80,21 @@
     $frame-left:   max(left($border-width),   max(left($border-radius),   top($border-radius)));
     $frame-max:    max(max($frame-top, $frame-bottom), max($frame-left, $frame-right));
 
+    $padding-top: 0;
+    $padding-right: 0;
+    $padding-bottom: 0;
+    $padding-left: 0;
+
     // For CSS3 browsers, if the border-radius is larger than the border-width, we need to
     // apply padding to inset the content. These values can never be 0 because frame-xxx
     // includes border-xxx in its max.
     //
-    $padding-top:    $frame-top    - top($border-width);
-    $padding-right:  $frame-right  - right($border-width);
-    $padding-bottom: $frame-bottom - bottom($border-width);
-    $padding-left:   $frame-left   - left($border-width);
+    @if not $ignore-frame-padding {
+        $padding-top:    $frame-top    - top($border-width);
+        $padding-right:  $frame-right  - right($border-width);
+        $padding-bottom: $frame-bottom - bottom($border-width);
+        $padding-left:   $frame-left   - left($border-width);
+    }
 
     // If there is additional padding, this is understood to be a request to ensure that
     // the content is **at least** this far from the inside of the border. If the framing
@@ -183,7 +192,7 @@
         }
     }
 
-    @if $include-slicer-border-radius {
+    @if $frame-include-slicer-border-radius {
         .#{$prefix}#{$cls-ui}-mc {
             @if not is-null($background-gradient) {
                 background-image: slicer-frame-background-image($cls-ui, '#{$cls}/#{$cls-img-ui}-fbg');
@@ -228,7 +237,7 @@
         }
     }
 
-    @if $include-slicer-border-radius {
+    @if $frame-include-slicer-border-radius {
         .#{$prefix}nbr {
             // This rule must be in x-nbr to avoid matching on CSS3 browsers.
             .#{$prefix}#{$cls-ui} {
@@ -372,8 +381,6 @@
         .#{$prefix}#{$cls-ui}-bc,
         .#{$prefix}#{$cls-ui}-ml,
         .#{$prefix}#{$cls-ui}-mr {
-            zoom:1;
-
             @if $background-color != transparent {
                 background-image: slicer-corner-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-corners');
             }
@@ -397,8 +404,6 @@
         @if $vertical == true {
             .#{$prefix}#{$cls-ui}-tc,
             .#{$prefix}#{$cls-ui}-bc {
-                zoom:1;
-
                 @if $background-color != transparent {
                     background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-sides');
                     background-repeat: repeat-x;
@@ -416,8 +421,6 @@
         } @else {
             .#{$prefix}#{$cls-ui}-ml,
             .#{$prefix}#{$cls-ui}-mr {
-                zoom:1;
-
                 @if $background-color != transparent {
                     background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-sides');
                     @if is-null($background-gradient) {
@@ -429,18 +432,6 @@
 
         .#{$prefix}#{$cls-ui}-mc {
             padding: $extra-padding-top $extra-padding-right $extra-padding-bottom $extra-padding-left;
-        }
-
-        @if $include-ie {
-            // framed components in ie7 strict mode suffer from an obscure bug that causes the tl and bl framing elements to
-            // be shrink-wrapped to the width of their contents.  This hack forces the elements' widths to fit to their parent
-            .#{$prefix}strict .#{$prefix}ie7 {
-                .#{$prefix}#{$cls-ui}-tl,
-                .#{$prefix}#{$cls-ui}-bl {
-                    position: relative;
-                    right: 0;
-                }
-            }
         }
     }
 

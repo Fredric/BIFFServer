@@ -1,32 +1,14 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 Ext.define('Ext.rtl.util.Renderable', {
     override: 'Ext.util.Renderable',
 
     _rtlCls: Ext.baseCSSPrefix + 'rtl',
     _ltrCls: Ext.baseCSSPrefix + 'ltr',
 
-    // this template should be exactly the same as frameTableTple, except with the order
+    // this template should be exactly the same as frameTableTpl, except with the order
     // of right and left TD elements switched.
     rtlFrameTableTpl: [
         '{%this.renderDockedItems(out,values,0);%}',
         '<table id="{fgid}Table" class="', Ext.plainTableCls, '" cellpadding="0" role="presentation">',
-        '<tbody role="presentation">',
             '<tpl if="top">',
                 '<tr role="presentation">',
                     '<tpl if="right"><td id="{fgid}TR" class="{frameCls}-tr {baseCls}-tr {baseCls}-{ui}-tr<tpl for="uiCls"> {parent.baseCls}-{parent.ui}-{.}-tr</tpl>{frameElCls}" role="presentation"></td></tpl>',
@@ -48,12 +30,12 @@ Ext.define('Ext.rtl.util.Renderable', {
                     '<tpl if="left"><td id="{fgid}BL" class="{frameCls}-bl {baseCls}-bl {baseCls}-{ui}-bl<tpl for="uiCls"> {parent.baseCls}-{parent.ui}-{.}-bl</tpl>{frameElCls}" role="presentation"></td></tpl>',
                 '</tr>',
             '</tpl>',
-        '</tbody></table>',
+        '</table>',
         '{%this.renderDockedItems(out,values,1);%}'
     ],
 
     beforeRender: function() {
-        var rtl = this.getHierarchyState().rtl;
+        var rtl = this.getInherited().rtl;
         if (rtl) {
             this.addCls(this._rtlCls);
         } else if (rtl === false) {
@@ -64,7 +46,7 @@ Ext.define('Ext.rtl.util.Renderable', {
     },
 
     getFrameTpl: function(table) {
-        return (table && this.getHierarchyState().rtl) ?
+        return (table && this.getInherited().rtl) ?
             this.getTpl('rtlFrameTableTpl') : this.callParent(arguments);
     },
 
@@ -73,7 +55,7 @@ Ext.define('Ext.rtl.util.Renderable', {
             renderData = me.callParent(),
             rtlCls = me._rtlCls;
 
-        if (rtlCls && me.getHierarchyState().rtl) {
+        if (rtlCls && me.getInherited().rtl) {
             renderData.childElCls = ' ' + rtlCls;
         }
 
@@ -85,7 +67,7 @@ Ext.define('Ext.rtl.util.Renderable', {
             data = me.callParent(),
             rtlCls = me._rtlCls;
 
-        if (rtlCls && me.getHierarchyState().rtl) {
+        if (rtlCls && me.getInherited().rtl) {
             data.frameElCls = ' ' + rtlCls;
         }
 

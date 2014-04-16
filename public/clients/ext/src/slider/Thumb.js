@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @class Ext.slider.Thumb
  * @private
@@ -65,7 +48,7 @@ Ext.define('Ext.slider.Thumb', {
         me.el = me.slider.innerEl.insertFirst(me.getElConfig());
         me.onRender();
     },
-    
+
     onRender: function() {
         if (this.disabled) {
             this.disable();
@@ -100,18 +83,18 @@ Ext.define('Ext.slider.Thumb', {
             from;
 
         v += '%';
-        
+
         if (!animate) {
             el.dom.style[styleProp] = v;
         } else {
             to = {};
             to[styleProp] = v;
-            
+
             if (!Ext.supports.GetPositionPercentage) {
                 from = {};
                 from[styleProp] = el.dom.style[styleProp];
             }
-            
+
             new Ext.fx.Anim({
                 target: el,
                 duration: 350,
@@ -165,20 +148,18 @@ Ext.define('Ext.slider.Thumb', {
      * Sets up an Ext.dd.DragTracker for this thumb
      */
     initEvents: function() {
-        var me = this,
-            el = me.el;
+        var me = this;
 
         me.tracker = new Ext.dd.DragTracker({
-            onBeforeStart: Ext.Function.bind(me.onBeforeDragStart, me),
-            onStart      : Ext.Function.bind(me.onDragStart, me),
-            onDrag       : Ext.Function.bind(me.onDrag, me),
-            onEnd        : Ext.Function.bind(me.onDragEnd, me),
+            el           : me.el,
+            onBeforeStart: me.onBeforeDragStart.bind(me),
+            onStart      : me.onDragStart.bind(me),
+            onDrag       : me.onDrag.bind(me),
+            onEnd        : me.onDragEnd.bind(me),
             tolerance    : 3,
             autoStart    : 300,
             overCls      : Ext.baseCSSPrefix + 'slider-thumb-over'
         });
-
-        me.tracker.initEl(el);
     },
 
     /**
@@ -188,10 +169,20 @@ Ext.define('Ext.slider.Thumb', {
      * @return {Boolean} False if the slider is currently disabled
      */
     onBeforeDragStart : function(e) {
-        if (this.disabled) {
+        var me = this,
+            el = me.el,
+            trackerXY = me.tracker.getXY(),
+            delta = me.pointerOffset = el.getXY();
+
+        if (me.disabled) {
             return false;
         } else {
-            this.slider.promoteThumb(this);
+            // Work out the delta of the pointer from the dead centre of the thumb.
+            // Slider.getTrackPoint positions the centre of the slider at the reported
+            // pointer position, so we have to correct for that in getValueFromTracker.
+            delta[0] += Math.floor(el.getWidth() / 2) - trackerXY[0];
+            delta[1] += Math.floor(el.getHeight() / 2) - trackerXY[1];
+            me.slider.promoteThumb(me);
             return true;
         }
     },
@@ -247,7 +238,12 @@ Ext.define('Ext.slider.Thumb', {
 
     getValueFromTracker: function() {
         var slider = this.slider,
-            trackPoint = slider.getTrackpoint(this.tracker.getXY());
+            trackerXY = this.tracker.getXY(),
+            trackPoint;
+
+        trackerXY[0] += this.pointerOffset[0];
+        trackerXY[1] += this.pointerOffset[1];
+        trackPoint = slider.getTrackpoint(trackerXY);
 
         // If dragged out of range, value will be undefined
         if (trackPoint !== undefined) {
@@ -273,10 +269,15 @@ Ext.define('Ext.slider.Thumb', {
 
         if (me.dragStartValue != value) {
             slider.fireEvent('changecomplete', slider, value, me);
+            if (slider.publishOnComplete) {
+                slider.publishValue(value);
+            }
         }
     },
 
     destroy: function() {
         Ext.destroy(this.tracker);
+        this.el.destroy();
+        this.el = null;
     }
 });

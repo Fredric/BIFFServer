@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @author Ed Spencer
  * TabBar is used internally by a {@link Ext.tab.Panel TabPanel} and typically should not need to be created manually.
@@ -22,7 +5,8 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  */
 Ext.define('Ext.tab.Bar', {
     extend: 'Ext.panel.Header',
-    alias: 'widget.tabbar',
+    xtype: 'tabbar',
+
     baseCls: Ext.baseCSSPrefix + 'tab-bar',
 
     requires: [
@@ -42,6 +26,8 @@ Ext.define('Ext.tab.Bar', {
     
     /**
      * @cfg {String} iconCls @hide
+     *
+     * There are no default icon classes that come with Ext JS.
      */
 
     // @private
@@ -91,6 +77,14 @@ Ext.define('Ext.tab.Bar', {
         right: 'left'
     },
 
+    /**
+     * @event change
+     * Fired when the currently-active tab has changed
+     * @param {Ext.tab.Bar} tabBar The TabBar
+     * @param {Ext.tab.Tab} tab The new Tab
+     * @param {Ext.Component} card The card that was just shown in the TabPanel
+     */
+
     // @private
     initComponent: function() {
         var me = this;
@@ -100,17 +94,6 @@ Ext.define('Ext.tab.Bar', {
         }
 
         me.addClsWithUI(me.orientation);
-
-        me.addEvents(
-            /**
-             * @event change
-             * Fired when the currently-active tab has changed
-             * @param {Ext.tab.Bar} tabBar The TabBar
-             * @param {Ext.tab.Tab} tab The new Tab
-             * @param {Ext.Component} card The card that was just shown in the TabPanel
-             */
-            'change'
-        );
 
         // Element onClick listener added by Header base class
         me.callParent(arguments);
@@ -134,7 +117,7 @@ Ext.define('Ext.tab.Bar', {
 
         me.callParent();
 
-        if (me.orientation === 'vertical' && (Ext.isIE8 || Ext.isIE9) && Ext.isStrict) {
+        if (Ext.isIE9m && me.orientation === 'vertical') {
             me.el.on({
                 mousemove: me.onMouseMove, 
                 scope: me
@@ -146,8 +129,8 @@ Ext.define('Ext.tab.Bar', {
         var layout = this.layout;
 
         this.callParent();
-        if (Ext.isIE9 && Ext.isStrict && this.orientation === 'vertical') {
-            // EXTJSIV-8765: focusing a vertically-oriented tab in IE9 strict can cause
+        if (Ext.isIE9 && this.orientation === 'vertical') {
+            // EXTJSIV-8765: focusing a vertically-oriented tab in IE9 can cause
             // the innerCt to scroll if the tabs have bordering.  
             layout.innerCt.on('scroll', function() {
                 layout.innerCt.dom.scrollLeft = 0;
@@ -220,7 +203,7 @@ Ext.define('Ext.tab.Bar', {
         
         me.callParent(arguments);
             
-        if (needsScroll) {
+        if (needsScroll && me.tooNarrow) {
             me.layout.overflowHandler.scrollToItem(me.activeTab);
         }    
         delete me.needsScroll;
@@ -236,7 +219,7 @@ Ext.define('Ext.tab.Bar', {
             return;
         }
 
-        if (me.orientation === 'vertical' && (Ext.isIE8 || Ext.isIE9) && Ext.isStrict) {
+        if (Ext.isIE9m && me.orientation === 'vertical') {
             tabInfo = me.getTabInfoFromPoint(e.getXY());
             tab = tabInfo.tab;
             isCloseClick = tabInfo.close;
@@ -260,8 +243,9 @@ Ext.define('Ext.tab.Bar', {
                 } else {
                     me.setActiveTab(tab);
                 }
-                tab.focus();
             }
+            
+            tab.afterClick(isCloseClick);
         }
     },
 

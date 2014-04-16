@@ -1,22 +1,40 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
+ * A selection model for {@link Ext.grid.Panel grid panels} which allows selection of a single cell at a time.
  *
+ * Implements cell based navigation via keyboard.
+ *
+ *     @example
+ *     var store = Ext.create('Ext.data.Store', {
+ *         fields  : ['name', 'email', 'phone'],
+ *         data    : {
+ *             items : [
+ *                 { name : 'Lisa',  email : 'lisa@simpsons.com',  phone : '555-111-1224' },
+ *                 { name : 'Bart',  email : 'bart@simpsons.com',  phone : '555-222-1234' },
+ *                 { name : 'Homer', email : 'homer@simpsons.com', phone : '555-222-1244' },
+ *                 { name : 'Marge', email : 'marge@simpsons.com', phone : '555-222-1254' }
+ *             ]
+ *         },
+ *         proxy   : {
+ *             type   : 'memory',
+ *             reader : {
+ *                 type : 'json',
+ *                 root : 'items'
+ *             }
+ *         }
+ *     });
+ 
+ *     Ext.create('Ext.grid.Panel', {
+ *         title    : 'Simpsons',
+ *         store    : store,
+ *         width    : 400,
+ *         renderTo : Ext.getBody(),
+ *         columns  : [
+ *             { text : 'Name',  dataIndex : 'name'  },
+ *             { text : 'Email', dataIndex : 'email', flex : 1 },
+ *             { text : 'Phone', dataIndex : 'phone' }
+ *         ],
+ *         selType: 'cellmodel'
+ *     });
  */
 Ext.define('Ext.selection.CellModel', {
     extend: 'Ext.selection.Model',
@@ -55,30 +73,23 @@ Ext.define('Ext.selection.CellModel', {
         column: -1
     },
 
-    constructor: function() {
-        this.addEvents(
-            /**
-             * @event deselect
-             * Fired after a cell is deselected
-             * @param {Ext.selection.CellModel} this
-             * @param {Ext.data.Model} record The record of the deselected cell
-             * @param {Number} row The row index deselected
-             * @param {Number} column The column index deselected
-             */
-            'deselect',
+    /**
+     * @event deselect
+     * Fired after a cell is deselected
+     * @param {Ext.selection.CellModel} this
+     * @param {Ext.data.Model} record The record of the deselected cell
+     * @param {Number} row The row index deselected
+     * @param {Number} column The column index deselected
+     */
 
-            /**
-             * @event select
-             * Fired after a cell is selected
-             * @param {Ext.selection.CellModel} this
-             * @param {Ext.data.Model} record The record of the selected cell
-             * @param {Number} row The row index selected
-             * @param {Number} column The column index selected
-             */
-            'select'
-        );
-        this.callParent(arguments);
-    },
+    /**
+     * @event select
+     * Fired after a cell is selected
+     * @param {Ext.selection.CellModel} this
+     * @param {Ext.data.Model} record The record of the selected cell
+     * @param {Number} row The row index selected
+     * @param {Number} column The column index selected
+     */
 
     bindComponent: function(view) {
         var me = this,
@@ -157,6 +168,10 @@ Ext.define('Ext.selection.CellModel', {
         this.keyNavigation = false;
     },
 
+    selectWithEvent: function(record, e) {
+        this.select(record);
+    },
+
     select: function(pos, keepExisting, suppressEvent) {
         var me = this,
             row,
@@ -178,7 +193,7 @@ Ext.define('Ext.selection.CellModel', {
                 pos = {
                     row: pos,
                     column: 0
-                }
+                };
             }
         } 
 
@@ -292,6 +307,11 @@ Ext.define('Ext.selection.CellModel', {
         }
     },
     
+    onStoreClear: function() {
+        this.callParent(arguments);
+        this.selection = null;
+    },
+    
     onStoreAdd: function() {
         var me = this,
             pos = me.getCurrentPosition();
@@ -391,7 +411,7 @@ Ext.define('Ext.selection.CellModel', {
             editingPlugin = pos.view.editingPlugin;
             // If we were in editing mode, but just focused on a non-editable cell, behave as if we tabbed off an editable field
             if (editingPlugin && me.wasEditing) {
-                me.onEditorTab(editingPlugin, e)
+                me.onEditorTab(editingPlugin, e);
             } else {
                 me.move(e.shiftKey ? 'left' : 'right', e);
             }
@@ -401,7 +421,8 @@ Ext.define('Ext.selection.CellModel', {
     onEditorTab: function(editingPlugin, e) {
         var me = this,
             direction = e.shiftKey ? 'left' : 'right',
-            position  = me.move(direction, e);
+            pos = me.getCurrentPosition(),
+            position  = pos.view.walkCells(pos, direction, e, me.preventWrap);
 
         // Navigation had somewhere to go.... not hit the buffers.
         if (position) {
@@ -413,7 +434,7 @@ Ext.define('Ext.selection.CellModel', {
             // bring the cell into view.
             // Set a flag that we should go back into editing mode upon next onKeyTab call
             else {
-                position.view.scrollCellIntoView(position);
+                me.setCurrentPosition(position);
                 me.wasEditing = true;
             }
         }

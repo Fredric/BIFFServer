@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.post('/password/reset',
         passreset.requestResetToken({
             loginParam: 'email',
-            callbackURL: 'http://127.0.0.1:3000/clients/Desktop/#/changepassword/{token}',
+            callbackURL: 'http://127.0.0.1:3000/clients/Desktop/#changepassword/{token}',
 
             // If this function is given you can handle errors yourself. Otherwise,
             // errors will be sent automatically in a JSON format

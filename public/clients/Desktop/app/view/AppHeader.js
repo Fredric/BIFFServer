@@ -1,13 +1,21 @@
-Ext.define('BIFF.view.AppHeader',{
+Ext.define('BIFF.view.AppHeader', {
     extend: 'Ext.toolbar.Toolbar',
-    xtype:'appheader',
-    items:[
+    controller: 'appheadercontroller',
+    xtype: 'appheader',
+    items: [
         '->',
         {
-            xtype:'button',
-            text:'Log out',
-            handler:function(){
-                window.location = '/logout'
+            xtype: 'button',
+            text: 'Log out',
+            listeners: {
+                click: 'onLogoutClick'
+            }
+        },
+        {
+            xtype: 'button',
+            text: 'Login',
+            listeners: {
+                click: 'onLoginClick'
             }
         }
     ]

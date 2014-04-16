@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * A class that manages a group of {@link Ext.Component#floating} Components and provides z-order management,
  * and Component activation behavior, including masking below the active (topmost) Component.
@@ -30,6 +13,10 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  */
 Ext.define('Ext.ZIndexManager', {
     alternateClassName: 'Ext.WindowGroup',
+
+    requires: [
+        'Ext.GlobalEvents'
+    ],
 
     statics: {
         zBase : 9000
@@ -54,7 +41,7 @@ Ext.define('Ext.ZIndexManager', {
             }
             // This is the ZIndexManager for a DOM element
             else {
-                Ext.EventManager.onWindowResize(me._onContainerResize, me);
+                Ext.on('resize', me._onContainerResize, me);
                 me.zseed = me.getNextZSeed();
                 me.targetEl = Ext.get(container);
             }
@@ -62,9 +49,9 @@ Ext.define('Ext.ZIndexManager', {
         // No container passed means we are the global WindowManager. Our target is the doc body.
         // DOM must be ready to collect that ref.
         else {
-            Ext.EventManager.onWindowResize(me._onContainerResize, me);
             me.zseed = me.getNextZSeed();
-            Ext.onDocumentReady(function() {
+            Ext.onReady(function() {
+                Ext.on('resize', me._onContainerResize, me);
                 me.targetEl = Ext.getBody();
             });
         }
@@ -110,7 +97,7 @@ Ext.define('Ext.ZIndexManager', {
         
         // If we encountered a modal in our reassigment, ensure our modal mask is just below it.
         if (topModal) {
-            this._showModalMask(topModal)
+            this._showModalMask(topModal);
         }
         return zIndex;
     },
@@ -203,19 +190,6 @@ Ext.define('Ext.ZIndexManager', {
             viewSize;
 
         if (!mask) {
-            if (Ext.isIE6) {
-                shim = me.maskShim = Ext.getBody().createChild({
-                    //<debug>
-                    // tell the spec runner to ignore this element when checking if the dom is clean 
-                    'data-sticky': true,
-                    //</debug>
-                    tag: 'iframe',
-                    role: 'presentation',
-                    cls : Ext.baseCSSPrefix + 'shim ' + Ext.baseCSSPrefix + 'mask-shim'
-                });
-                shim.setVisibilityMode(Ext.Element.DISPLAY);
-            }
-
             // Create the mask at zero size so that it does not affect upcoming target measurements.
             mask = me.mask = Ext.getBody().createChild({
                 //<debug>
@@ -240,8 +214,6 @@ Ext.define('Ext.ZIndexManager', {
         }
         mask.setStyle('zIndex', zIndex);
 
-        // setting mask box before showing it in an IE7 strict iframe within a quirks page
-        // can cause body scrolling [EXTJSIV-6219]
         mask.show();
         mask.setBox(viewSize);
     },

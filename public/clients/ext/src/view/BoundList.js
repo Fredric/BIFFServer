@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * An internally used DataView for {@link Ext.form.field.ComboBox ComboBox}.
  */
@@ -23,10 +6,10 @@ Ext.define('Ext.view.BoundList', {
     alias: 'widget.boundlist',
     alternateClassName: 'Ext.BoundList',
     requires: ['Ext.layout.component.BoundList', 'Ext.toolbar.Paging'],
-    
-    mixins: {
-        queryable: 'Ext.Queryable'
-    },
+
+    mixins: [
+        'Ext.mixin.Queryable'
+    ],
 
     /**
      * @cfg {Number} [pageSize=0]
@@ -53,23 +36,28 @@ Ext.define('Ext.view.BoundList', {
     listItemCls: '',
     shadow: false,
     trackOver: true,
-    refreshed: 0,
+
+    preserveScrollOnRefresh: true,
 
     // This Component is used as a popup, not part of a complex layout. Display data immediately.
     deferInitialRefresh: false,
 
     componentLayout: 'boundlist',
 
+    autoScroll: true,
+
     childEls: [
-        'listEl'
+        'listWrap', 'listEl'
     ],
 
     renderTpl: [
-        '<div id="{id}-listEl" role="presentation" class="{baseCls}-list-ct ', Ext.dom.Element.unselectableCls, '" style="overflow:auto"></div>',
+        '<div id="{id}-listWrap" role="presentation" class="{baseCls}-list-ct ', Ext.dom.Element.unselectableCls, '">',
+            '<ul id="{id}-listEl" class="' + Ext.plainListCls + '">',
+            '</ul>',
+        '</div>',
         '{%',
-            'var me=values.$comp, pagingToolbar=me.pagingToolbar;',
+            'var pagingToolbar=values.$comp.pagingToolbar;',
             'if (pagingToolbar) {',
-                'pagingToolbar.ownerLayout = me.componentLayout;',
                 'Ext.DomHelper.generateMarkup(pagingToolbar.getRenderTree(), out);',
             '}',
         '%}',
@@ -124,6 +112,7 @@ Ext.define('Ext.view.BoundList', {
             me.overItemCls = baseCls + '-item-over';
         }
         me.itemSelector = "." + itemCls;
+        me.scrollerSelector = 'ul.' + Ext.plainListCls;
 
         if (me.floating) {
             me.addCls(baseCls + '-floating');
@@ -133,9 +122,9 @@ Ext.define('Ext.view.BoundList', {
             // should be setting aria-posinset based on entire set of data
             // not filtered set
             me.tpl = new Ext.XTemplate(
-                '<ul class="' + Ext.plainListCls + '"><tpl for=".">',
+                '<tpl for=".">',
                     '<li role="option" unselectable="on" class="' + itemCls + '">' + me.getInnerTpl(me.displayField) + '</li>',
-                '</tpl></ul>'
+                '</tpl>'
             );
         } else if (!me.tpl.isTemplate) {
             me.tpl = new Ext.XTemplate(me.tpl);
@@ -148,24 +137,26 @@ Ext.define('Ext.view.BoundList', {
         me.callParent();
     },
 
-    beforeRender: function() {
-        var me = this;
-
-        me.callParent(arguments);
-
-        // If there's a Menu among our ancestors, then add the menu class.
-        // This is so that the MenuManager does not see a mousedown in this Component as a document mousedown, outside the Menu
-        if (me.up('menu')) {
-            me.addCls(Ext.baseCSSPrefix + 'menu');
-        }
-    },
-
     getRefOwner: function() {
         return this.pickerField || this.callParent();
     },
 
     getRefItems: function() {
-        return this.pagingToolbar ? [ this.pagingToolbar ] : [];
+        var result = this.callParent(),
+            toolbar = this.pagingToolbar;
+        
+        if (toolbar) {
+            result.push(toolbar);
+        }
+        return result;
+    },
+
+    getTargetEl: function() {
+        return this.listEl;
+    },
+
+    getOverflowEl: function() {
+        return this.listWrap;
     },
 
     createPagingToolbar: function() {
@@ -180,7 +171,6 @@ Ext.define('Ext.view.BoundList', {
     },
 
     // Do the job of a container layout at this point even though we are not a Container.
-    // TODO: Refactor as a Container.
     finishRenderChildren: function () {
         var toolbar = this.pagingToolbar;
 
@@ -206,13 +196,7 @@ Ext.define('Ext.view.BoundList', {
         // The view removes the targetEl from the DOM before updating the template
         // Ensure the toolbar goes to the end
         if (rendered && toolbar && toolbar.rendered && !me.preserveScrollOnRefresh) {
-            me.el.appendChild(toolbar.el);
-        }
-
-        // IE6 strict can sometimes have repaint issues when showing
-        // the list from a remote data source
-        if (rendered && Ext.isIE6 && Ext.isStrict) {
-            me.listEl.repaint();
+            me.el.appendChild(toolbar.el, true);
         }
     },
 
@@ -225,17 +209,13 @@ Ext.define('Ext.view.BoundList', {
         }
     },
 
-    getTargetEl: function() {
-        return this.listEl || this.el;
-    },
-
     /**
      * A method that returns the inner template for displaying items in the list.
      * This method is useful to override when using a more complex display value, for example
      * inserting an icon along with the text.
      *
      * The XTemplate is created with a reference to the owning form field in the `field` property to provide access
-     * to context. For example to highlight the currently typed value, the getInnerTpl may be configured into a 
+     * to context. For example to highlight the currently typed value, the getInnerTpl may be configured into a
      * ComboBox as part of the {@link Ext.form.field.ComboBox#listConfig listConfig}:
      *
      *    listConfig: {
@@ -251,7 +231,7 @@ Ext.define('Ext.view.BoundList', {
     },
 
     onDestroy: function() {
-        Ext.destroyMembers(this, 'pagingToolbar', 'listEl');
         this.callParent();
+        Ext.destroyMembers(this, 'pagingToolbar', 'listWrap', 'listEl');
     }
 });

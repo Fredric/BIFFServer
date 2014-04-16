@@ -1,6 +1,10 @@
 Ext.define('BIFF.controller.Users', {
     extend: 'Ext.app.Controller',
-
+    config : {
+        routes : {
+            'users' : 'show'
+        }
+    },
     views: [
         'Users'
     ],
@@ -16,7 +20,7 @@ Ext.define('BIFF.controller.Users', {
         }
     ],
     show: function () {
-        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
         viewport.layout.setActiveItem(viewport.add(this.getUsers()));
 
         this.getUsersStore().load();

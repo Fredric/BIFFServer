@@ -106,6 +106,12 @@ menuItemCfgs : {
 
     plain: true,
 
+    /**
+     * @event update
+     * Fires when a filter configuration has changed
+     * @param {Ext.ux.grid.filter.Filter} this The filter object.
+     */
+
     constructor : function (config) {
         var me = this,
             fields, fieldCfg, i, len, item, cfg, Cls;
@@ -114,15 +120,6 @@ menuItemCfgs : {
 
         fields = me.fields = me.fields || {};
         fieldCfg = me.fieldCfg = me.fieldCfg || {};
-        
-        me.addEvents(
-            /**
-             * @event update
-             * Fires when a filter configuration has changed
-             * @param {Ext.ux.grid.filter.Filter} this The filter object.
-             */
-            'update'
-        );
       
         me.updateTask = Ext.create('Ext.util.DelayedTask', me.fireUpdate, me);
     

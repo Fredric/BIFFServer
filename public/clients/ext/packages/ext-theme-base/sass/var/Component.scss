@@ -34,13 +34,6 @@ $include-missing-images: true !default;
 $include-ie: true !default;
 
 /**
- * @var {boolean} $include-content-box
- * True to include rules for browsers that do not support the border-box model
- * (IE6 strict and IE7 strict)
- */
-$include-content-box: $include-ie !default;
-
-/**
  * @var {boolean} $include-ff
  * True to include Firefox specific rules
  */
@@ -101,9 +94,9 @@ $image-extension: 'png' !default;
 
 /**
  * @var {string} $slicer-image-extension
- * default file extension to use for slicer images (defaults to 'gif').
+ * default file extension to use for slicer images (defaults to 'png').
  */
-$slicer-image-extension: 'gif' !default;
+$slicer-image-extension: 'png' !default;
 
 /**
  * Default search path for images

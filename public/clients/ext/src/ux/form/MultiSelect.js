@@ -130,6 +130,8 @@ Ext.define('Ext.ux.form.MultiSelect', {
      * Any configuration that is valid for BoundList can be included.
      */
 
+    //TODO - doc me.addEvents('drop');
+
     initComponent: function(){
         var me = this;
 
@@ -149,7 +151,6 @@ Ext.define('Ext.ux.form.MultiSelect', {
         
         me.callParent();
         me.initField();
-        me.addEvents('drop');    
     },
     
     setupItems: function() {

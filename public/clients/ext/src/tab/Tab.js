@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @author Ed Spencer
  * 
@@ -90,43 +73,37 @@ Ext.define('Ext.tab.Tab', {
     scale: false,
 
     position: 'top',
-    
+
+    /**
+     * @event activate
+     * Fired when the tab is activated.
+     * @param {Ext.tab.Tab} this
+     */
+
+    /**
+     * @event deactivate
+     * Fired when the tab is deactivated.
+     * @param {Ext.tab.Tab} this
+     */
+
+    /**
+     * @event beforeclose
+     * Fires if the user clicks on the Tab's close button, but before the {@link #close} event is fired. Return
+     * false from any listener to stop the close event being fired
+     * @param {Ext.tab.Tab} tab The Tab object
+     */
+
+    /**
+     * @event close
+     * Fires to indicate that the tab is to be closed, usually because the user has clicked the close button.
+     * @param {Ext.tab.Tab} tab The Tab object
+     */
+
     ariaRole: 'tab',
     
     initComponent: function() {
         var me = this;
         
-        me.addEvents(
-            /**
-             * @event activate
-             * Fired when the tab is activated.
-             * @param {Ext.tab.Tab} this
-             */
-            'activate',
-
-            /**
-             * @event deactivate
-             * Fired when the tab is deactivated.
-             * @param {Ext.tab.Tab} this
-             */
-            'deactivate',
-
-            /**
-             * @event beforeclose
-             * Fires if the user clicks on the Tab's close button, but before the {@link #close} event is fired. Return
-             * false from any listener to stop the close event being fired
-             * @param {Ext.tab.Tab} tab The Tab object
-             */
-            'beforeclose',
-
-            /**
-             * @event close
-             * Fires to indicate that the tab is to be closed, usually because the user has clicked the close button.
-             * @param {Ext.tab.Tab} tab The Tab object
-             */
-            'close'
-        );
-
         me.callParent(arguments);
 
         if (me.card) {
@@ -299,7 +276,7 @@ Ext.define('Ext.tab.Tab', {
             }
             closeEl.addClsOnOver(me.closeElOverCls);
         } else if (closeEl) {
-            closeEl.remove();
+            closeEl.destroy();
             delete me.closeEl;
         }
     },
@@ -379,6 +356,13 @@ Ext.define('Ext.tab.Tab', {
     onDeleteKey: function(e) {
         if (this.closable) {
             this.onCloseClick();
+        }
+    },
+    
+    // @private
+    afterClick: function(isCloseClick) {
+        if (!isCloseClick) {
+            this.focus();
         }
     },
 

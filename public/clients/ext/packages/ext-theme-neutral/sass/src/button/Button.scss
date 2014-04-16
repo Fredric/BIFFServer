@@ -161,6 +161,14 @@
  * @param {number} $split-height
  * The height of a {@link Ext.button.Split Split Button}'s arrow
  *
+ * @param {number} $split-spacing-right
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is right-aligned.  
+ *
+ * @param {number} $split-spacing-bottom
+ * The amount of space in between the split arrow and the button text, when the split arrow
+ * is bottom-aligned.  
+ *
  * @param {boolean} [$include-ui-menu-arrows=$button-include-ui-menu-arrows]
  * True to include the UI name in the file name of the {@link #cfg-menu}
  * arrow icon. Set this to false to share the same arrow bewteen multiple UIs.
@@ -245,6 +253,8 @@
     $arrow-height: null,
     $split-width: null,
     $split-height: null,
+    $split-spacing-right: null,
+    $split-spacing-bottom: null,
     $include-ui-menu-arrows: $button-include-ui-menu-arrows,
     $include-ui-split-arrows: $button-include-ui-split-arrows,
     $include-split-noline-arrows: $button-include-split-noline-arrows,
@@ -310,7 +320,7 @@
                 $mix-color: #fff;
             }
             @if $include-ie {
-                .#{$prefix}ie8m & {
+                .#{$prefix}ie8 & {
                     color: mix($glyph-color, $mix-color, $glyph-opacity * 100);
                 }
             }
@@ -343,10 +353,6 @@
 
     .#{$prefix}btn-#{$ui}-icon,
     .#{$prefix}btn-#{$ui}-noicon {
-        .#{$prefix}btn-button {
-            // this is required to prevent IE 6/quirks from crushing the icon.
-            height: $icon-size;
-        }
         .#{$prefix}btn-inner {
             line-height: $icon-size;
         }
@@ -385,11 +391,6 @@
     }
 
     .#{$prefix}btn-#{$ui}-icon-text-left {
-        .#{$prefix}btn-button {
-            // this is required to prevent IE 6/quirks from crushing the icon.
-            height: $icon-size;
-        }
-
         .#{$prefix}btn-inner {
             line-height: $icon-size;
             padding-left: $icon-size + $button-icon-spacing;
@@ -409,13 +410,6 @@
         .#{$prefix}btn-icon-el {
             width: $icon-size;
             right: auto;
-
-            @if $include-ie {
-                .#{$prefix}ie6 &,
-                .#{$prefix}quirks .#{$prefix}ie & {
-                    height: $icon-size;
-                }
-            }
         }
 
         @if $include-rtl {
@@ -427,11 +421,6 @@
     }
 
     .#{$prefix}btn-#{$ui}-icon-text-right {
-        .#{$prefix}btn-button {
-            // this is required to prevent IE 6/quirks from crushing the icon.
-            height: $icon-size;
-        }
-
         .#{$prefix}btn-inner {
             line-height: $icon-size;
             padding-right: $icon-size + $button-icon-spacing;
@@ -447,13 +436,6 @@
         .#{$prefix}btn-icon-el {
             width: $icon-size;
             left: auto;
-
-            @if $include-ie {
-                .#{$prefix}ie6 &,
-                .#{$prefix}quirks .#{$prefix}ie & {
-                    height: $icon-size;
-                }
-            }
         }
 
         @if $include-rtl {
@@ -472,15 +454,6 @@
         .#{$prefix}btn-icon-el {
             height: $icon-size;
             bottom: auto;
-
-            @if $include-ie {
-                // in IE6 and IE old quirks the width of the icon needs to be stretched
-                // so that the icon can be centered using background-position
-                .#{$prefix}ie6 &,
-                .#{$prefix}quirks .#{$prefix}ie & {
-                    width: 100%;
-                }
-            }
         }
     }
 
@@ -492,15 +465,6 @@
         .#{$prefix}btn-icon-el {
             height: $icon-size;
             top: auto;
-
-            @if $include-ie {
-                // in IE6 and IE old quirks the width of the icon needs to be stretched
-                // so that the icon can be centered using background-position
-                .#{$prefix}ie6 &,
-                .#{$prefix}quirks .#{$prefix}ie & {
-                    width: 100%;
-                }
-            }
         }
     }
 
@@ -722,6 +686,12 @@
         .#{$prefix}btn-split-right {
             background-image: theme-background-image('button/#{$arrow-prefix}s-arrow#{$arrow-suffix}');
             padding-right: $split-width;
+
+            @if $split-spacing-right != null and $split-spacing-right != $text-padding {
+                .#{$prefix}btn-inner {
+                    padding-right: $split-spacing-right;
+                }
+            }
         }
 
         @if $include-rtl {
@@ -735,6 +705,32 @@
         .#{$prefix}btn-split-bottom {
             background-image: theme-background-image('button/#{$arrow-prefix}s-arrow-b#{$arrow-suffix}');
             padding-bottom: $split-height;
+
+            @if $split-spacing-bottom != null {
+                .#{$prefix}btn-button {
+                    margin-bottom: $split-spacing-bottom;
+                }
+            }
+        }
+    }
+
+    @if $split-spacing-right != null and $split-spacing-right != $text-padding {
+        .#{$prefix}btn-#{$ui}-icon .#{$prefix}btn-split-right {
+            .#{$prefix}btn-icon-el {
+                right: right($padding);
+            }
+            .#{$prefix}btn-inner {
+                padding-right: $icon-size + right($padding);
+            }
+        }
+
+        .#{$prefix}btn-#{$ui}-icon-text-right .#{$prefix}btn-split-right {
+            .#{$prefix}btn-icon-el {
+                right: right($padding);
+            }
+            .#{$prefix}btn-inner {
+                padding-right: $icon-size + $button-icon-spacing + right($padding);
+            }
         }
     }
 
@@ -773,11 +769,20 @@
     @include x-slicer(btn-#{$ui}-over);
     @include x-slicer(btn-#{$ui}-pressed);
     @include x-slicer(btn-#{$ui}-disabled);
+
+    @if $include-ext-view-table {
+        $ui-height: $icon-size + vertical($padding) + vertical($border-width);
+        .#{$prefix}btn-#{$ui}-cell .#{$prefix}grid-cell-inner {
+            padding-top:    max(ceil(($grid-row-height - $ui-height) / 2), 0);
+            padding-bottom: max(floor(($grid-row-height - $ui-height) / 2), 0);
+        }
+    }
 }
 
 @import 'Button_small';
 @import 'Button_medium';
 @import 'Button_large';
+@import 'Button_cell';
 
 @if $include-button-default-small-ui {
     @include extjs-button-small-ui(
@@ -1033,36 +1038,8 @@
     }
 }
 
-.#{$prefix}btn-icon-text-left {
-    .#{$prefix}btn-icon-el {
-        background-position: left center;
-    }
-
-    @if $include-rtl {
-        .#{$prefix}rtl.#{$prefix}btn-icon-el {
-            background-position: right center;
-        }
-    }
-}
-
-.#{$prefix}btn-icon-text-right {
-    .#{$prefix}btn-icon-el {
-        background-position: right center;
-    }
-
-    @if $include-rtl {
-        .#{$prefix}rtl.#{$prefix}btn-icon-el {
-            background-position: left center;
-        }
-    }
-}
-
-.#{$prefix}btn-icon-text-top .#{$prefix}btn-icon-el {
-    background-position: center top;
-}
-
-.#{$prefix}btn-icon-text-bottom .#{$prefix}btn-icon-el {
-    background-position: center bottom;
+.#{$prefix}btn-icon-el {
+    background-position: center center;
 }
 
 .#{$prefix}btn-arrow-right {

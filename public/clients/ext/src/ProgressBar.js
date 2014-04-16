@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * An updateable progress bar component. The progress bar supports two different modes: manual and automatic.
  *
@@ -58,6 +41,10 @@ Ext.define('Ext.ProgressBar', {
 
     uses: ['Ext.fx.Anim'],
 
+    config: {
+        value: 0
+    },
+
    /**
     * @cfg {Number} [value=0]
     * A floating point value between 0 and 1 (e.g., .5)
@@ -99,6 +86,8 @@ Ext.define('Ext.ProgressBar', {
         'bar'
     ],
 
+    defaultBindProperty: 'value',
+
     renderTpl: [
         '<tpl if="internalText">',
             '<div class="{baseCls}-text {baseCls}-text-back">{text}</div>',
@@ -116,21 +105,13 @@ Ext.define('Ext.ProgressBar', {
     
     ariaRole: 'progressbar',
 
-    // private
-    initComponent: function() {
-        this.callParent();
-
-        this.addEvents(
-            /**
-             * @event update
-             * Fires after each update interval
-             * @param {Ext.ProgressBar} this
-             * @param {Number} value The current progress value
-             * @param {String} text The current progress text
-             */
-            "update"
-        );
-    },
+    /**
+     * @event update
+     * Fires after each update interval
+     * @param {Ext.ProgressBar} this
+     * @param {Number} value The current progress value
+     * @param {String} text The current progress text
+     */
 
     initRenderData: function() {
         var me = this;
@@ -157,6 +138,10 @@ Ext.define('Ext.ProgressBar', {
             // renderSelectors):
             me.textEl = me.el.select('.' + me.baseCls + '-text');
         }
+    },
+
+    updateValue: function(value) {
+        this.updateProgress(value, Math.round(value * 100) + '%');
     },
 
     /**
@@ -208,7 +193,7 @@ Ext.define('Ext.ProgressBar', {
         
         me.text = text;
         if (me.rendered) {
-            me.textEl.update(me.text);
+            me.textEl.setHtml(me.text);
         }
         return me;
     },

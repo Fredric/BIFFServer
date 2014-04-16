@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Component layout for buttons
  * @private
@@ -57,16 +40,32 @@ Ext.define('Ext.layout.component.Button', {
 
     beginLayoutCycle: function(ownerContext) {
         var owner = this.owner,
-            lastWidthModel = this.lastWidthModel;
+            lastWidthModel = this.lastWidthModel,
+            lastHeightModel = this.lastHeightModel,
+            btnInnerEl = owner.btnInnerEl,
+            table = owner.getFrameInfo().table;
 
         this.callParent(arguments);
+        
+        // If we are framing and we have a calculated/configured size, that size gets
+        // stamped onto the table frame element. If we're changing from !shrink -> shrink,
+        // we need to clear the dimension of the innerEl (and by extension, the frame el),
+        // so that we can calculate our size properly.
 
-        if (lastWidthModel && !this.lastWidthModel.shrinkWrap &&
+        if (lastWidthModel && !lastWidthModel.shrinkWrap &&
             ownerContext.widthModel.shrinkWrap) {
             // clear any heights we set last time around if needed
             owner.btnWrap.setStyle('height', '');
             owner.btnEl.setStyle('height', '');
-            owner.btnInnerEl.setStyle('line-height', '');
+            btnInnerEl.setStyle('line-height', '');
+            if (table) {
+                btnInnerEl.setStyle('width', '');
+            }
+        }
+        
+        if (table && lastHeightModel && !lastHeightModel.shrinkWrap &&
+            ownerContext.heightModel.shrinkWrap) {
+            btnInnerEl.setStyle('height', '');
         }
     },
 
@@ -95,7 +94,6 @@ Ext.define('Ext.layout.component.Button', {
                     ownerContext,
                     btnElHeight
                 );
-                me.ieCenterIcon(ownerContext, btnElHeight);
             }
         } else {
             // Buttons with configured or calculated heights may need to stretch their
@@ -141,7 +139,6 @@ Ext.define('Ext.layout.component.Button', {
                     // inside of centerInnerEl() since multi-line text is not a possiblity
                     btnInnerElContext.setProp('line-height', mmax(0, innerElHeight) + 'px');
                 }
-                me.ieCenterIcon(ownerContext, btnElHeight);
             } else if (ownerHeight !== 0) {
                 // Only fail if height was undefined, since it could be 0
                 me.done = false;
@@ -171,21 +168,6 @@ Ext.define('Ext.layout.component.Button', {
                     // padding to the padding adjustment.
                     btnInnerElContext.getPaddingInfo().top 
             );
-        }
-    },
-
-    ieCenterIcon: function(ownerContext, btnElHeight) {
-        var iconAlign = this.owner.iconAlign;
-
-        if ((Ext.isIEQuirks || Ext.isIE6) &&
-            (iconAlign === 'left' || iconAlign === 'right')) {
-            // Normally right/left aligned icon elements are vertically stretched using
-            // top:0, bottom:0, and the icon is vertically centered inside this element
-            // using background-position.  This technique for vertical centering does not
-            // work in IE6 and IE quirks, so the stylesheet sets a fixed height on the
-            // icon element in these browsers.  If the layout changes the height of the
-            // button the height of the icon element must also be modified.
-            ownerContext.btnIconElContext.setHeight(btnElHeight);
         }
     },
 

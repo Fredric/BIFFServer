@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @docauthor Robert Dougan <rob@sencha.com>
  *
@@ -111,11 +94,9 @@ Ext.define('Ext.form.field.Checkbox', {
     alternateClassName: 'Ext.form.Checkbox',
     requires: ['Ext.XTemplate', 'Ext.form.CheckboxManager' ],
 
-    componentLayout: 'field',
-    
     // inputEl should always retain the same size, never stretch
     stretchInputElFixed: false,
-    
+
     childEls: [
         /**
          * @property {Ext.Element} boxLabelEl
@@ -130,7 +111,8 @@ Ext.define('Ext.form.field.Checkbox', {
         '<div class="{wrapInnerCls} {noBoxLabelCls}" role="presentation">',
             '<tpl if="labelAlignedBefore">',
                 '{beforeBoxLabelTpl}',
-                '<label id="{cmpId}-boxLabelEl" {boxLabelAttrTpl} class="{boxLabelCls} {boxLabelCls}-{boxLabelAlign}" for="{id}">',
+                '<label id="{cmpId}-boxLabelEl" {boxLabelAttrTpl} class="{boxLabelCls} ',
+                        '{boxLabelCls}-{ui} {boxLabelCls}-{boxLabelAlign} {childElCls}" for="{id}">',
                     '{beforeBoxLabelTextTpl}',
                     '{boxLabel}',
                     '{afterBoxLabelTextTpl}',
@@ -141,10 +123,11 @@ Ext.define('Ext.form.field.Checkbox', {
                 '<tpl if="tabIdx"> tabIndex="{tabIdx}"</tpl>',
                 '<tpl if="disabled"> disabled="disabled"</tpl>',
                 '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>',
-                ' class="{fieldCls} {typeCls} {inputCls} {childElCls} {afterLabelCls}" autocomplete="off" hidefocus="true" />',
+                ' class="{fieldCls} {typeCls} {typeCls}-{ui} {inputCls} {inputCls}-{ui} {childElCls} {afterLabelCls}" autocomplete="off" hidefocus="true" />',
             '<tpl if="boxLabel && !labelAlignedBefore">',
                 '{beforeBoxLabelTpl}',
-                '<label id="{cmpId}-boxLabelEl" {boxLabelAttrTpl} class="{boxLabelCls} {boxLabelCls}-{boxLabelAlign}" for="{id}">',
+                '<label id="{cmpId}-boxLabelEl" {boxLabelAttrTpl} class="{boxLabelCls} ',
+                        '{boxLabelCls}-{ui} {boxLabelCls}-{boxLabelAlign} {childElCls}" for="{id}">',
                     '{beforeBoxLabelTextTpl}',
                     '{boxLabel}',
                     '{afterBoxLabelTextTpl}',
@@ -157,6 +140,10 @@ Ext.define('Ext.form.field.Checkbox', {
             compiled: true
         }
     ],
+
+    publishes: {
+        checked: 1
+    },
 
     subTplInsertions: [
         /**
@@ -221,7 +208,7 @@ Ext.define('Ext.form.field.Checkbox', {
      */
     
     // private
-    extraFieldBodyCls: Ext.baseCSSPrefix + 'form-cb-wrap',
+    fieldBodyCls: Ext.baseCSSPrefix + 'form-cb-wrap',
 
     /**
      * @cfg {Boolean} checked
@@ -378,7 +365,7 @@ Ext.define('Ext.form.field.Checkbox', {
         
         me.boxLabel = boxLabel;
         if (me.rendered) {
-            me.boxLabelEl.update(boxLabel);
+            me.boxLabelEl.setHtml(boxLabel);
         }
     },
 
@@ -442,6 +429,9 @@ Ext.define('Ext.form.field.Checkbox', {
         }
 
         me.checked = me.rawValue = checked;
+        if (!me.duringSetValue) {
+            me.lastValue = checked;
+        }
         return checked;
     },
 
@@ -468,17 +458,18 @@ Ext.define('Ext.form.field.Checkbox', {
                 box.setValue(Ext.Array.contains(checked, box.inputValue));
             }
         } else {
+            // The callParent() call ends up trigger setRawValue, we only want to modify
+            // the lastValue when setRawValue being called independently.
+            me.duringSetValue = true;
             me.callParent(arguments);
+            delete me.duringSetValue;
         }
 
         return me;
     },
 
     // private
-    valueToRaw: function(value) {
-        // No extra conversion for checkboxes
-        return value;
-    },
+    valueToRaw: Ext.identityFn,
 
     /**
      * @private
@@ -488,10 +479,16 @@ Ext.define('Ext.form.field.Checkbox', {
     onChange: function(newVal, oldVal) {
         var me = this,
             handler = me.handler;
+
         if (handler) {
             handler.call(me.scope || me, me, newVal);
         }
+
         me.callParent(arguments);
+
+        if (me.reference && me.publishState) {
+            me.publishState('checked', newVal);
+        }
     },
     
     resetOriginalValue: function(/* private */ fromBoxInGroup){

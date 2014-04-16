@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * @author Ed Spencer, Tommy Maintz, Brian Moeskau
  *
@@ -47,6 +30,7 @@ Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
  * by specifying the tabConfig option:
  *
  *     @example
+ *     Ext.tip.QuickTipManager.init();
  *     Ext.create('Ext.tab.Panel', {
  *         width: 400,
  *         height: 400,
@@ -399,6 +383,23 @@ Ext.define('Ext.tab.Panel', {
      */
     deferredRender : true,
 
+    /**
+     * @event
+     * Fires before a tab change (activated by {@link #setActiveTab}). Return false in any listener to cancel
+     * the tabchange
+     * @param {Ext.tab.Panel} tabPanel The TabPanel
+     * @param {Ext.Component} newCard The card that is about to be activated
+     * @param {Ext.Component} oldCard The card that is currently active
+     */
+
+    /**
+     * @event
+     * Fires when a new tab has been activated (activated by {@link #setActiveTab}).
+     * @param {Ext.tab.Panel} tabPanel The TabPanel
+     * @param {Ext.Component} newCard The newly activated item
+     * @param {Ext.Component} oldCard The previously active item
+     */
+
     //inherit docs
     initComponent: function() {
         var me = this,
@@ -429,27 +430,6 @@ Ext.define('Ext.tab.Panel', {
         dockedItems.push(me.tabBar);
         me.dockedItems = dockedItems;
 
-        me.addEvents(
-            /**
-             * @event
-             * Fires before a tab change (activated by {@link #setActiveTab}). Return false in any listener to cancel
-             * the tabchange
-             * @param {Ext.tab.Panel} tabPanel The TabPanel
-             * @param {Ext.Component} newCard The card that is about to be activated
-             * @param {Ext.Component} oldCard The card that is currently active
-             */
-            'beforetabchange',
-
-            /**
-             * @event
-             * Fires when a new tab has been activated (activated by {@link #setActiveTab}).
-             * @param {Ext.tab.Panel} tabPanel The TabPanel
-             * @param {Ext.Component} newCard The newly activated item
-             * @param {Ext.Component} oldCard The previously active item
-             */
-            'tabchange'
-        );
-
         me.callParent(arguments);
 
         // We have to convert the numeric index/string ID config into its component reference
@@ -458,6 +438,23 @@ Ext.define('Ext.tab.Panel', {
         // Ensure that the active child's tab is rendered in the active UI state
         if (activeTab) {
             me.tabBar.setActiveTab(activeTab.tab, true);
+        }
+    },
+
+    onRender: function() {
+        var items = this.items.items,
+            len = items.length,
+            i;
+
+        this.callParent(arguments);
+
+        // We want to force any view model for the panel to be created.
+        // This is because we capture various parts about the panel itself (title, icon, etc)
+        // So we need to be able to use that to populate the tabs.
+        // In the future, this could be optimized to be a bit smarter to prevent creation when
+        // not required.
+        for (i = 0; i < len; ++i) {
+            items[i].getBind();
         }
     },
 
@@ -520,6 +517,10 @@ Ext.define('Ext.tab.Panel', {
         }
     },
 
+    setActiveItem: function(item) {
+        return this.setActiveTab(item);
+    },
+
     /**
      * Returns the item that is currently active inside this TabPanel.
      * @return {Ext.Component} The currently active item.
@@ -553,7 +554,7 @@ Ext.define('Ext.tab.Panel', {
      */
     onAdd: function(item, index) {
         var me = this,
-            cfg = item.tabConfig || {},
+            cfg = Ext.apply({}, item.tabConfig),
             defaultConfig = {
                 xtype: 'tab',
                 ui: me.tabBar.ui,
@@ -598,6 +599,11 @@ Ext.define('Ext.tab.Panel', {
             if (item.isPanel && me.border) {
                 item.setBorder(false);
             }
+        }
+
+        // Force the view model to be created, see onRender
+        if (me.rendered) {
+            item.getBind();
         }
     },
 
@@ -664,7 +670,7 @@ Ext.define('Ext.tab.Panel', {
             toActivate;
 
         // Destroying, or removing the last item, nothing to activate
-        if (me.destroying || me.items.getCount() == 1) {
+        if (me.removingAll || me.destroying || me.items.getCount() == 1) {
             me.activeTab = null;
         }
 

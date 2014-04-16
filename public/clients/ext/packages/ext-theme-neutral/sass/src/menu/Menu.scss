@@ -49,7 +49,7 @@ $menu-item-icon-top: round(($menu-item-height - vertical($menu-item-border-width
     cursor: $menu-item-cursor;
 }
 
-.#{$prefix}menu-item-link,
+.#{$prefix}menu-item-text,
 .#{$prefix}menu-item-cmp {
     margin: 0 after($menu-item-text-horizontal-spacing) 0 before($menu-item-text-horizontal-spacing);
 }
@@ -73,7 +73,7 @@ $menu-item-icon-top: round(($menu-item-height - vertical($menu-item-border-width
 
 @if $include-rtl {
     .#{$prefix}rtl {
-        &.#{$prefix}menu-item-link,
+        &.#{$prefix}menu-item-text,
         &.#{$prefix}menu-item-cmp {
             margin: 0 before($menu-item-text-horizontal-spacing) 0 after($menu-item-text-horizontal-spacing);
         }
@@ -159,7 +159,7 @@ $stretch: slicer-background-stretch(menu-item-link, bottom);
         // the partially transparent pixels of the glyph as black. To work around this,
         // we emulate the approximate color that the glyph would have if it had opacity
         // applied by mixing the glyph color with the menus's background-color.
-        .#{$prefix}ie8m & {
+        .#{$prefix}ie8 & {
             color: mix($menu-glyph-color, $menu-background-color, $menu-glyph-opacity * 100);
         }
     }
@@ -186,6 +186,10 @@ $stretch: slicer-background-stretch(menu-item-link, bottom);
         left: after($menu-item-icon-horizontal-spacing);
 
         .#{$prefix}menu-item-active & {
+            // Needs right overriding within the .x-menu-item-active .x-rtl.x-menu-item-right rule
+            // IEQuirks sees that as equivalent to .x-menu-item-active .x-menu-item-right, so
+            // https://sencha.jira.com/browse/EXTJSIV-11176
+            right: auto;
             left: after($menu-item-icon-horizontal-spacing) - right($menu-item-border-width);
         }
     }
@@ -201,6 +205,14 @@ $stretch: slicer-background-stretch(menu-item-link, bottom);
     }
     color: $menu-text-color;
     cursor: $menu-item-cursor; // needed to override cursor:default set by x-unselectable
+}
+
+@if $menu-item-checkbox-size != $menu-item-icon-size {
+    .#{$prefix}menu-item-checked,
+    .#{$prefix}menu-item-unchecked {
+        height: $menu-item-checkbox-size;
+        width: $menu-item-checkbox-size;
+    }
 }
 
 .#{$prefix}menu-item-checked {
@@ -259,20 +271,8 @@ $stretch: slicer-background-stretch(menu-item-link, bottom);
     @include opacity($menu-item-disabled-opacity);
 }
 
-@if $include-content-box {
-  .#{$prefix}content-box {
-        .#{$prefix}menu-icon-separator {
-            width: $menu-separator-size - 1;
-        }
-
-        .#{$prefix}menu-item-separator {
-            height: $menu-separator-size - 1;
-        }
-    }
-}
-
 @if $include-ie {
-    .#{$prefix}ie {
+    .#{$prefix}ie9m {
         .#{$prefix}menu-item-disabled {
             .#{$prefix}menu-item-icon {
                 @include opacity($menu-item-disabled-opacity);
@@ -310,7 +310,7 @@ $stretch: slicer-background-stretch(menu-item-link, bottom);
     }
     @if $menu-scroller-opacity != 1 $menu-scroller-opacity-over != 1 $menu-scroller-opacity-pressed != 1 {
         // EXTJSIV-8846: partially transparent png images do not display correctly
-        // in winXP/IE8m when the image element has a transparent background.
+        // in winXP/IE8 when the image element has a transparent background.
         // to fix this, we give the element the same background-color as the menu.
         background-color: $menu-background-color;
     }

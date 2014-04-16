@@ -112,6 +112,11 @@ $menu-item-active-border-radius: 0 !default;
  */
 $menu-item-icon-size: 16px !default;
 
+/**
+ * @var {number}
+ * The size of {@link Ext.menu.Item Menu Item} checkboxes
+ */
+$menu-item-checkbox-size: $menu-item-icon-size !default;
 
 /**
  * @var {list}

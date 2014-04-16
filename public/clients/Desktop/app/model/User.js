@@ -10,6 +10,10 @@ Ext.define('BIFF.model.User', {
     ],
     proxy: {
         type: 'rest',
-        url: '/users'
+        url: '/users',
+        writer:{
+            type:'json',
+            writeAllFields:true
+        }
     }
 })

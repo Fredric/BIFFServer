@@ -73,8 +73,28 @@
     -->
     <target name="-slice-app-theme" depends="-detect-app-build-properties">
         <x-ant-call target="-compass-compile-slicer-css"/>
-        <x-run-bootstrap file="${bootstrap.example.js}" 
-                         basedir="${bootstrap.base.path}"/>
+
+        <local name="relpath"/>
+        <x-get-relative-path from="${bootstrap.base.path}"
+                             to="${framework.packages.dir}"
+                             property="relpath"/>
+
+        <x-bootstrap file="${bootstrap.example.js}"
+                     basedir="${bootstrap.base.path}"
+                     includeBoot="true"
+                     includeCoreFiles="true"
+                     overrideTpl="${bootstrap.override.tpl}"
+                     overrideTplType="${bootstrap.override.tpltype}"
+                     overrideExcludeTags="">
+<![CDATA[
+Ext.Boot.loadSync([
+    "render.js",
+    "${relpath}/ext-theme-base/sass/example/manifest.js",
+    "${relpath}/ext-theme-base/sass/example/shortcuts.js",
+    "custom.js"
+]);
+]]>
+        </x-bootstrap>
        
         <echo>Capture theme image to ${build.capture.png}</echo>
         <x-sencha-command>

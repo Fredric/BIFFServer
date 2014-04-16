@@ -1,20 +1,3 @@
-/*
-This file is part of Ext JS 4.2
-
-Copyright (c) 2011-2013 Sencha Inc
-
-Contact:  http://www.sencha.com/contact
-
-Commercial Usage
-Licensees holding valid commercial licenses may use this file in accordance with the Commercial
-Software License Agreement provided with the Software or, alternatively, in accordance with the
-terms contained in a written agreement between you and Sencha.
-
-If you are unsure which license is appropriate for your use, please contact the sales department
-at http://www.sencha.com/contact.
-
-Build date: 2013-09-18 17:18:59 (940c324ac822b840618a3a8b2b4b873f83a1a9b1)
-*/
 /**
  * Adds custom behavior for left/right keyboard navigation for use with a tree.
  * Depends on the view having an expand and collapse method which accepts a
@@ -66,15 +49,16 @@ Ext.define('Ext.selection.TreeModel', {
     },
     
     navExpand: function(e, t) {
-        var focused = this.getLastFocused(),
-            view    = this.view;
+        var me      = this,
+            focused = me.getLastFocused(),
+            view    = me.view;
 
         if (focused) {
             // tree node is already expanded, go down instead
             // this handles both the case where we navigate to firstChild and if
             // there are no children to the nextSibling
             if (focused.isExpanded()) {
-                this.onKeyDown(e, t);
+                me.onKeyDown(e, t);
             // if its not a leaf node, expand it
             } else if (focused.isExpandable()) {
                 // If we are the normal side of a locking pair, only the tree view can do expanding
@@ -83,6 +67,9 @@ Ext.define('Ext.selection.TreeModel', {
                 }
 
                 view.expand(focused);
+                if (focused) {
+                    me.onLastFocusChanged(null, focused);
+                }
             }
         }
     },
@@ -93,8 +80,8 @@ Ext.define('Ext.selection.TreeModel', {
     
     navCollapse: function(e, t) {
         var me = this,
-            focused = this.getLastFocused(),
-            view    = this.view,
+            focused = me.getLastFocused(),
+            view    = me.view,
             parentNode;
 
         if (focused) {
@@ -107,6 +94,7 @@ Ext.define('Ext.selection.TreeModel', {
                 }
 
                 view.collapse(focused);
+                me.onLastFocusChanged(null, focused);
             // has a parentNode and its not root
             // TODO: this needs to cover the case where the root isVisible
             } else if (parentNode && !parentNode.isRoot()) {
@@ -122,6 +110,7 @@ Ext.define('Ext.selection.TreeModel', {
                     me.select(parentNode);
                 }
             }
+            this.onLastFocusChanged(null, focused);
         }
     },
 

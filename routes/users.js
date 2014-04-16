@@ -66,8 +66,10 @@ module.exports = function (app) {
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
             console.log(req.user)
+            console.log(app.connections)
             return next();
         }
+
         res.send(403, "Invalid username or password.");
     }
 

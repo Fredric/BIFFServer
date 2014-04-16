@@ -18,7 +18,7 @@ $grid-column-header-font-size: $font-size !default;
  * @var {string}
  * The font-weight of grid column headers
  */
-$grid-column-header-font-weight: normal !default;
+$grid-column-header-font-weight: $font-weight !default;
 
 /**
  * @var {number}

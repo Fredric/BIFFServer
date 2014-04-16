@@ -52,18 +52,20 @@ require('./lib/passreset')(app);
 
 app.get('/', function (req, res) {
     if(req.isAuthenticated()){
-        res.redirect('/clients/build/production/BIFF/#/users')
+        res.redirect('/clients/Desktop/#users')
     }else{
         res.redirect('/clients/build/production/Login')
     }
 });
 
 app.get('/success', function (req, res) {
-    res.redirect('/clients/build/production/BIFF/#/users')
+
+
+    res.redirect('/clients/Desktop/#users')
 });
 
 app.get('/LoginLocal', function (req, res) {
-    res.redirect('/clients/build/production/BIFF/#/login')
+    res.redirect('/clients/Desktop/#login')
 });
 
 app.get('/test',function(req,res,next){
@@ -83,7 +85,7 @@ var server = http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-require('./lib/sockets')(server);
+require('./lib/sockets')(server, app);
 
 
 

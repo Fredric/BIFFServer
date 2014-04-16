@@ -187,15 +187,6 @@
     border-style: solid;
     border-width: 5px;
     border-color: $tip-border-color;
-
-    zoom: 1;
-    
-    @if $include-content-box {
-        .#{$prefix}content-box & {
-            height: 0;
-            width: 0;
-        }
-    }
 }
 
 .#{$prefix}tip-anchor-top {

@@ -61,7 +61,7 @@ Ext.define('Ext.ux.GroupTabRenderer', {
         itemSelector: 'div.' + Ext.baseCSSPrefix + 'grouptab-row',
 
         // row which contains cells as opposed to wrapping rows
-        dataRowSelector: 'div.' + Ext.baseCSSPrefix + 'grouptab-row',
+        rowSelector: 'div.' + Ext.baseCSSPrefix + 'grouptab-row',
 
         // cell
         cellSelector: 'div.' + Ext.baseCSSPrefix + 'grouptab-cell', 

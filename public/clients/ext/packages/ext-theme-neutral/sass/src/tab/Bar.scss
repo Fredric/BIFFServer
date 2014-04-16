@@ -87,8 +87,9 @@
     $ui-scroller-opacity-over: $tabbar-scroller-opacity-over,
     $ui-scroller-opacity-pressed: $tabbar-scroller-opacity-pressed,
     $ui-scroller-opacity-disabled: $tabbar-scroller-opacity-disabled,
-    $ui-tab-height: $tab-line-height + vertical($tab-text-padding) + 
-        vertical($tab-padding) + $tab-border-width
+    $ui-tab-height:
+        if($tabbar-strip-height > 0, $tab-border-width, $tab-border-width * 2) +
+        $tab-line-height + vertical($tab-text-padding) + vertical($tab-padding)
 ) {
     // Tab Bar
     .#{$prefix}tab-bar-#{$ui} {
@@ -148,24 +149,12 @@
     // horizontal tabbars need a fixed height so that they doesn't lose height when all tabs are closed
     .#{$prefix}tab-bar-#{$ui}-horizontal {
         height: $ui-height;
-
-        @if $include-content-box {
-            .#{$prefix}content-box & {
-                height: $ui-content-height;
-            }
-        }
     }
 
     // vertical tabbars need a fixed width so that they doesn't expand to fill their container
     // when rendered ouside of a tabpanel
     .#{$prefix}tab-bar-#{$ui}-vertical {
         width: $ui-height;
-
-        @if $include-content-box {
-            .#{$prefix}content-box & {
-                width: $ui-content-height;
-            }
-        }
     }
 
     $strip-size: max($ui-strip-height - vertical($ui-strip-border-width), 0);
@@ -203,22 +192,6 @@
         border-style: solid;
         border-color: $ui-strip-border-color;
         background-color: $ui-strip-background-color;
-    }
-
-    @if $include-content-box {
-        .#{$prefix}tab-bar-strip-#{$ui}-horizontal {
-            .#{$prefix}content-box & {
-                height: $ui-strip-height - vertical($ui-strip-border-width);
-            }
-        }
-    }
-
-    @if $include-content-box {
-        .#{$prefix}tab-bar-strip-#{$ui}-vertical {
-            .#{$prefix}content-box & {
-                width: $ui-strip-height - vertical($ui-strip-border-width);
-            }
-        }
     }
 
     .#{$prefix}tab-bar-strip-#{$ui}-top {
@@ -327,7 +300,7 @@
             }
             @if $needs-transparency-fix {
                 // EXTJSIV-8846: partially transparent png images do not display correctly
-                // in winXP/IE8m when the image element has a transparent background.
+                // in winXP/IE8 when the image element has a transparent background.
                 // to fix this, we give the element the same background-color as the tabbar.
                 background-color: $ui-background-color;
             }
@@ -339,7 +312,7 @@
             .#{$prefix}box-scroller-plain .#{$prefix}box-scroller {
                 background-color: transparent;
                 @if $include-ie {
-                    .#{$prefix}ie8m & {
+                    .#{$prefix}ie8 & {
                         background-color: #fff;
                     }
                 }
@@ -987,8 +960,9 @@
             $ui-scroller-opacity-over: $ui-bar-scroller-opacity-over,
             $ui-scroller-opacity-pressed: $ui-bar-scroller-opacity-pressed,
             $ui-scroller-opacity-disabled: $ui-bar-scroller-opacity-disabled,
-            $ui-tab-height: $ui-tab-line-height + vertical($ui-tab-text-padding) + 
-                vertical($ui-tab-padding) + $ui-tab-border-width
+            $ui-tab-height:
+                if($ui-strip-height > 0, $ui-tab-border-width, $ui-tab-border-width * 2) +
+                $ui-tab-line-height + vertical($ui-tab-text-padding) + vertical($ui-tab-padding)
         );
     }
 }

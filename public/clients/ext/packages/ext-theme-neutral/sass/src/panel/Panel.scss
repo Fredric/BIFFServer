@@ -139,6 +139,12 @@
  * {@link #border} config. Only applicable when `$ui-include-border-management-rules` is
  * `true`.
  *
+ * @param {boolean} [$ui-ignore-frame-padding=$panel-ignore-frame-padding]
+ * True to ignore the frame padding.  By default, the frame mixin adds extra padding when
+ * border radius is larger than border width.  This is intended to prevent the content
+ * from colliding with the rounded corners of the frame.  Set this to true to prevent
+ * the panel frame from adding this extra padding.
+ *
  * @member Ext.panel.Panel
  */
 @mixin extjs-panel-ui(
@@ -190,8 +196,9 @@
 
     // See the docs above
     $ui-include-border-management-rules: $panel-include-border-management-rules,
-    $ui-wrap-border-color: $panel-wrap-border-color,
-    $ui-wrap-border-width: $panel-wrap-border-width,
+    $ui-wrap-border-color: null,
+    $ui-wrap-border-width: null,
+    $ui-ignore-frame-padding: $panel-ignore-frame-padding,
 
     // deprecated - use $ui instead
     $ui-label: null
@@ -202,6 +209,22 @@
             $ui: $ui-label;
         } @else {
             @warn "#{error('$ui is required')}";
+        }
+    }
+
+    @if is-null($ui-wrap-border-color) {
+        @if $ui == 'default-framed' {
+            $ui-wrap-border-color: $panel-wrap-border-color;
+        } @else {
+            $ui-wrap-border-color: $ui-border-color;
+        }
+    }
+
+    @if is-null($ui-wrap-border-width) {
+        @if $ui == 'default-framed' {
+            $ui-wrap-border-width: $panel-wrap-border-width;
+        } @else {
+            $ui-wrap-border-width: $ui-border-width;
         }
     }
 
@@ -235,7 +258,7 @@
             }
             @if is-null($ui-header-background-gradient) {
                 // EXTJSIV-8846: partially transparent png images do not display correctly
-                // in winXP/IE8m when the image element has a transparent background.
+                // in winXP/IE8 when the image element has a transparent background.
                 // to fix this, we give the element the same background-color as the header.
                 background-color: $ui-header-background-color;
             }
@@ -303,7 +326,8 @@
             $border-radius   : $ui-border-radius,
             $border-width    : $ui-border-width,
             $padding         : $ui-padding,
-            $background-color: $ui-body-background-color
+            $background-color: $ui-body-background-color,
+            $ignore-frame-padding: $ui-ignore-frame-padding
         );
 
         @include x-frame(
@@ -442,6 +466,7 @@
                 }
             }
         }
+
     } @else {
         @if not is-null($ui-header-background-color) {
             .#{$prefix}panel-header-#{$ui} {
@@ -585,7 +610,7 @@
             // we emulate the approximate color that the glyph would have if it had opacity
             // applied by mixing the glyph color with the header's background-color.
             @if $include-ie {
-                .#{$prefix}ie8m & {
+                .#{$prefix}ie8 & {
                     color: mix($ui-header-glyph-color, $ui-header-background-color, $ui-header-glyph-opacity * 100);
                 }
             }

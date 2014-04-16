@@ -6,7 +6,9 @@
     used by the app, then including the corresponding scss files into the 
     app's style
     -->
-    <target name="-compile-sass" depends="-init-compiler">
+    <target name="-compile-sass" depends="-init-app-js-files">
+		<local name="app.out.scss.tmp"/>
+		<property name="app.out.scss.tmp" value="${app.out.scss}.tmp"/>
         <x-normalize-path 
             path="${build.dir}/resources" 
             property="image.search.path"/>
@@ -21,7 +23,7 @@
                     +class-name-vars
                     -variable=$image-search-path:'${image.search.path}'
                     -variable=$theme-name: '${app.theme}' !default
-                    -output=${app.out.scss}
+                    -output=${app.out.scss.tmp}
                 and
                 include
                     -all
@@ -31,7 +33,7 @@
                     +etc
                     +vars
                     +append
-                    -output=${app.out.scss}
+                    -output=${app.out.scss.tmp}
                 and
                 restore
                     page
@@ -40,13 +42,23 @@
                 sass
                     +rules
                     +append
-                    -output=${app.out.scss}
+                    -output=${app.out.scss.tmp}
                 and
                 sass
                     +ruby
                     -output=${app.out.ruby}
             ]]>
         </x-compile>
+		
+		<if>
+			<not>
+				<filesmatch file1="${app.out.scss.tmp}" file2="${app.out.scss}"/>
+			</not>
+			<then>
+				<copy file="${app.out.scss.tmp}" tofile="${app.out.scss}" overwrite="true"/>
+			</then>
+		</if>
+		
         <!--
         app.out.css.path is relative to the app output index.html file
         -->

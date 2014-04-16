@@ -1,10 +1,6 @@
 .#{$prefix}btn {
     display: inline-block;
     position: relative;
-    @if $include-ie {
-        zoom: 1;
-        *display: inline;
-    }
     outline: 0;
     cursor: pointer;
     white-space: nowrap;
@@ -22,14 +18,12 @@
     display: block;
     text-decoration: none;
     overflow: hidden;
-    zoom: 1;
 }
 
 .#{$prefix}btn-inner {
     display: block;
     white-space: nowrap;
     overflow: hidden;
-    zoom: 1;
 }
 
 .#{$prefix}btn-icon-el {

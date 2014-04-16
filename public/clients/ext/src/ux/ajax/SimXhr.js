@@ -56,10 +56,16 @@ Ext.define('Ext.ux.ajax.SimXhr', {
     },
 
     schedule: function () {
-        var me = this;
-        me.timer = setTimeout(function () {
+        var me = this,
+            delay = me.mgr.delay;
+            
+        if (delay) {
+            me.timer = setTimeout(function () {
+                me.onTick();
+            }, delay);
+        } else {
             me.onTick();
-        }, me.mgr.delay);
+        }
     },
 
     send: function (body) {

@@ -136,8 +136,8 @@
         .#{$prefix}btn-icon-el {
             background-color: $toolbar-background-color;
             @if $include-ie {
-                .#{$prefix}strict .#{$prefix}ie8 & {
-                    // in IE8 strict, position: absolute breaks inheritance of opacity,
+                .#{$prefix}ie8 & {
+                    // in IE8 position: absolute breaks inheritance of opacity,
                     // so we have to apply the opacity to the icon element.
                     // We don't do this in the button mixin because the icon el has to 
                     // have a background-color or else partially transparent pixels
