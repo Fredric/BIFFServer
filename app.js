@@ -17,10 +17,11 @@ var express = require('express'),
 //var routes = require('./routes');
 
 if (typeof(process.env.PRODUCTION) === 'undefined') {
-    global.userDb = monk('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+    global.userDb = monk('localhost:27017/users');
 
 } else {
-    global.userDb = monk('localhost:27017/users');
+    global.userDb = monk('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+
 
 }
 
