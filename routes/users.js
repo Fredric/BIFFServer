@@ -3,22 +3,28 @@
  */
 module.exports = function (app) {
 
-    var collection = global.userDb.get('usercollection');
+    var collection = global.userDb.collection('usercollection');
+    ObjectId = require('mongodb').ObjectID;
 
     /***************** L I S T ********************/
 
     app.get('/users', ensureAuthenticated, function (req, res) {
 
-        collection.find({}, function (err, docs) {
-            res.send(docs);
+//        collection.find({}, function (err, docs) {
+//
+//
+//        });
 
+        collection.find().toArray(function (err, items) {
+            res.send(items);
         });
+
     });
 
 
     /***************** G E T ********************/
 
-    app.get('/users/:id',ensureAuthenticated, function (req, res) {
+    app.get('/users/:id', ensureAuthenticated, function (req, res) {
         collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
             if (e) return next(e)
             res.send(result)
@@ -28,19 +34,36 @@ module.exports = function (app) {
 
     /***************** P U T ********************/
 
-    app.put('/users/:id', ensureAuthenticated,function (req, res) {
-        collection.updateById(req.params.id, req.body, function (err, result) {
-            collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
+    app.put('/users/:id', ensureAuthenticated, function (req, res) {
+
+        delete req.body._id;
+
+        collection.update({_id: ObjectId(req.params.id)}, req.body, function (err, result) {
+            collection.findOne({_id: ObjectId(req.params.id)}, function (e, result) {
                 if (e) return next(e)
                 res.send(result)
             })
         });
+
+//        collection.save(req.body,function (err, result) {
+//            collection.findOne({_id: req.body._id}, function (e, result) {
+//                if (e) return next(e)
+//                res.send(result)
+//            })
+//        });
+
+//            collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
+//                if (e) return next(e)
+//                res.send(result)
+//            })
+//        });
     });
 
 
     /***************** P O S T ********************/
 
     app.post('/users', ensureAuthenticated, function (req, res) {
+        delete req.body._id;
         collection.insert(req.body, {safe: true}, function (err, result) {
             if (err) {
                 res.send({'error': 'An error has occurred'});
@@ -54,8 +77,8 @@ module.exports = function (app) {
 
     /***************** D E L E T E ********************/
 
-    app.delete('/users/:id',ensureAuthenticated, function (req, res) {
-        collection.remove({_id: collection.id(req.params.id)}, {safe: true}, function (err, result) {
+    app.delete('/users/:id', ensureAuthenticated, function (req, res) {
+        collection.remove({_id: ObjectId(req.params.id)}, {safe: true}, function (err, result) {
             if (err) {
                 res.send({'error': 'An error has occurred - ' + err});
             } else {

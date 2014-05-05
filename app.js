@@ -7,6 +7,8 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     mongo = require('mongodb'),
+    mongodb = require('mongoskin'),
+
     monk = require('monk'),
     flash = require('connect-flash'),
     passport = require('passport'),
@@ -16,14 +18,14 @@ var express = require('express'),
 //var httpProxy = require('http-proxy');
 //var routes = require('./routes');
 
+
 if (typeof(process.env.PRODUCTION) === 'undefined') {
-    global.userDb = monk('localhost:27017/users');
-
+    require('./oauth.js')
+    global.userDb = mongodb.db('mongodb://admin:admin@localhost:27017/users');
 } else {
-    global.userDb = monk('mongodb://test:a6de521abefc2fed4f5876855a3484f5@ds035488.mongolab.com:35488/heroku_app24702540/users');
-
-
+    global.userDb = mongodb('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
 }
+
 
 var app = express();
 
@@ -55,6 +57,10 @@ app.configure(function () {
 require('./routes')(app);
 require('./lib/localStrategy')(passport, app);
 require('./lib/passreset')(app);
+//require('./lib/connections')(app);
+
+
+
 
 
 app.get('/', function (req, res) {
@@ -75,10 +81,6 @@ app.get('/LoginLocal', function (req, res) {
     res.redirect('/clients/Desktop/#login')
 });
 
-app.get('/test', function (req, res, next) {
-    res.render('login.ejs')
-    // -> render layout.ejs with index.ejs as `body`.
-})
 
 
 app.use(app.router);
