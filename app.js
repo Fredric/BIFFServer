@@ -16,7 +16,13 @@ var express = require('express'),
 //var httpProxy = require('http-proxy');
 //var routes = require('./routes');
 
-global.userDb = monk('localhost:27017/users');
+if (typeof(process.env.PRODUCTION) === 'undefined') {
+    global.userDb = monk('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+
+} else {
+    global.userDb = monk('localhost:27017/users');
+
+}
 
 var app = express();
 
@@ -51,9 +57,9 @@ require('./lib/passreset')(app);
 
 
 app.get('/', function (req, res) {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         res.redirect('/clients/Desktop/#users')
-    }else{
+    } else {
         res.redirect('/clients/build/production/Login')
     }
 });
@@ -68,9 +74,9 @@ app.get('/LoginLocal', function (req, res) {
     res.redirect('/clients/Desktop/#login')
 });
 
-app.get('/test',function(req,res,next){
-  res.render('login.ejs')
-  // -> render layout.ejs with index.ejs as `body`.
+app.get('/test', function (req, res, next) {
+    res.render('login.ejs')
+    // -> render layout.ejs with index.ejs as `body`.
 })
 
 
