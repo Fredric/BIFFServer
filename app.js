@@ -23,7 +23,7 @@ if (typeof(process.env.PRODUCTION) === 'undefined') {
     require('./oauth.js')
     global.userDb = mongodb.db('mongodb://admin:admin@localhost:27017/users');
 } else {
-    global.userDb = mongodb('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+    global.userDb = mongodb.db('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
 }
 
 
