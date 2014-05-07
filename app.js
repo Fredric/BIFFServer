@@ -1,33 +1,28 @@
-/**
- * Module dependencies.
- *
- */
-
 var express = require('express'),
     http = require('http'),
     path = require('path'),
     mongo = require('mongodb'),
     mongodb = require('mongoskin'),
-
-    monk = require('monk'),
-    flash = require('connect-flash'),
     passport = require('passport'),
     partials = require('express-partials');
 
-
-//var httpProxy = require('http-proxy');
-//var routes = require('./routes');
-
-
 if (typeof(process.env.PRODUCTION) === 'undefined') {
-    require('./oauth.js')
-    global.userDb = mongodb.db('mongodb://admin:admin@localhost:27017/users');
+
 } else {
-    global.userDb = mongodb.db('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+
 }
 
 
 var app = express();
+
+app.configure('development',function(){
+    require('./oauth.js')
+    global.userDb = mongodb.db('mongodb://admin:admin@localhost:27017/users');
+});
+
+app.configure('production',function(){
+    global.userDb = mongodb.db('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+});
 
 app.configure(function () {
     app.set('port', process.env.PORT || 3000);
@@ -41,11 +36,14 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.cookieParser());
 
+    app.use(function (req, res, next) {
+        console.log('%s %s', req.method, req.url);
+        next();
+    });
 
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use(express.session({ secret: 'keyboard cat' }));
-    app.use(flash());
     /** PASSPORT *****/
 
     app.use(passport.initialize());
@@ -60,9 +58,6 @@ require('./lib/passreset')(app);
 //require('./lib/connections')(app);
 
 
-
-
-
 app.get('/', function (req, res) {
     if (req.isAuthenticated()) {
         res.redirect('/clients/Desktop/#users')
@@ -72,15 +67,12 @@ app.get('/', function (req, res) {
 });
 
 app.get('/success', function (req, res) {
-
-
     res.redirect('/clients/Desktop/#users')
 });
 
 app.get('/LoginLocal', function (req, res) {
     res.redirect('/clients/Desktop/#login')
 });
-
 
 
 app.use(app.router);
