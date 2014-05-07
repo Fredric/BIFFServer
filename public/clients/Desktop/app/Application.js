@@ -22,7 +22,6 @@ Ext.define('BIFF.Application', {
         });
 
         BIFF.socket.on('authenticate', function (data) {
-            debugger
             console.log('authenticated')
             //socket.emit('my other event', { my: 'data' });
         });

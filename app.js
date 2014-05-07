@@ -6,12 +6,6 @@ var express = require('express'),
     passport = require('passport'),
     partials = require('express-partials');
 
-if (typeof(process.env.PRODUCTION) === 'undefined') {
-
-} else {
-
-}
-
 
 var app = express();
 
@@ -36,26 +30,19 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.cookieParser());
 
-    app.use(function (req, res, next) {
-        console.log('%s %s', req.method, req.url);
-        next();
-    });
 
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use(express.session({ secret: 'keyboard cat' }));
-    /** PASSPORT *****/
 
     app.use(passport.initialize());
     app.use(passport.session());
-    /*****************/
 
 });
 
 require('./routes')(app);
 require('./lib/localStrategy')(passport, app);
 require('./lib/passreset')(app);
-//require('./lib/connections')(app);
 
 
 app.get('/', function (req, res) {
