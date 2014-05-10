@@ -14,7 +14,7 @@ Ext.define('BIFF.Application', {
     launch: function () {
 
 
-        BIFF.socket = io.connect('http://localhost:3000');
+        BIFF.socket = io.connect('http://sleepy-beach-6260.herokuapp.com');
         BIFF.socket.on('personalmessage', function (data) {
             console.log('Personal socket message',data);
         });
