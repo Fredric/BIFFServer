@@ -32,5 +32,9 @@ Ext.define('BIFF.Application', {
 
         // Ext.create('BIFF.view.Login').show()
 
+    },
+    isLoggedIn:function(){
+
+
     }
 });
