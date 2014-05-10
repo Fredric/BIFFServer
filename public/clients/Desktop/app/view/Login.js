@@ -93,8 +93,8 @@ Ext.define('BIFF.view.Login', {
             url: '/login',
             scope: this,
             success: function (form, action) {
-
-                window.location = '/success';
+                BIFF.socket.emit('clientAuthenticate', { name: this.getForm().findField('username').getValue(), socketId:BIFF.socketId });
+                Ext.History.add('#users')
             },
             failure:function(){
                 console.log('callbak')

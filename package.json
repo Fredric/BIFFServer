@@ -11,10 +11,9 @@
         "passport-local": "*",
         "passport-facebook": "*",
         "pass-reset": "*",
-        "handlebars": "*",
         "util": "*",
         "socket.io": "*",
-        "ejs": "*",
+
         "express-partials": "*",
         "mongodb": "*",
         "mongoskin": "*",

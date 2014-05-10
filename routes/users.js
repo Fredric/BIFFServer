@@ -15,6 +15,8 @@ module.exports = function (app) {
 //
 //        });
 
+
+
         collection.find().toArray(function (err, items) {
             res.send(items);
         });
@@ -35,6 +37,8 @@ module.exports = function (app) {
     /***************** P U T ********************/
 
     app.put('/users/:id', ensureAuthenticated, function (req, res) {
+        //global.io.sockets.in('kalle').emit('roomjoin', 'user listing')
+        global.io.sockets.in(req.user.username).emit('personalmessage', 'PUTTING IT')
 
         delete req.body._id;
 
@@ -63,6 +67,7 @@ module.exports = function (app) {
     /***************** P O S T ********************/
 
     app.post('/users', ensureAuthenticated, function (req, res) {
+        global.io.sockets.in('kalle').emit('roomjoin', 'user listing')
         delete req.body._id;
         collection.insert(req.body, {safe: true}, function (err, result) {
             if (err) {

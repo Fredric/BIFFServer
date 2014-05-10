@@ -14,16 +14,18 @@ Ext.define('BIFF.Application', {
     launch: function () {
 
 
-        BIFF.socket = io.connect('http://localhost');
-        BIFF.socket.on('roomjoin', function (data) {
-            console.log('someone joined a room');
-
-            //socket.emit('my other event', { my: 'data' });
+        BIFF.socket = io.connect('http://localhost:3000');
+        BIFF.socket.on('personalmessage', function (data) {
+            console.log('Personal socket message',data);
         });
 
-        BIFF.socket.on('authenticate', function (data) {
-            console.log('authenticated')
-            //socket.emit('my other event', { my: 'data' });
+        BIFF.socket.on('globalmessage', function (data) {
+            console.log('Global message:' + data);
+        });
+
+        BIFF.socket.on('connected', function (data) {
+            console.log('You was registered in socket as a connection', data)
+            BIFF.socketId = data;
         });
 
 
