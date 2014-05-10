@@ -13,7 +13,7 @@
         "pass-reset": "*",
         "util": "*",
         "socket.io": "*",
-
+        "handlebars":"*",
         "express-partials": "*",
         "mongodb": "*",
         "mongoskin": "*",
