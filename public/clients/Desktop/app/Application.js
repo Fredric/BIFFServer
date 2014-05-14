@@ -3,7 +3,7 @@ Ext.define('BIFF.Application', {
 
     extend: 'Ext.app.Application',
     requires: [
-       // 'Ext.ux.Router'
+        // 'Ext.ux.Router'
     ],
 
     controllers: [
@@ -13,28 +13,41 @@ Ext.define('BIFF.Application', {
 
     launch: function () {
 
-
-        BIFF.socket = io.connect('http://sleepy-beach-6260.herokuapp.com');
-        BIFF.socket.on('personalmessage', function (data) {
-            console.log('Personal socket message',data);
-        });
-
-        BIFF.socket.on('globalmessage', function (data) {
-            console.log('Global message:' + data);
-        });
+        BIFF.socket = io.connect('http://localhost:3000');
 
         BIFF.socket.on('connected', function (data) {
             console.log('You was registered in socket as a connection', data)
             BIFF.socketId = data;
         });
 
+        BIFF.socket.on('personalmessage', function (data) {
+            console.log('Personal socket message', data);
+        });
 
+        BIFF.socket.on('globalmessage', function (data) {
+            console.log('Global message:' + data);
+        });
 
-        // Ext.create('BIFF.view.Login').show()
+        this.isAuthenticated(function (a, b, c) {
+            var resp = Ext.decode(c.responseText, true);
+            if (resp && resp.success === true) {
+                this.clientAuthenticate(resp.user.username);
+            } else {
+                Ext.History.add('#login')
+            }
+        });
 
     },
-    isLoggedIn:function(){
+    isAuthenticated: function (callback) {
+        Ext.Ajax.request({
+            url: '/getUserInfo',
+            callback: callback,
+            scope: this
+        })
+    },
 
+    clientAuthenticate: function (username) {
+        BIFF.socket.emit('clientAuthenticate', { name: username, socketId: BIFF.socketId });
 
     }
 });
