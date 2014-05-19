@@ -1,4 +1,4 @@
-Ext.define('BIFF.controller.auth.Root', {
+Ext.define('BIFF.controller.auth.Root2', {
     extend: 'Ext.app.Controller',
     config : {
         routes : {
