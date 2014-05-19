@@ -8,7 +8,7 @@ Ext.define('BIFF.Application', {
 
 
     controllers: [
-        'Users', 'auth.Root', 'Main'
+        'Users', 'auth.Root2', 'Main'
     ],
 
 
