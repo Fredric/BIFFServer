@@ -18,5 +18,6 @@ Ext.define('BIFF.view.AppHeader', {
                 click: 'onLoginClick'
             }
         }
+
     ]
 });

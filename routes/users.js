@@ -10,13 +10,6 @@ module.exports = function (app) {
 
     app.get('/users', ensureAuthenticated, function (req, res) {
 
-//        collection.find({}, function (err, docs) {
-//
-//
-//        });
-
-
-
         collection.find().toArray(function (err, items) {
             res.send(items);
         });
@@ -48,26 +41,12 @@ module.exports = function (app) {
                 res.send(result)
             })
         });
-
-//        collection.save(req.body,function (err, result) {
-//            collection.findOne({_id: req.body._id}, function (e, result) {
-//                if (e) return next(e)
-//                res.send(result)
-//            })
-//        });
-
-//            collection.findOne({_id: collection.id(req.params.id)}, function (e, result) {
-//                if (e) return next(e)
-//                res.send(result)
-//            })
-//        });
     });
 
 
     /***************** P O S T ********************/
 
     app.post('/users', ensureAuthenticated, function (req, res) {
-        global.io.sockets.in('kalle').emit('roomjoin', 'user listing')
         delete req.body._id;
         collection.insert(req.body, {safe: true}, function (err, result) {
             if (err) {
@@ -78,7 +57,6 @@ module.exports = function (app) {
             }
         });
     });
-
 
     /***************** D E L E T E ********************/
 
@@ -91,10 +69,12 @@ module.exports = function (app) {
             }
         });
     });
+
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
             return next();
         }
+        global.io.sockets.in(req.user.username).emit('personalmessage', 'Not Authenticated')
 
         res.send(403, "Invalid username or password.");
     }

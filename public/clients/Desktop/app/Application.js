@@ -6,8 +6,9 @@ Ext.define('BIFF.Application', {
         // 'Ext.ux.Router'
     ],
 
+
     controllers: [
-        'Users', 'Login', 'Main', 'PassReset', 'PassChange'
+        'Users', 'auth.Root', 'Main'
     ],
 
 
@@ -33,7 +34,7 @@ Ext.define('BIFF.Application', {
             if (resp && resp.success === true) {
                 this.clientAuthenticate(resp.user.username);
             } else {
-                Ext.History.add('#login')
+                //Ext.History.add('#auth/login')
             }
         });
 
