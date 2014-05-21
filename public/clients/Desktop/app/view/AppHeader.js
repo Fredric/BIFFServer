@@ -10,13 +10,6 @@ Ext.define('BIFF.view.AppHeader', {
             listeners: {
                 click: 'onLogoutClick'
             }
-        },
-        {
-            xtype: 'button',
-            text: 'Login',
-            listeners: {
-                click: 'onLoginClick'
-            }
         }
 
     ]

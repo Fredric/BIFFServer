@@ -8,47 +8,30 @@ Ext.define('BIFF.Application', {
 
 
     controllers: [
-        'Users', 'auth.Root2', 'Main'
+        'Socket', 'Users', 'Auth', 'Main'
     ],
 
 
     launch: function () {
 
-        BIFF.socket = io.connect('http://localhost:3000');
 
-        BIFF.socket.on('connected', function (data) {
-            console.log('You was registered in socket as a connection', data)
-            BIFF.socketId = data;
-        });
 
-        BIFF.socket.on('personalmessage', function (data) {
-            console.log('Personal socket message', data);
-        });
+        var session = this.session = new Ext.data.session.Session();
 
-        BIFF.socket.on('globalmessage', function (data) {
-            console.log('Global message:' + data);
-        });
-
-        this.isAuthenticated(function (a, b, c) {
-            var resp = Ext.decode(c.responseText, true);
-            if (resp && resp.success === true) {
-                this.clientAuthenticate(resp.user.username);
-            } else {
-                //Ext.History.add('#auth/login')
-            }
-        });
-
-    },
-    isAuthenticated: function (callback) {
-        Ext.Ajax.request({
-            url: '/getUserInfo',
-            callback: callback,
-            scope: this
+        BIFF.loginManager = Ext.create('BIFF.lib.LoginManager',{
+            session:session,
+            model: 'User'
         })
-    },
 
-    clientAuthenticate: function (username) {
-        BIFF.socket.emit('clientAuthenticate', { name: username, socketId: BIFF.socketId });
+        BIFF.loginManager.isAuthenticated(function (success) {
+            if (success === true) {
+
+                this.redirectTo(Ext.util.History.getHash() || 'userarea', true);
+            } else {
+                this.redirectTo('#auth/login')
+            }
+        }, this);
 
     }
+
 });

@@ -4,9 +4,7 @@ Ext.define('BIFF.view.AppHeaderController',{
     init: function() {
 
     },
-    onLoginClick:function(){
-       window.location = '/login'
-    },
+
     onLogoutClick:function(){
         window.location = '/logout'
     }

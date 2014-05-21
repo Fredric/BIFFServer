@@ -1,6 +1,7 @@
 Ext.define('BIFF.view.login.Login', {
     extend: 'Ext.form.Panel',
     controller: 'logincontroller',
+    viewModel:'login',
     xtype: 'login',
     layout: {
         type: 'vbox',
@@ -17,6 +18,7 @@ Ext.define('BIFF.view.login.Login', {
         {
             name: 'username',
             ui:'login',
+            bind: '{username}',
             enableKeyEvents:true,
             maxLength: 60,
             allowBlank:false,

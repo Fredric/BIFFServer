@@ -47,14 +47,14 @@ require('./lib/passreset')(app);
 
 app.get('/', function (req, res) {
     if (req.isAuthenticated()) {
-        res.redirect('/clients/Desktop/#users')
+        res.redirect('/clients/Desktop')
     } else {
         res.redirect('/clients/build/production/Login')
     }
 });
 
 app.get('/success', function (req, res) {
-    res.redirect('/clients/Desktop/#users')
+    res.redirect('/clients/Desktop/#')
 });
 
 app.get('/LoginLocal', function (req, res) {
