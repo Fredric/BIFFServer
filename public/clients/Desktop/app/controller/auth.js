@@ -14,7 +14,6 @@ Ext.define('BIFF.controller.Auth', {
 
     ],
 
-
     refs: [
         {
             ref: 'login',
