@@ -1,10 +1,10 @@
 Ext.define('BIFF.controller.Auth', {
     extend: 'Ext.app.Controller',
-    config : {
-        routes : {
-            'auth/login'                 : 'showLogin',
-            'auth/changepassword/:token' : 'showChangePassword',
-            'auth/reset'                 : 'showPassReset'
+    config: {
+        routes: {
+            'auth/login': 'showLogin',
+            'auth/changepassword/:token': 'showChangePassword',
+            'auth/reset': 'showPassReset'
         }
     },
     views: [
@@ -18,13 +18,13 @@ Ext.define('BIFF.controller.Auth', {
         {
             ref: 'login',
             selector: 'login',
-            xtype:'login'
+            xtype: 'login'
         },
         {
             ref: 'passChange',
             selector: 'passchange',
             autoCreate: true,
-            xtype:'passchange'
+            xtype: 'passchange'
         },
         {
             ref: 'passReset',
@@ -35,10 +35,19 @@ Ext.define('BIFF.controller.Auth', {
     ],
 
     showLogin: function (params) {
-        var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
+        var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0],
+            login = this.getLogin();
+        if (login) {
+            login.destroy();
+        }
 
-        var login = Ext.create('BIFF.view.login.Login',{
-            session : BIFF.loginManager.getSession()
+        login = Ext.create('BIFF.view.login.Login', {
+            session: BIFF.loginManager.getSession(),
+            viewModel: {
+                data: {
+                    currentUser: BIFF.loginManager.getUser()
+                }
+            }
         });
 
         viewport.layout.setActiveItem(viewport.add(login));

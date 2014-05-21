@@ -5,7 +5,5 @@ Ext.define('BIFF.view.login.LoginModel', {
     // Just some data to seed the process. This might be pulled from a cookie or other
     // in a real app.
 
-    data: {
-        username: 'kalle'
-    }
+
 });

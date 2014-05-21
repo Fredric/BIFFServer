@@ -9,6 +9,15 @@ Ext.define('BIFF.controller.Main', {
         'AppHeader',
         'UserArea.Main'
     ],
+    refs: [
+
+        {
+            ref: 'main',
+            selector: 'main'
+
+
+        }
+    ],
     listen: {
         controller: {
             // Listen for the LoginController ("controller.login" alias) to fire its
@@ -21,8 +30,11 @@ Ext.define('BIFF.controller.Main', {
     },
 
     openUserArea: function () {
-
-        this.main = Ext.create('BIFF.view.UserArea.Main', {
+        var main = this.getMain();
+        if(main){
+          main.destroy();
+        }
+        main = Ext.create('BIFF.view.UserArea.Main', {
             session: BIFF.loginManager.getSession(),
             viewModel: {
                 data: {
@@ -31,6 +43,6 @@ Ext.define('BIFF.controller.Main', {
             }
         });
         var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
-        viewport.layout.setActiveItem(viewport.add(this.main));
+        viewport.layout.setActiveItem(viewport.add(main));
     }
 });

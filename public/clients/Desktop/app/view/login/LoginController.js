@@ -31,6 +31,7 @@ Ext.define('BIFF.view.login.LoginController', {
          }
     },
     onButtonLogin: function () {
+
         this.loginManager.login({
             data: this.view.getForm().getValues(),
             scope: this,
@@ -44,7 +45,7 @@ Ext.define('BIFF.view.login.LoginController', {
     },
     onLoginFailure: function() {
         // Do something
-        debugger
+
     },
 
     onLoginSuccess: function(user) {

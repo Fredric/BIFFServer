@@ -18,7 +18,7 @@ Ext.define('BIFF.view.login.Login', {
         {
             name: 'username',
             ui:'login',
-            bind: '{username}',
+            bind: '{currentUser.username}',
             enableKeyEvents:true,
             maxLength: 60,
             allowBlank:false,
@@ -35,7 +35,7 @@ Ext.define('BIFF.view.login.Login', {
         },
         {
             xtype: 'button',
-            itemId:'loginbutton',
+            itemId:'login',
             formBind:true,
             scale: 'medium',
             text: 'Login'
