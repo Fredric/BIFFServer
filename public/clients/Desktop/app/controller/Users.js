@@ -20,12 +20,29 @@ Ext.define('BIFF.controller.Users', {
         }
     ],
     show: function () {
+//        var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
+//        viewport.layout.setActiveItem(viewport.add(this.getUsers()));
+
+
+
+
+
+        var users = this.getUsers();
+        if(users){
+            users.destroy();
+        }
+        users = Ext.create('BIFF.view.Users', {
+            session: BIFF.loginManager.getSession(),
+            viewModel: {
+                data: {
+                    currentUser: BIFF.loginManager.getUser()
+                }
+            }
+        });
         var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
-        viewport.layout.setActiveItem(viewport.add(this.getUsers()));
+        viewport.layout.setActiveItem(viewport.add(users));
 
         this.getUsersStore().load();
-
-
     }
 
 });

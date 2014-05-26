@@ -17,7 +17,7 @@ module.exports = function (app) {
             // and if a function is given it will be called after the request is
             // processed. Otherwise, a simple JSON {status: 'OK'} will be sent.
             next: function (req, res) {
-                res.send(200, 'Yay!');
+                res.send(200, {success:true});
             }
         })
     );

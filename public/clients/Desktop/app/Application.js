@@ -24,8 +24,8 @@ Ext.define('BIFF.Application', {
         })
 
         BIFF.loginManager.isAuthenticated(function (success) {
-            if (success === true) {
 
+            if (success === true || Ext.util.History.getToken().split('/')[0] === 'auth') {
                 this.redirectTo(Ext.util.History.getHash() || 'userarea', true);
             } else {
                 this.redirectTo('#auth/login')

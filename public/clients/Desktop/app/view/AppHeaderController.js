@@ -7,6 +7,9 @@ Ext.define('BIFF.view.AppHeaderController',{
 
     onLogoutClick:function(){
         window.location = '/logout'
+    },
+    onChangePasswordClick:function(){
+        this.redirectTo('auth/reset')
     }
 
 });

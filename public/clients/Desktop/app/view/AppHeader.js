@@ -10,10 +10,16 @@ Ext.define('BIFF.view.AppHeader', {
             bind:'{currentUser.username}',
             menu      : [
                 {
-                    text: 'Item 1',
                     text: 'Log out',
                     listeners: {
                         click: 'onLogoutClick'
+                    }
+                },
+                {
+                    text: 'Item 1',
+                    text: 'Change password',
+                    listeners: {
+                        click: 'onChangePasswordClick'
                     }
                 }
 

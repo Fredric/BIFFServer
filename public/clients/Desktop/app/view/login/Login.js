@@ -32,12 +32,15 @@ Ext.define('BIFF.view.login.Login', {
             name: 'password',
             maxLength: 60,
             inputType: 'password'
-        },
+        }
+
+    ],
+    buttons:[
         {
             xtype: 'button',
             itemId:'login',
             formBind:true,
-            scale: 'medium',
+            scale: 'small',
             text: 'Login'
         },
         {
@@ -46,6 +49,7 @@ Ext.define('BIFF.view.login.Login', {
             scale: 'small',
             text: 'Forgot password'
         }
+
     ]
 
 

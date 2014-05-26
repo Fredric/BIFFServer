@@ -25,7 +25,7 @@ Ext.define('BIFF.view.login.PassResetController', {
             url: '/password/reset',
             scope: this,
             success: function (form, action) {
-
+                alert('A password reset request has been sent to your email address')
                 this.redirectTo('#auth/login')
 
             },

@@ -25,12 +25,19 @@ Ext.define('BIFF.view.login.PassChangeController', {
             url: '/password/resetpassword',
             method:'PUT',
             scope: this,
-            success: function (form, action) {
-                this.redirectTo('#auth/login')
-            },
-            failure: function () {
-              alert('error')
 
+            callback:function(a, b, c){
+                if(b.response.statusText === 'OK'){
+                    this.redirectTo('#auth/login');
+                }
+            },
+            failure:function(a, b, c){
+                if(b.response.statusText === 'OK'){
+                    this.redirectTo('#auth/login');
+                }else{
+                    alert('Token probably expired. Make a new password change request')
+                    this.redirectTo('#auth/reset');
+                }
             }
         });
     }
