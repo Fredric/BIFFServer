@@ -477,6 +477,12 @@ $form-text-field-focus-border-color: $form-field-focus-border-color !default;
 $form-text-field-invalid-border-color: $form-field-invalid-border-color !default;
 
 /**
+ * @var {number/list}
+ * Border radius for text fields
+ */
+$form-text-field-border-radius: 0 !default;
+
+/**
  * @var {string}
  * The background image of the text field's input element
  */
@@ -676,6 +682,12 @@ $form-toolbar-text-field-focus-border-color: $form-text-field-focus-border-color
  * Border color for invalid toolbar text fields.
  */
 $form-toolbar-text-field-invalid-border-color: $form-text-field-invalid-border-color !default;
+
+/**
+ * @var {number/list}
+ * Border radius for toolbar text fields
+ */
+$form-toolbar-text-field-border-radius: $form-text-field-border-radius !default;
 
 /**
  * @var {string}

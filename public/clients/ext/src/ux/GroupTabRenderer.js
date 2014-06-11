@@ -2,8 +2,8 @@
 * Allows GroupTab to render a table structure.
 */
 Ext.define('Ext.ux.GroupTabRenderer', {
+    extend: 'Ext.plugin.Abstract',
     alias: 'plugin.grouptabrenderer',
-    extend: 'Ext.AbstractPlugin',
 
     tableTpl: new Ext.XTemplate(
         '<div id="{view.id}-body" class="' + Ext.baseCSSPrefix + '{view.id}-table ' + Ext.baseCSSPrefix + 'grid-table-resizer" style="{tableStyle}">',
@@ -75,7 +75,7 @@ Ext.define('Ext.ux.GroupTabRenderer', {
     init: function(grid) {
         var view = grid.getView(), 
             me = this;
-        view.addTableTpl(me.tableTpl);
+        view.addTpl(me.tableTpl);
         view.addRowTpl(me.rowTpl);
         view.addCellTpl(me.cellTpl);
         Ext.apply(view, me.selectors);

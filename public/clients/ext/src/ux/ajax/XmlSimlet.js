@@ -64,5 +64,33 @@ Ext.define('Ext.ux.ajax.XmlSimlet', {
         ret.responseText = xml;
         ret.responseXML = doc;
         return ret;
+    },
+
+    fixTree: function() {
+        this.callParent(arguments);
+        var buffer = [];
+        this.buildTreeXml(this.data, buffer);
+        this.data = buffer.join('');
+    },
+
+    buildTreeXml: function(nodes, buffer) {
+        var rootProperty = this.rootProperty,
+            recordProperty = this.recordProperty;
+
+        buffer.push('<', rootProperty, '>');
+        Ext.Array.forEach(nodes, function(node) {
+            buffer.push('<', recordProperty, '>');
+            for (var key in node) {
+                if (key == 'children') {
+                    this.buildTreeXml(node.children, buffer);
+                } else {
+                    buffer.push('<', key, '>', node[key], '</', key, '>');
+                }
+            }
+            buffer.push('</', recordProperty, '>');
+        });
+        buffer.push('</', rootProperty, '>');
     }
+
+
 });

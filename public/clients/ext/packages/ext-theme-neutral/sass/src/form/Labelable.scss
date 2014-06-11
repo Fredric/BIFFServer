@@ -6,7 +6,7 @@
  * The name of the UI being created. Can not included spaces or special punctuation
  * (used in CSS class names).
  *
- * @param {color} [$ui-font-color=$form-label-font-color
+ * @param {color} [$ui-font-color=$form-label-font-color]
  * The text color the label
  *
  * @param {string} [$ui-font-weight=$form-label-font-weight]
@@ -95,11 +95,20 @@
 ) {
     $ui-error-wrap-width: $ui-error-icon-width + horizontal($ui-error-icon-side-margin);
     .#{$prefix}form-item-label-#{$ui} {
+        $padding-top: round(($ui-height - $ui-line-height) / 2);
+
         color: $ui-font-color;
         font: $ui-font-weight #{$ui-font-size}/#{$ui-line-height} $ui-font-family;
         min-height: $ui-height;
-        padding-top: round(($ui-height - $ui-line-height) / 2);
+        padding-top: $padding-top;
         padding-right: $ui-horizontal-spacing;
+
+        @if $include-ie {
+            .#{$prefix}ie8 & {
+                // min-height triggers content-box sizing on IE8, so subtract padding
+                min-height: $ui-height - $padding-top;
+            }
+        }
 
         &.#{$prefix}form-item-label-top {
             height: 1px;

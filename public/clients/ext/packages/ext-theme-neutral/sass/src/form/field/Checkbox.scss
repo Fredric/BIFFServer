@@ -10,7 +10,7 @@
  * @param {number} [$ui-field-height=$form-field-height]
  * The height of the field body that the checkbox must fit within.  This does not set the
  * height of the field, only allows the checkbox to be centered inside the field body.
- * (The height of the field body is determined by {@link #extjs-label}).
+ * (The height of the field body is determined by {@link #extjs-label-ui}).
  *
  * @param {number} [$ui-checkbox-size=$form-checkbox-size]
  * The size of the checkbox
@@ -118,6 +118,14 @@
                 padding-left: 0;
                 padding-right: $ui-label-spacing + $ui-checkbox-size;
             }
+        }
+    }
+
+    // Checkbox field or subclass inside cell - calculate top/bottom padding to keep row height correct
+    @if $include-ext-grid-column-widget or $include-ext-grid-plugin-editing {
+        .#{$prefix}checkbox-#{$ui}-cell > .#{$prefix}grid-cell-inner {
+            padding-top:    max(ceil(($grid-row-height - $ui-field-height) / 2), 0);
+            padding-bottom: max(floor(($grid-row-height - $ui-field-height) / 2), 0);
         }
     }
 }

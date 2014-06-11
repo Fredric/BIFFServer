@@ -7,6 +7,10 @@
     border-collapse: separate;
 }
 
+.#{$prefix}form-item-label {
+    overflow: hidden;
+}
+
 .#{$prefix}form-item-label,
 .#{$prefix}form-item-body {
     display: table-cell;

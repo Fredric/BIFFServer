@@ -8,6 +8,8 @@
     "compatVersion": "5.0.0",
     "format": "1",
     "local": true,
-    "requires": [],
+    "requires": [
+        "ext-touch-sizing"
+    ],
     "extend": "ext-theme-neptune"
 }

@@ -23,24 +23,13 @@ Ext.define('Ext.overrides.event.publisher.Gesture', {
                 superOnDelegatedEvent = me.onDelegatedEvent;
 
                 me.onDelegatedEvent = function(e) {
-                    // When events are attached using IE's attachEvent API instead of
-                    // addEventListener accessing any members of an event object asynchronously
-                    // results in "Member not found" error.  To work around this we fabricate
-                    // our own event object by copying all of its members to a new object.
-                    // We do this for all events that the Gesture publisher handles
-                    // because onTouchMove and onTouchEnd use requestAnimationFrame,
-                    // and handle the event object asynchronously.
-                    var name,
-                        fakeEvent = {};
-
-                    for (name in e) {
-                        fakeEvent[name] = e[name];
-                    }
-
-                    superOnDelegatedEvent.call(me, fakeEvent);
+                    // Workaround IE's "Member not found" errors when accessing an event
+                    // object asynchronously.  Needed for all gesture handlers because
+                    // they use requestAnimationFrame (see enableIEAsync for more details)
+                    superOnDelegatedEvent.call(me, Ext.event.Event.enableIEAsync(e));
                 };
             }
         });
     }
 });
-//</feature legacyBrowser>
+//</feature>

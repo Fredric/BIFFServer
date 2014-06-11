@@ -94,9 +94,9 @@ $image-extension: 'png' !default;
 
 /**
  * @var {string} $slicer-image-extension
- * default file extension to use for slicer images (defaults to 'png').
+ * default file extension to use for slicer images (defaults to 'gif').
  */
-$slicer-image-extension: 'png' !default;
+$slicer-image-extension: 'gif' !default;
 
 /**
  * Default search path for images
@@ -110,6 +110,12 @@ $image-search-path: '.' !default;
 $include-default-uis: true !default;
 
 /**
+ * @var {boolean}
+ * True to add font-smoothing styles to all components
+ */
+$enable-font-smoothing: true !default;
+
+/**
  * @var {string}
  * The base path relative to the CSS output directory to use for theme resources.  For example
  * if the theme's images live one directory up from the generated CSS output in a directory
@@ -118,3 +124,9 @@ $include-default-uis: true !default;
  * CSS output directory.
  */
 $theme-resource-path: '' !default;
+
+/**
+ * @private
+ * Flag to ensure GridField rules only get set once
+ */
+$grid-cell-field-src-included: false;

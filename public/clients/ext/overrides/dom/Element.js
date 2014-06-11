@@ -127,7 +127,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         override: 'Ext.dom.Element',
 
         mixins: [
-            'Ext.util.Positionable_ext',
             'Ext.util.Animate'
         ],
 
@@ -732,6 +731,23 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
+         * Convenience method for setVisibilityMode(Element.DISPLAY).
+         * @param {String} [display] What to set display to when visible
+         * @return {Ext.dom.Element} this
+         */
+        enableDisplayMode : function(display) {
+            var me = this;
+
+            me.setVisibilityMode(Element.DISPLAY);
+
+            if (display !== undefined) {
+                me.getData()[ORIGINALDISPLAY] = display;
+            }
+
+            return me;
+        },
+
+        /**
          * Fade an element in (from transparent to opaque). The ending opacity can be specified using the `opacity`
          * config option. Usage:
          *
@@ -749,7 +765,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     });
          *
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-         * @return {Ext.Element} The Element
+         * @return {Ext.dom.Element} The Element
          */
         fadeIn: function(o) {
             var me = this,
@@ -794,7 +810,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     });
          *
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-         * @return {Ext.Element} The Element
+         * @return {Ext.dom.Element} The Element
          */
         fadeOut: function(o) {
             var me = this,
@@ -1198,6 +1214,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
+         * @override
          * Hide this element - Uses display mode to determine whether to use "display",
          * "visibility", or "offsets". See {@link #setVisible}.
          * @param {Boolean/Object} [animate] true for the default animation or a standard
@@ -1374,7 +1391,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             if (dom && !dom.disabled) {
                 // A tabIndex of -1 means it has to be programatically focused, so that needs FocusManager,
                 // and it has to be the focus holding el of a Component within the Component tree.
-                if (tabIndex === -1) { // note that the value is a string
+                if (tabIndex == -1) { // note that the value is a string
                     canFocus = Ext.enableFocusManager && asFocusEl;
                 }
                 else {
@@ -1424,10 +1441,9 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
-         * Direct access to the Ext.ElementLoader {@link Ext.ElementLoader#load} method.
-         * The method takes the same object parameter as {@link Ext.ElementLoader#load}
-         * @param {Object} options a options object for 
-         * Ext.ElementLoader {@link Ext.ElementLoader#load}
+         * Direct access to the Ext.ElementLoader {@link Ext.ElementLoader#method-load} method.
+         * The method takes the same object parameter as {@link Ext.ElementLoader#method-load}
+         * @param {Object} options a options object for Ext.ElementLoader {@link Ext.ElementLoader#method-load}
          * @return {Ext.dom.Element} this
          */
         load: function(options) {
@@ -1533,12 +1549,16 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 timer,
                 listeners = {
                     mouseleave: function(e) {
+                        //<feature legacyBrowser>
+                        if (Ext.isIE9m) {
+                            e.enableIEAsync();
+                        }
+                        //</feature>
                         timer = setTimeout(Ext.Function.bind(handler, scope||me, [e]), delay);
                     },
                     mouseenter: function() {
                         clearTimeout(timer);
-                    },
-                    freezeEvent: true
+                    }
                 };
 
             me.on(listeners);
@@ -1741,7 +1761,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * an object with "x" and "y" properties.
          * @param {Number/Boolean/Object} deltaY Either the y delta, or an animate flag or config object.
          * @param {Boolean/Object} animate Animate flag/config object if the delta values were passed separately.
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         scrollBy: function(deltaX, deltaY, animate) {
             var me = this,
@@ -1804,7 +1824,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * @param {Number} value The new scroll value
          * @param {Boolean/Object} [animate] true for the default animation or a standard Element
          * animation config object
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         scrollTo: function(side, value, animate) {
             //check if we're scrolling top or left
@@ -1835,7 +1855,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
 
         /**
          * Enable text selection for this element (normalized across browsers)
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         selectable: function() {
             var me = this;
@@ -1848,10 +1868,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             me.addCls(Element.selectableCls);
 
             return me;
-        },
-
-        setBox: function(box, animate) {
-            return animate ? this._animSetBox(box, animate) : this.callParent([box]);
         },
 
         //<feature legacyBrowser>
@@ -1877,7 +1893,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * @return {Ext.dom.Element} this
          */
         setDisplayed: function(value) {
-            if(typeof value === "boolean"){
+            if (typeof value === "boolean"){
                value = value ? getDisplay(this) : NONE;
             }
             this.setStyle(DISPLAY, value);
@@ -1944,7 +1960,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             // delete the inverted methods and revert to inheriting from the prototype 
             delete me.setWidth;
             delete me.setHeight;
-            if (!Ext.isIE9m) {
+            if (!Ext.isIE8) {
                 delete me.getWidth;
                 delete me.getHeight;
             }
@@ -2132,9 +2148,9 @@ Ext.define('Ext.overrides.dom.Element', (function() {
 
             me.setWidth = proto.setHeight;
             me.setHeight = proto.setWidth;
-            if (!Ext.isIE9m) {
+            if (!Ext.isIE8) {
                 // In browsers that use CSS3 transforms we must invert getHeight and
-                // get Width. In IE9 and below no adjustment is needed because we use
+                // get Width. In IE8 no adjustment is needed because we use
                 // a BasicImage filter to rotate the element and the element's
                 // offsetWidth and offsetHeight are automatically inverted.
                 me.getWidth = proto.getHeight;
@@ -2962,7 +2978,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      *
                      * @deprecated 4.0 Use the `delay` config to {@link #animate} instead.
                      * @param {Number} seconds The length of time to pause (in seconds)
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     pause: function(ms) {
                         var me = this;
@@ -2993,7 +3009,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      * @param {Number} width The new width (pass undefined to keep the original width)
                      * @param {Number} height The new height (pass undefined to keep the original height)
                      * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     scale: function(w, h, o) {
                         this.animate(Ext.apply({}, o, {
@@ -3025,7 +3041,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      *
                      * @deprecated 4.0 Just use {@link #animate} instead.
                      * @param {Object} options Object literal with any of the {@link Ext.fx.Anim} config options
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     shift: function(config) {
                         this.animate(config);
@@ -3294,40 +3310,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         Ext.CompositeElementLite.importElementMethods();
     }
 
-    // When elements are rotated 80 or 270 degrees, their border, margin and padding hooks
-    // need to be rotated as well.
-    proto.verticalStyleHooks90 = verticalStyleHooks90 = Ext.Object.chain(styleHooks);
-    proto.verticalStyleHooks270 = verticalStyleHooks270 = Ext.Object.chain(styleHooks);
-
-    verticalStyleHooks90.width = { name: 'height' };
-    verticalStyleHooks90.height = { name: 'width' };
-    verticalStyleHooks90['margin-top'] = { name: 'marginLeft' };
-    verticalStyleHooks90['margin-right'] = { name: 'marginTop' };
-    verticalStyleHooks90['margin-bottom'] = { name: 'marginRight' };
-    verticalStyleHooks90['margin-left'] = { name: 'marginBottom' };
-    verticalStyleHooks90['padding-top'] = { name: 'paddingLeft' };
-    verticalStyleHooks90['padding-right'] = { name: 'paddingTop' };
-    verticalStyleHooks90['padding-bottom'] = { name: 'paddingRight' };
-    verticalStyleHooks90['padding-left'] = { name: 'paddingBottom' };
-    verticalStyleHooks90['border-top'] = { name: 'borderLeft' };
-    verticalStyleHooks90['border-right'] = { name: 'borderTop' };
-    verticalStyleHooks90['border-bottom'] = { name: 'borderRight' };
-    verticalStyleHooks90['border-left'] = { name: 'borderBottom' };
-
-    verticalStyleHooks270.width = { name: 'height' };
-    verticalStyleHooks270.height = { name: 'width' };
-    verticalStyleHooks270['margin-top'] = { name: 'marginRight' };
-    verticalStyleHooks270['margin-right'] = { name: 'marginBottom' };
-    verticalStyleHooks270['margin-bottom'] = { name: 'marginLeft' };
-    verticalStyleHooks270['margin-left'] = { name: 'marginTop' };
-    verticalStyleHooks270['padding-top'] = { name: 'paddingRight' };
-    verticalStyleHooks270['padding-right'] = { name: 'paddingBottom' };
-    verticalStyleHooks270['padding-bottom'] = { name: 'paddingLeft' };
-    verticalStyleHooks270['padding-left'] = { name: 'paddingTop' };
-    verticalStyleHooks270['border-top'] = { name: 'borderRight' };
-    verticalStyleHooks270['border-right'] = { name: 'borderBottom' };
-    verticalStyleHooks270['border-bottom'] = { name: 'borderLeft' };
-    verticalStyleHooks270['border-left'] = { name: 'borderTop' };
 
     styleHooks.opacity = {
         name: 'opacity',
@@ -3541,6 +3523,13 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         // suppport border-box, but it is hard coded to true for backward compatibility
         isBorderBox: true,
 
+        /**
+         * @private
+         * Returns an HTML div element into which {@link Ext.container.Container#method-remove removed} components
+         * are placed so that their DOM elements are not garbage collected as detached Dom trees.
+         * @returns {Ext.dom.Element}
+         * @member Ext
+         */
         getDetachedBody: function () {
             var detachedEl = Ext.detachedBodyEl;
 
@@ -3654,7 +3643,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                                 //<debug>
                                 Ext.Error.raise("Stale Element with id '" + el.id +
                                     "' found in Element cache. " +
-                                    "Make sure to clean up Element instances using destroy()" ); 
+                                    "Make sure to clean up Element instances using destroy()" );
                                 //</debug>
                                 entry.destroy();
                             }
@@ -3710,9 +3699,13 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         var transparentRe = /^(?:transparent|(?:rgba[(](?:\s*\d+\s*[,]){3}\s*0\s*[)]))$/i,
             bodyCls = [],
             //htmlCls = [],
+            origSetWidth = proto.setWidth,
+            origSetHeight = proto.setHeight,
+            origSetSize = proto.setSize,
+            pxRe = /^\d+(?:\.\d*)?px$/i,
             colorStyles, i, name, camel;
 
-        if (supports.MinWidthTableCellBug) {
+        if (supports.FixedTableWidthBug) {
             // EXTJSIV-12665
             // https://bugs.webkit.org/show_bug.cgi?id=130239
             // Webkit browsers fail to layout correctly when a form field's width is less
@@ -3726,7 +3719,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 name: 'width',
                 set: function(dom, value, el) {
                     var style = dom.style,
-                        needsFix = el._needsMinWithFix,
+                        needsFix = el._needsTableWidthFix,
                         origDisplay = style.display;
 
                     if (needsFix) {
@@ -3740,13 +3733,12 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         style.display = origDisplay;
                     }
                 }
-            }
-            origSetWidth = proto.setWidth;
+            };
             proto.setWidth = function(width, animate) {
                 var me = this,
                     dom = me.dom,
                     style = dom.style,
-                    needsFix = me._needsMinWithFix,
+                    needsFix = me._needsTableWidthFix,
                     origDisplay = style.display;
 
                 if (needsFix && !animate) {
@@ -3760,13 +3752,12 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     style.display = origDisplay;
                 }
                 return me;
-            }
-            origSetSize = proto.setSize;
+            };
             proto.setSize = function(width, height, animate) {
                 var me = this,
                     dom = me.dom,
                     style = dom.style,
-                    needsFix = me._needsMinWithFix,
+                    needsFix = me._needsTableWidthFix,
                     origDisplay = style.display;
 
                 if (needsFix && !animate) {
@@ -3780,8 +3771,72 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     style.display = origDisplay;
                 }
                 return me;
-            }
+            };
         }
+
+        //<feature legacyBrowser>
+        if (Ext.isIE8) {
+            styleHooks.height = {
+                name: 'height',
+                set: function(dom, value, el) {
+                    var component = el.component,
+                        frameInfo, frameBodyStyle;
+
+                    if (component && component._syncFrameHeight && this === component.el) {
+                        frameBodyStyle = component.frameBody.dom.style;
+                        if (pxRe.test(value)) {
+                            frameInfo = component.getFrameInfo();
+                            if (frameInfo) {
+                                frameBodyStyle.height = (parseInt(value, 10) - frameInfo.height) + 'px';
+                            }
+                        } else if (!value || value === 'auto') {
+                            frameBodyStyle.height = '';
+                        }
+                    }
+
+                    dom.style.height = value;
+                }
+            };
+
+            proto.setHeight = function(height, animate) {
+                var component = this.component,
+                    frameInfo, frameBodyStyle;
+
+                if (component && component._syncFrameHeight && this === component.el) {
+                    frameBodyStyle = component.frameBody.dom.style;
+                    if (!height || height === 'auto') {
+                        frameBodyStyle.height = '';
+                    } else {
+                        frameInfo = component.getFrameInfo();
+                        if (frameInfo) {
+                            frameBodyStyle.height = (height - frameInfo.height) + 'px';
+                        }
+                    }
+                }
+
+                return origSetHeight.call(this, height, animate);
+            };
+
+            proto.setSize = function(width, height, animate) {
+                var component = this.component,
+                    frameInfo, frameBodyStyle;
+
+                if (component && component._syncFrameHeight && this === component.el) {
+                    frameBodyStyle = component.frameBody.dom.style;
+                    if (!height || height === 'auto') {
+                        frameBodyStyle.height = '';
+                    } else {
+                        frameInfo = component.getFrameInfo();
+                        if (frameInfo) {
+                            frameBodyStyle.height = (height - frameInfo.height) + 'px';
+                        }
+                    }
+                }
+
+                return origSetSize.call(this, width, height, animate);
+            };
+        }
+        //</feature>
 
         // Element.unselectable relies on this listener to prevent selection in IE. Some other browsers support the event too
         // but it is only strictly required for IE. In WebKit this listener causes subtle differences to how the browser handles
@@ -3933,6 +3988,41 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             }
         }
 
+        // When elements are rotated 80 or 270 degrees, their border, margin and padding hooks
+        // need to be rotated as well.
+        proto.verticalStyleHooks90 = verticalStyleHooks90 = Ext.Object.chain(styleHooks);
+        proto.verticalStyleHooks270 = verticalStyleHooks270 = Ext.Object.chain(styleHooks);
+
+        verticalStyleHooks90.width = styleHooks.height || { name: 'height' };
+        verticalStyleHooks90.height = styleHooks.width || { name: 'width' };
+        verticalStyleHooks90['margin-top'] = { name: 'marginLeft' };
+        verticalStyleHooks90['margin-right'] = { name: 'marginTop' };
+        verticalStyleHooks90['margin-bottom'] = { name: 'marginRight' };
+        verticalStyleHooks90['margin-left'] = { name: 'marginBottom' };
+        verticalStyleHooks90['padding-top'] = { name: 'paddingLeft' };
+        verticalStyleHooks90['padding-right'] = { name: 'paddingTop' };
+        verticalStyleHooks90['padding-bottom'] = { name: 'paddingRight' };
+        verticalStyleHooks90['padding-left'] = { name: 'paddingBottom' };
+        verticalStyleHooks90['border-top'] = { name: 'borderLeft' };
+        verticalStyleHooks90['border-right'] = { name: 'borderTop' };
+        verticalStyleHooks90['border-bottom'] = { name: 'borderRight' };
+        verticalStyleHooks90['border-left'] = { name: 'borderBottom' };
+
+        verticalStyleHooks270.width = styleHooks.height || { name: 'height' };
+        verticalStyleHooks270.height = styleHooks.width || { name: 'width' };
+        verticalStyleHooks270['margin-top'] = { name: 'marginRight' };
+        verticalStyleHooks270['margin-right'] = { name: 'marginBottom' };
+        verticalStyleHooks270['margin-bottom'] = { name: 'marginLeft' };
+        verticalStyleHooks270['margin-left'] = { name: 'marginTop' };
+        verticalStyleHooks270['padding-top'] = { name: 'paddingRight' };
+        verticalStyleHooks270['padding-right'] = { name: 'paddingBottom' };
+        verticalStyleHooks270['padding-bottom'] = { name: 'paddingLeft' };
+        verticalStyleHooks270['padding-left'] = { name: 'paddingTop' };
+        verticalStyleHooks270['border-top'] = { name: 'borderRight' };
+        verticalStyleHooks270['border-right'] = { name: 'borderBottom' };
+        verticalStyleHooks270['border-bottom'] = { name: 'borderLeft' };
+        verticalStyleHooks270['border-left'] = { name: 'borderTop' };
+
         /**
          * @property {Boolean} scopeCss
          * @member Ext
@@ -3988,6 +4078,9 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         }
         if (Ext.isOpera) {
             bodyCls.push(Ext.baseCSSPrefix + 'opera');
+        }
+        if (Ext.isOpera12m) {
+            bodyCls.push(Ext.baseCSSPrefix + 'opera12m');
         }
         if (Ext.isWebKit) {
             bodyCls.push(Ext.baseCSSPrefix + 'webkit');

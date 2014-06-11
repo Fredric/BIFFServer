@@ -16,11 +16,11 @@ Ext.define('BIFF.Application', {
 
 
 
-        var session = this.session = new Ext.data.session.Session();
+        var session = this.session = new Ext.data.Session();
 
         BIFF.loginManager = Ext.create('BIFF.lib.LoginManager',{
             session:session,
-            model: 'User'
+            model: 'BIFF.model.User'
         })
 
         BIFF.loginManager.isAuthenticated(function (success) {

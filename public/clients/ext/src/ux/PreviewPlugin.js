@@ -5,7 +5,7 @@
  * another instance of the same plugin.
  */
 Ext.define('Ext.ux.PreviewPlugin', {
-    extend: 'Ext.AbstractPlugin',
+    extend: 'Ext.plugin.Abstract',
     alias: 'plugin.preview',
     requires: ['Ext.grid.feature.RowBody'],
     
@@ -26,7 +26,7 @@ Ext.define('Ext.ux.PreviewPlugin', {
 
     /**
      * Plugin may be safely declared on either a panel.Grid or a Grid View/viewConfig
-     * @param {Ext.panel.Grid/Ext.view.View} target
+     * @param {Ext.grid.Panel/Ext.view.View} target
      */
     setCmp: function(target) {
         this.callParent(arguments);
@@ -84,16 +84,21 @@ Ext.define('Ext.ux.PreviewPlugin', {
     toggleExpanded: function(expanded) {
         var grid = this.getCmp(),
             view = grid && grid.getView(),
+            bufferedRenderer = view.bufferedRenderer,
             scrollManager = view.scrollManager;
 
         if (grid && view && expanded !== view.previewExpanded ) {
             this.previewExpanded = view.previewExpanded = !!expanded;
             view.refreshView();
 
-            // If we are using the touch scroller and we just collapsed, ensure
-            // that the scroller is not left stranded below the visible range
-            if (scrollManager && !expanded) {
-                scrollManager.refresh(true);
+            // If we are using the touch scroller, ensure that the scroller knows about
+            // the correct scrollable range
+            if (scrollManager) {
+                if (bufferedRenderer) {
+                    bufferedRenderer.stretchView(view, bufferedRenderer.getScrollHeight(true));
+                } else {
+                    scrollManager.refresh(true);
+                }
             }
         }
     }

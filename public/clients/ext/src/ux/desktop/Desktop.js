@@ -39,10 +39,10 @@ Ext.define('Ext.ux.desktop.Desktop', {
     app: null,
 
     /**
-     * @cfg {Array|Store} shortcuts
+     * @cfg {Array/Ext.data.Store} shortcuts
      * The items to add to the DataView. This can be a {@link Ext.data.Store Store} or a
      * simple array. Items should minimally provide the fields in the
-     * {@link Desktop.model.ShorcutModel Shortcut}.
+     * {@link Ext.ux.desktop.ShortcutModel Shortcut}.
      */
     shortcuts: null,
 
@@ -57,7 +57,7 @@ Ext.define('Ext.ux.desktop.Desktop', {
     /**
      * @cfg {String} shortcutTpl
      * This XTemplate is used to render items in the DataView. If this is changed, the
-     * {@link shortcutItemSelect} will probably also need to changed.
+     * {@link #shortcutItemSelector} will probably also need to changed.
      */
     shortcutTpl: [
         '<tpl for=".">',

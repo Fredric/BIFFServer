@@ -1,9 +1,9 @@
 .#{$prefix}toast-icon-information {
-    background-image: theme-background-image('window/toast/icon16_info');
+    background-image: theme-background-image('window/toast/icon16_info', 'png');
 }
 
 .#{$prefix}toast-icon-error {
-    background-image: theme-background-image('window/toast/icon16_error');
+    background-image: theme-background-image('window/toast/icon16_error', 'png');
 }
 
 
@@ -23,7 +23,7 @@
 }
 
 .#{$prefix}toast-light {
-    background-image: theme-background-image('window/toast/fader');
+    background-image: theme-background-image('window/toast/fader', 'png');
 }
 
 .#{$prefix}toast-light .x-window-body {

@@ -76,4 +76,4 @@ Ext.define('Ext.overrides.event.publisher.Dom', {
         prototype.captureEvents = {};
     }
 });
-//</feature legacyBrowser>
+//</feature>

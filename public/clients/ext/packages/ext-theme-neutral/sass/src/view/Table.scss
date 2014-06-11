@@ -14,7 +14,8 @@
 
 // Default background color applied at table level - each row is its own separate table
 .#{$prefix}grid-item {
-    table-layout: fixed;
+    color: $grid-row-cell-color;
+    font: $grid-row-cell-font;
     background-color: $grid-row-cell-background-color;
 }
 
@@ -22,60 +23,83 @@
     background-color: $grid-row-cell-alt-background-color;
 }
 
-.#{$prefix}grid-row {
-    outline: none; // prevent dotted outline in firefox when focused
-}
-
 .#{$prefix}grid-item-over {
+    color: $grid-row-cell-over-color;
     background-color: $grid-row-cell-over-background-color;
-    @if $grid-row-cell-over-color != $grid-row-cell-color or
-        $grid-row-cell-over-color != $grid-row-cell-focus-color {
-        color: $grid-row-cell-over-color;
-    }
-    > tbody > .#{$prefix}grid-row {
-        outline: $grid-row-cell-border-width $grid-row-cell-over-border-style $grid-row-cell-over-border-color;
-    }
 }
 
 .#{$prefix}grid-item-focused {
-    @if $grid-row-cell-focus-color != $grid-row-cell-color {
-        color: $grid-row-cell-focus-color;
-    }
+    color: $grid-row-cell-focus-color;
     background-color: $grid-row-cell-focus-background-color;
-    > tbody > .#{$prefix}grid-row {
-        outline: $grid-row-cell-border-width $grid-row-cell-focus-border-style $grid-row-cell-focus-border-color;
-    }
 }
 
 .#{$prefix}grid-item-selected {
-    @if $grid-row-cell-selected-color != $grid-row-cell-color or
-        $grid-row-cell-selected-color != $grid-row-cell-focus-color or
-        $grid-row-cell-selected-color != $grid-row-cell-over-color {
-        color: $grid-row-cell-selected-color;
-    }
+    color: $grid-row-cell-selected-color;
     background-color: $grid-row-cell-selected-background-color;
-    > tbody > .#{$prefix}grid-row {
-        outline: $grid-row-cell-border-width $grid-row-cell-selected-border-style $grid-row-cell-selected-border-color;
-    }
 }
 
 .#{$prefix}grid-with-row-lines {
     .#{$prefix}grid-item {
-        border-bottom: $grid-row-cell-border-width solid bottom($grid-row-cell-border-color);
+        border-style: $grid-row-cell-border-style;
+        border-width: $grid-row-cell-border-width 0 0;
+        border-color: $grid-row-border-color;
     }
 
-    // since the top border of each row is the bottom border of the row above, the top
-    // border of the first row goes on the row containing element.
-    .#{$prefix}grid-item-container {
-        border-top: $grid-row-cell-border-width solid $grid-row-cell-background-color;
+    .#{$prefix}grid-item:first-child {
+        border-top-color: $grid-row-cell-background-color;
     }
-}
 
-.#{$prefix}grid-cell {
-    @if $grid-row-cell-color {
-        color: $grid-row-cell-color;
+    // the following rules have .x-grid-item added to increase specificity over the
+    // :first-child rule above
+    .#{$prefix}grid-item.#{$prefix}grid-item-over {
+        border-style: $grid-row-cell-over-border-style;
+        border-color: $grid-row-cell-over-border-color;
     }
-    font: $grid-row-cell-font;
+
+    .#{$prefix}grid-item-over + .#{$prefix}grid-item {
+        border-top-style: $grid-row-cell-over-border-style;
+        border-top-color: $grid-row-cell-over-border-color;
+    }
+
+    .#{$prefix}grid-item.#{$prefix}grid-item-selected {
+        border-style: $grid-row-cell-selected-border-style;
+        border-color: $grid-row-cell-selected-border-color;
+    }
+
+    .#{$prefix}grid-item-selected + .#{$prefix}grid-item {
+        border-top-style: $grid-row-cell-selected-border-style;
+        border-top-color: $grid-row-cell-selected-border-color;
+    }
+
+    .#{$prefix}grid-item.#{$prefix}grid-item-focused {
+        border-style: $grid-row-cell-focus-border-style;
+        border-color: $grid-row-cell-focus-border-color;
+    }
+
+    .#{$prefix}grid-item-focused + .#{$prefix}grid-item {
+        border-top-style: $grid-row-cell-focus-border-style;
+        border-top-color: $grid-row-cell-focus-border-color;
+    }
+
+    .#{$prefix}grid-item:last-child {
+        border-bottom-width: $grid-row-cell-border-width;
+    }
+
+    // IE8 doesn't have last-child, so we end up with no border on the bottom row.
+    // To work around this issue we give all the rows a bottom border and negative
+    // margin so that they overlap.  This approach doesn't work everywhere though...
+    // in newer IE, using the browser's zoom feature can result in rounding errors on 
+    // the negative margin, resulting in the appearance of some borders being double.
+    .#{$prefix}ie8 & {
+        .#{$prefix}grid-item {
+            border-width: $grid-row-cell-border-width 0;
+            margin-top: (-$grid-row-cell-border-width);
+        }
+
+        .#{$prefix}grid-item:first-child {
+            margin-top: 0;
+        }
+    }
 }
 
 .#{$prefix}grid-cell-inner {
@@ -163,14 +187,14 @@
 
 // Column lines on leading edge where there may be whitespace following
 .#{$prefix}grid-with-col-lines .#{$prefix}grid-cell {
-    border-right: $grid-row-cell-border-width solid right($grid-row-cell-border-color);
+    border-right: $grid-row-cell-border-width $grid-row-cell-border-style $grid-col-border-color;
 }
 
 // Column lines in RTL mode - leading edge is left.
 @if $include-rtl {
     .#{$prefix}rtl.#{$prefix}grid-with-col-lines .#{$prefix}grid-cell {
-        border-right: 0 none;
-        border-left: $grid-row-cell-border-width solid left($grid-row-cell-border-color);
+        border-right: 0;
+        border-left: $grid-row-cell-border-width $grid-row-cell-border-style $grid-col-border-color;
     }
 }
 

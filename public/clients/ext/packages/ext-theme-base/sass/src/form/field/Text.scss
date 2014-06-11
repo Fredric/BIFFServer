@@ -18,6 +18,13 @@
             height: 100%;
         }
     }
+
+    // The extjs-text-field mixin sets min/max-width to give the body its default width.
+    // Fields with grow configured need no min/max-width since their body width is set by autoSize()
+    &.#{$prefix}form-text-grow {
+        min-width: inherit;
+        max-width: inherit;
+    }
 }
 
 .#{$prefix}form-text {

@@ -14,22 +14,23 @@
     .#{$prefix}grid-cell,
     .#{$prefix}grid-rowwrap,
     .#{$prefix}grid-cell-rowbody {
-        border-color: $grid-row-cell-border-color;
+        border-color: $grid-row-border-color;
         background-color: $grid-body-background-color !important;
-        border-top: 1px solid $grid-row-cell-border-color;
+        border-top: 1px solid $grid-row-border-color;
         font: $grid-row-cell-font;
     }
 }
 
-// Ensure no border between summary and panel border, and that the background is consistent.
-.#{$prefix}docked-summary-bottom .#{$prefix}grid-row-summary .#{$prefix}grid-cell {
-    border-bottom: 0 none;
-}
-.#{$prefix}docked-summary-top .#{$prefix}grid-row-summary .#{$prefix}grid-cell {
-    border-top: 0 none;
+// Ensure no border between summary and body, or between summary and panel border.
+.#{$prefix}docked-summary {
+    .#{$prefix}grid-item,
+    .#{$prefix}grid-row-summary .#{$prefix}grid-cell {
+        border-bottom: 0 none;
+        border-top: 0 none;
+    }
 }
 
-// Embedded tables within rows do not get their own borders
-.#{$prefix}grid-with-row-lines .#{$prefix}grid-table-summary {
-    border: 0;
+// Hide expander cell in summary rows
+.#{$prefix}grid-row-summary .#{$prefix}grid-cell-inner-row-expander {
+    display: none;
 }

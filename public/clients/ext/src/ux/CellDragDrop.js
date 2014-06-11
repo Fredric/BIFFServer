@@ -18,7 +18,7 @@
  *      }
  */
 Ext.define('Ext.ux.CellDragDrop', {
-    extend: 'Ext.AbstractPlugin',
+    extend: 'Ext.plugin.Abstract',
     alias: 'plugin.celldragdrop',
 
     uses: ['Ext.view.DragZone'],

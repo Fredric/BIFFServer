@@ -74,7 +74,7 @@ Ext.define('Ext.ux.DataTip', function(DataTip) {
         extend: 'Ext.tip.ToolTip',
 
         mixins: {
-            plugin: 'Ext.AbstractPlugin'
+            plugin: 'Ext.plugin.Abstract'
         },
 
         alias: 'plugin.datatip',

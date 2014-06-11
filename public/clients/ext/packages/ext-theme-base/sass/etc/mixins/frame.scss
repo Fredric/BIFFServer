@@ -27,17 +27,13 @@
     $table: false,
     $background-direction: top,
     $include-frame-rtl: false,
-    // an optional ui to use for images
-    $img-ui: $ui,
     $background-stretch: null,
-    $ignore-frame-padding: false,
-    $frame-include-slicer-border-radius: $include-slicer-border-radius
+    $ignore-frame-padding: false
 ) {
     $cls-ui: $cls;
-    $cls-img-ui: null;
+    $cls-ui: null;
     @if $ui != null {
         $cls-ui: $cls + '-' + $ui;
-        $cls-img-ui: $cls + '-' + $img-ui;
     }
 
     $vertical: false;
@@ -47,10 +43,14 @@
 
     $background-stretch-position: null;
     @if is-null($background-stretch) {
-        @if $vertical {
-            $background-stretch: left;
-        } @else {
+        @if $background-direction == top {
             $background-stretch: bottom;
+        } @else if $background-direction == right {
+            $background-stretch: left;
+        } @else if $background-direction == bottom {
+            $background-stretch: top;
+        } @else if $background-direction == left {
+            $background-stretch: right;
         }
     }
 
@@ -85,6 +85,11 @@
     $padding-bottom: 0;
     $padding-left: 0;
 
+    $frame-info-padding-top: 0;
+    $frame-info-padding-right: 0;
+    $frame-info-padding-bottom: 0;
+    $frame-info-padding-left: 0;
+
     // For CSS3 browsers, if the border-radius is larger than the border-width, we need to
     // apply padding to inset the content. These values can never be 0 because frame-xxx
     // includes border-xxx in its max.
@@ -94,6 +99,13 @@
         $padding-right:  $frame-right  - right($border-width);
         $padding-bottom: $frame-bottom - bottom($border-width);
         $padding-left:   $frame-left   - left($border-width);
+    } @else {
+        // In nocss3 browsers we can never ignore frame padding, because the framing elements
+        // cannot be overlapped by the content.
+        $frame-info-padding-top:    $frame-top    - top($border-width);
+        $frame-info-padding-right:  $frame-right  - right($border-width);
+        $frame-info-padding-bottom: $frame-bottom - bottom($border-width);
+        $frame-info-padding-left:   $frame-left   - left($border-width);
     }
 
     // If there is additional padding, this is understood to be a request to ensure that
@@ -138,10 +150,10 @@
            nopx(right($border-width)) + '-' +
            nopx(bottom($border-width)) + '-' +
            nopx(left($border-width)) + '-' +
-           nopx($padding-top) + '-' +
-           nopx($padding-right) + '-' +
-           nopx($padding-bottom) + '-' +
-           nopx($padding-left);
+           if($ignore-frame-padding, $frame-info-padding-top, nopx($padding-top)) + '-' +
+           if($ignore-frame-padding, $frame-info-padding-right, nopx($padding-right)) + '-' +
+           if($ignore-frame-padding, $frame-info-padding-bottom, nopx($padding-bottom)) + '-' +
+           if($ignore-frame-padding, $frame-info-padding-left, nopx($padding-left)) + '-';
 
     .#{$prefix}#{$cls-ui} {
         @if length($border-radius) == 2 {
@@ -192,13 +204,14 @@
         }
     }
 
-    @if $frame-include-slicer-border-radius {
+    @if $include-slicer-border-radius {
         .#{$prefix}#{$cls-ui}-mc {
             @if not is-null($background-gradient) {
-                background-image: slicer-frame-background-image($cls-ui, '#{$cls}/#{$cls-img-ui}-fbg');
+                background-image: slicer-frame-background-image($cls-ui, '#{$cls}/#{$cls-ui}-fbg');
 
                 @if $vertical {
                     background-position: $background-stretch-position 0;
+                    background-repeat: repeat-y;
                 } @else {
                     background-position: 0 $background-stretch-position;
                 }
@@ -210,7 +223,7 @@
 
         @if $include-frame-rtl and not is-null($background-gradient) {
             .#{$prefix}rtl.#{$prefix}#{$cls-ui}-mc {
-                background-image: slicer-frame-background-image-rtl($cls-ui, '#{$cls}/#{$cls-img-ui}-fbg-rtl');
+                background-image: slicer-frame-background-image-rtl($cls-ui, '#{$cls}/#{$cls-ui}-fbg-rtl');
                 background-position: rtl-background-position($background-stretch-position 0);
             }
         }
@@ -219,7 +232,7 @@
     @if $include-slicer-gradient and not is-null($background-gradient) {
         .#{$prefix}nlg {
             .#{$prefix}#{$cls-ui} {
-                background-image: slicer-background-image($cls-ui, '#{$cls}/#{$cls-img-ui}-bg');
+                background-image: slicer-background-image($cls-ui, '#{$cls}/#{$cls-ui}-bg');
 
                 @if $vertical {
                     background-position: $background-stretch-position 0;
@@ -230,14 +243,14 @@
 
             @if $include-frame-rtl {
                 .#{$prefix}rtl.#{$prefix}#{$cls-ui} {
-                    background-image: slicer-background-image-rtl($cls-ui, '#{$cls}/#{$cls-img-ui}-bg-rtl');
+                    background-image: slicer-background-image-rtl($cls-ui, '#{$cls}/#{$cls-ui}-bg-rtl');
                     background-position: rtl-background-position($background-stretch-position 0);
                 }
             }
         }
     }
 
-    @if $frame-include-slicer-border-radius {
+    @if $include-slicer-border-radius {
         .#{$prefix}nbr {
             // This rule must be in x-nbr to avoid matching on CSS3 browsers.
             .#{$prefix}#{$cls-ui} {
@@ -245,7 +258,7 @@
                 border-width: 0 !important;
                 @include border-radius(0px);
                 @if not is-null($background-color) {
-                    background-color: transparent;
+                    background-color: transparent !important;
                 } @else {
                     background: #fff;
                 }
@@ -262,7 +275,7 @@
             // Originally, this tried to embed the information using a background image
             // pointing to about:blank#info however in IE with SSL, this would trigger
             // the insecure content warning. We also tried encoding the info using a
-            // filter as follows (where framing-info is a string containg the encoded data):
+            // filter as follows (where framing-info is a string containing the encoded data):
             // filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=false, src="ext-frame#{$framing-info}");
             // However the filter property can only be read by IE, making it impossible
             // to debug nocss3 mode in modern browsers. Font-family meets all the
@@ -338,11 +351,19 @@
             }
 
             .#{$prefix}#{$cls-ui}-ml {
-                background-position: 0 $background-stretch-position;
+                @if $background-stretch-position == 'right' or $background-stretch-position == 'left' {
+                    background-position: $background-stretch-position 0;
+                } @else {
+                    background-position: 0 $background-stretch-position;
+                }
             }
 
             .#{$prefix}#{$cls-ui}-mr {
-                background-position: right $background-stretch-position;
+                @if $background-stretch-position == 'right' or $background-stretch-position == 'left' {
+                    background-position: $background-stretch-position 0;
+                } @else {
+                    background-position: right $background-stretch-position;
+                }
             }
 
             .#{$prefix}#{$cls-ui}-tc {
@@ -382,7 +403,7 @@
         .#{$prefix}#{$cls-ui}-ml,
         .#{$prefix}#{$cls-ui}-mr {
             @if $background-color != transparent {
-                background-image: slicer-corner-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-corners');
+                background-image: slicer-corner-sprite($cls-ui, '#{$cls}/#{$cls-ui}-corners');
             }
         }
 
@@ -395,7 +416,7 @@
                     &.#{$prefix}#{$cls-ui}-tr,
                     &.#{$prefix}#{$cls-ui}-mr,
                     &.#{$prefix}#{$cls-ui}-br {
-                        background-image: slicer-corner-sprite-rtl($cls-ui, '#{$cls}/#{$cls-img-ui}-corners-rtl');
+                        background-image: slicer-corner-sprite-rtl($cls-ui, '#{$cls}/#{$cls-ui}-corners-rtl');
                     }
                 }
             }
@@ -405,7 +426,7 @@
             .#{$prefix}#{$cls-ui}-tc,
             .#{$prefix}#{$cls-ui}-bc {
                 @if $background-color != transparent {
-                    background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-sides');
+                    background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-ui}-sides');
                     background-repeat: repeat-x;
                 }
             }
@@ -414,7 +435,7 @@
                 .#{$prefix}rtl {
                     &.#{$prefix}#{$cls-ui}-tc,
                     &.#{$prefix}#{$cls-ui}-bc {
-                        background-image: slicer-sides-sprite-rtl($cls-ui, '#{$cls}/#{$cls-img-ui}-sides-rtl');
+                        background-image: slicer-sides-sprite-rtl($cls-ui, '#{$cls}/#{$cls-ui}-sides-rtl');
                     }
                 }
             }
@@ -422,7 +443,7 @@
             .#{$prefix}#{$cls-ui}-ml,
             .#{$prefix}#{$cls-ui}-mr {
                 @if $background-color != transparent {
-                    background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-img-ui}-sides');
+                    background-image: slicer-sides-sprite($cls-ui, '#{$cls}/#{$cls-ui}-sides');
                     @if is-null($background-gradient) {
                         background-repeat: repeat-y;
                     }

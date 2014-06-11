@@ -24,6 +24,7 @@ Ext.define('Ext.ux.form.SearchField', {
 
     initComponent: function() {
         var me = this,
+            store = me.store,
             proxy;
 
         me.callParent(arguments);
@@ -32,9 +33,13 @@ Ext.define('Ext.ux.form.SearchField', {
                 me.onSearchClick();
             }
         });
+        
+        if (!store || !store.isStore) {
+            store = me.store = Ext.data.StoreManager.lookup(store);
+        }
 
         // We're going to use filtering
-        me.store.setRemoteFilter(true);
+        store.setRemoteFilter(true);
 
         // Set up the proxy to encode the filter in the simplest way as a name/value pair
         proxy = me.store.getProxy();

@@ -131,8 +131,14 @@
  * @param {string} [$font-family-disabled=$button-medium-font-family-disabled]
  * The font-family of the button when the button is disabled
  *
+ * @var {number} [$line-height=$button-medium-line-height]
+ * The line-height of the button text
+ *
  * @param {number} [$icon-size=$button-medium-icon-size]
  * The size of the button icon
+ *
+ * @var {number} [$icon-spacing=$button-medium-icon-spacing]
+ * The space between the button's icon and text
  *
  * @param {color} [$glyph-color=$button-default-glyph-color]
  * The color of the button's {@link #glyph} icon
@@ -151,14 +157,6 @@
  *
  * @param {number} [$split-height=$button-medium-split-height]
  * The height of a {@link Ext.button.Split Split Button}'s arrow
- *
- * @param {number} [$split-spacing-right=$button-medium-split-spacing-right]
- * The amount of space in between the split arrow and the button text, when the split arrow
- * is right-aligned.  
- *
- * @param {number} [$split-spacing-bottom=$button-medium-split-spacing-bottom]
- * The amount of space in between the split arrow and the button text, when the split arrow
- * is bottom-aligned.  
  *
  * @param {boolean} [$include-ui-menu-arrows=$button-include-ui-menu-arrows]
  * True to include the UI name in the file name of the {@link #cfg-menu}
@@ -236,15 +234,15 @@
     $font-family-pressed: null,
     $font-family-disabled: null,
 
+    $line-height: $button-medium-line-height,
     $icon-size: $button-medium-icon-size,
+    $icon-spacing: $button-medium-icon-spacing,
     $glyph-color: $button-default-glyph-color,
     $glyph-opacity: $button-default-glyph-opacity,
     $arrow-width: $button-medium-arrow-width,
     $arrow-height: $button-medium-arrow-height,
     $split-width: $button-medium-split-width,
     $split-height: $button-medium-split-height,
-    $split-spacing-right: $button-medium-split-spacing-right,
-    $split-spacing-bottom: $button-medium-split-spacing-bottom,
     $include-ui-menu-arrows:  $button-include-ui-menu-arrows,
     $include-ui-split-arrows: $button-include-ui-split-arrows,
     $include-split-noline-arrows: $button-include-split-noline-arrows,
@@ -519,15 +517,15 @@
         $font-family-pressed: $font-family-pressed,
         $font-family-disabled: $font-family-disabled,
 
+        $line-height: $line-height,
         $icon-size: $icon-size,
+        $icon-spacing: $icon-spacing,
         $glyph-color: $glyph-color,
         $glyph-opacity: $glyph-opacity,
         $arrow-width: $arrow-width,
         $arrow-height: $arrow-height,
         $split-width: $split-width,
         $split-height: $split-height,
-        $split-spacing-right: $split-spacing-right,
-        $split-spacing-bottom: $split-spacing-bottom,
         $include-ui-menu-arrows:  $include-ui-menu-arrows,
         $include-ui-split-arrows: $include-ui-split-arrows,
         $include-split-noline-arrows: $include-split-noline-arrows,
@@ -670,8 +668,14 @@
  * @param {string} [$font-family-disabled=$button-medium-font-family-disabled]
  * The font-family of the button when the button is disabled
  *
+ * @var {number} [$line-height=$button-medium-line-height]
+ * The line-height of the button text
+ *
  * @param {number} [$icon-size=$button-medium-icon-size]
  * The size of the button icon
+ *
+ * @var {number} [$icon-spacing=$button-medium-icon-spacing]
+ * The space between the button's icon and text
  *
  * @param {color} [$glyph-color=$button-toolbar-glyph-color]
  * The color of the button's {@link #glyph} icon
@@ -690,14 +694,6 @@
  *
  * @param {number} [$split-height=$button-medium-split-height]
  * The height of a {@link Ext.button.Split Split Button}'s arrow
- *
- * @param {number} [$split-spacing-right=$button-medium-split-spacing-right]
- * The amount of space in between the split arrow and the button text, when the split arrow
- * is right-aligned.  
- *
- * @param {number} [$split-spacing-bottom=$button-medium-split-spacing-bottom]
- * The amount of space in between the split arrow and the button text, when the split arrow
- * is bottom-aligned.  
  *
  * @param {boolean} [$include-ui-menu-arrows=$button-include-ui-menu-arrows]
  * True to include the UI name in the file name of the {@link #cfg-menu}
@@ -775,15 +771,15 @@
     $font-family-pressed: null,
     $font-family-disabled: null,
 
+    $line-height: $button-medium-line-height,
     $icon-size: $button-medium-icon-size,
+    $icon-spacing: $button-medium-icon-spacing,
     $glyph-color: $button-toolbar-glyph-color,
     $glyph-opacity: $button-toolbar-glyph-opacity,
     $arrow-width: $button-medium-arrow-width,
     $arrow-height: $button-medium-arrow-height,
     $split-width: $button-medium-split-width,
     $split-height: $button-medium-split-height,
-    $split-spacing-right: $button-medium-split-spacing-right,
-    $split-spacing-bottom: $button-medium-split-spacing-bottom,
     $include-ui-menu-arrows:  $button-include-ui-menu-arrows,
     $include-ui-split-arrows: $button-include-ui-split-arrows,
     $include-split-noline-arrows: $button-toolbar-include-split-noline-arrows,
@@ -1058,15 +1054,15 @@
         $font-family-pressed: $font-family-pressed,
         $font-family-disabled: $font-family-disabled,
 
+        $line-height: $line-height,
         $icon-size: $icon-size,
+        $icon-spacing: $icon-spacing,
         $glyph-color: $glyph-color,
         $glyph-opacity: $glyph-opacity,
         $arrow-width: $arrow-width,
         $arrow-height: $arrow-height,
         $split-width: $split-width,
         $split-height: $split-height,
-        $split-spacing-right: $split-spacing-right,
-        $split-spacing-bottom: $split-spacing-bottom,
         $include-ui-menu-arrows:  $include-ui-menu-arrows,
         $include-ui-split-arrows: $include-ui-split-arrows,
         $include-split-noline-arrows: $include-split-noline-arrows,

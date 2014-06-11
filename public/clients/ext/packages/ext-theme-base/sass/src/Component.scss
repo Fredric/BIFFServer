@@ -1,5 +1,9 @@
 .#{$prefix}body {
     margin: 0;
+    @if $enable-font-smoothing {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 }
 
 .#{$prefix}no-touch-scroll {
@@ -9,6 +13,11 @@
     // possible.
     touch-action: none;
     -ms-touch-action: none; // IE10
+}
+
+@-ms-viewport {
+    // prevent scaling on windows8 tablets when using portrait orientation
+    width: device-width;
 }
 
 img {
@@ -23,8 +32,10 @@ img {
     -webkit-box-sizing:border-box;
 }
 
-.#{$prefix}rtl {
-    direction: rtl;
+@if $include-rtl {
+    .#{$prefix}rtl {
+        direction: rtl;
+    }
 }
 
 .#{$prefix}ltr {
@@ -145,6 +156,17 @@ img {
 .#{$prefix}frame-tc,
 .#{$prefix}frame-bc {
     background-repeat: repeat-x;
+}
+
+// the corners of a table frame are given their width by applying padding.  Setting their
+// width property to 1px ensures that they can get no larger than the amount of padding
+// inside, even when the frame is stretched because the button has a width
+// (e.g. Button with width or minWidth configured has width:100% on the frame table)
+td.#{$prefix}frame-tl,
+td.#{$prefix}frame-tr,
+td.#{$prefix}frame-bl,
+td.#{$prefix}frame-br {
+    width: 1px;
 }
 
 .#{$prefix}frame-mc {

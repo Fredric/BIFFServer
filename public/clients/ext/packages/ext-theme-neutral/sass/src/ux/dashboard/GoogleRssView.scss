@@ -15,7 +15,7 @@
     width: $ext-ux-dashboard-google-rss-preview-width;
     height: $ext-ux-dashboard-google-rss-preview-height;
     background-color: white;
-    background-image: theme-background-image('magnify', 'png');
+    background-image: theme-background-image('ux/dashboard/magnify', 'png');
 }
 
 .#{$prefix}dashboard-googlerss-detail-header {

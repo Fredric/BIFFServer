@@ -153,7 +153,7 @@ Ext.define('Ext.ux.TreePicker', {
      * @param {Ext.data.Model} record
      * @param {HTMLElement} node
      * @param {Number} rowIndex
-     * @param {Ext.EventObject} e
+     * @param {Ext.event.Event} e
      */
     onItemClick: function(view, record, node, rowIndex, e) {
         this.selectItem(record);
@@ -162,7 +162,7 @@ Ext.define('Ext.ux.TreePicker', {
     /**
      * Handles a keypress event on the picker element
      * @private
-     * @param {Ext.EventObject} e
+     * @param {Ext.event.Event} e
      * @param {HTMLElement} el
      */
     onPickerKeypress: function(e, el) {

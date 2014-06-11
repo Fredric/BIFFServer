@@ -8,7 +8,7 @@ $grid-row-cell-border-color: #ededed
 // special cells
 $grid-cell-special-background-color: #f6f6f6 !default;
 $grid-cell-special-background-gradient: 'grid-cell-special' !default;
-$grid-cell-special-selected-border-color: bottom($grid-row-cell-border-color) adjust-color($base-color, $hue: -0.175deg, $saturation: 25.296%, $lightness: -2.549%) !default;
+$grid-cell-special-selected-border-color: adjust-color($base-color, $hue: -0.175deg, $saturation: 25.296%, $lightness: -2.549%) !default;
 $grid-cell-special-over-background-color: adjust-color($base-color, $hue: -0.476deg, $saturation: 25.214%, $lightness: 5.686%) !default;
 
 $grid-cell-selected-background-color: #B8CFEE !default;

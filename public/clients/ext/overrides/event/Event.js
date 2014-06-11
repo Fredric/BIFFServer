@@ -36,6 +36,8 @@ Ext.define('Ext.overrides.event.Event', {
     },
 
     /**
+     * @method injectEvent
+     * @member Ext.event.Event
      * Injects a DOM event using the data in this object and (optionally) a new target.
      * This is a low-level technique and not likely to be used by application code. The
      * currently supported event types are:
@@ -294,8 +296,10 @@ Ext.define('Ext.overrides.event.Event', {
         '5.0': {
             methods: {
                 /**
+                 * @method clone
+                 * @member Ext.event.Event
                  * Clones this event.
-                 * @return {Ext.EventObject} The cloned copy
+                 * @return {Ext.event.Event} The cloned copy
                  * @deprecated 5.0.0
                  */
                 clone: function() {
@@ -304,6 +308,7 @@ Ext.define('Ext.overrides.event.Event', {
             }
         }
     }
+//<feature legacyBrowser>
 }, function() {
     var Event = this,
         btnMap;
@@ -316,6 +321,28 @@ Ext.define('Ext.overrides.event.Event', {
         };
 
         Event.override({
+            statics: {
+                /**
+                 * When events are attached using IE's attachEvent API instead of
+                 * addEventListener accessing any members of an event object asynchronously
+                 * results in "Member not found" error.  To work around this we fabricate
+                 * our own event object by copying all of its members to a new object.
+                 * @param {Event} browserEvent The native browser event object
+                 * @private
+                 * @static
+                 */
+                enableIEAsync: function(browserEvent) {
+                    var name,
+                        fakeEvent = {};
+
+                    for (name in browserEvent) {
+                        fakeEvent[name] = browserEvent[name];
+                    }
+
+                    return fakeEvent;
+                }
+            },
+
             constructor: function(event, info, touchesMap, identifiers) {
                 var me = this;
                 me.callParent([event, info, touchesMap, identifiers]);
@@ -330,6 +357,14 @@ Ext.define('Ext.overrides.event.Event', {
 
             mouseLeaveRe: /(mouseout|mouseleave)/,
             mouseEnterRe: /(mouseover|mouseenter)/,
+
+            /**
+             * @inheritdoc Ext.event.Event#static-enableIEAsync
+             * @private
+             */
+            enableIEAsync: function(browserEvent) {
+                this.browserEvent = this.self.enableIEAsync(browserEvent);
+            },
 
             getRelatedTarget: function(selector, maxDepth, returnEl) {
                 var me = this,
@@ -351,4 +386,5 @@ Ext.define('Ext.overrides.event.Event', {
             }
         });
     }
+//</feature>
 });

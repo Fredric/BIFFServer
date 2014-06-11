@@ -1,10 +1,10 @@
-/*!
+/**
  * Ext JS Library
  * Copyright(c) 2006-2014 Sencha Inc.
  * licensing@sencha.com
  * http://www.sencha.com/license
+ * @class Ext.ux.desktop.App
  */
-
 Ext.define('Ext.ux.desktop.App', {
     mixins: {
         observable: 'Ext.util.Observable'

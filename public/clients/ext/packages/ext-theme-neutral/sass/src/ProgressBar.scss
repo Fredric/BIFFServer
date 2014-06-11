@@ -123,7 +123,8 @@
     @include x-slicer(progress-bar-#{$ui});
 
     @if $include-ext-view-table {
-        .#{$prefix}progress-#{$ui}-cell .#{$prefix}grid-cell-inner {
+        .#{$prefix}progressbar-#{$ui}-cell > .#{$prefix}grid-cell-inner,
+        .#{$prefix}progressbarwidget-#{$ui}-cell > .#{$prefix}grid-cell-inner {
             padding-top:    max(ceil(($grid-row-height - $ui-height) / 2), 0);
             padding-bottom: max(floor(($grid-row-height - $ui-height) / 2), 0);
             .#{$prefix}progress-#{$ui} {

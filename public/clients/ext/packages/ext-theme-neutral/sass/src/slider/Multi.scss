@@ -101,8 +101,8 @@
     background-image: theme-background-image('slider/slider-v-bg', 'png');
 }
 
-
-.#{$prefix}slider-cell .#{$prefix}grid-cell-inner {
+.#{$prefix}slider-default-cell > .#{$prefix}grid-cell-inner,
+.#{$prefix}sliderwidget-default-cell > .#{$prefix}grid-cell-inner {
     padding-top:   floor(($grid-row-height - $horizontal-slider-thumb-height) / 2);
     padding-bottom: ceil(($grid-row-height - $horizontal-slider-thumb-height) / 2);
 }

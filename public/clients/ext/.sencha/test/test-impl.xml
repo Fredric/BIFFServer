@@ -24,6 +24,7 @@ this file in most cases.
         <property name="environment.dir" value="${package.dir}"/>
         <property name="cmd-test.specs.dir" value="${environment.dir}/test/specs"/>
         <property name="cmd-test.specs.test-json" value="${cmd-test.specs.dir}/test.json"/>
+        <available file="${cmd-test.specs.test-json}" property="cmd-test.available"/>
     </target>
     <target name="-after-test-init"/>
     <target name="test-init"
@@ -67,7 +68,7 @@ this file in most cases.
 
 
     <target name="-before-test-bootstrap"/>
-    <target name="-test-bootstrap">
+    <target name="-test-bootstrap" if="${cmd-test.available}">
         <local name="local.runner.dir"/>
         <local name="console.runner.dir"/>
         <local name="specfiles.list"/>
@@ -95,9 +96,9 @@ this file in most cases.
 <![CDATA[
 Ext.Boot.loadSync([
     "../bootstrap-files.js",
-    "../bootstrap-data.js",
-    "../bootstrap-launch.js"
+    "../bootstrap-data.js"
 ]);
+Ext.Boot.load("../bootstrap-launch.js");
 ]]>
          </x-bootstrap>
 

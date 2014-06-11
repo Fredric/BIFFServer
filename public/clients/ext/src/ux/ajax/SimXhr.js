@@ -29,9 +29,11 @@ Ext.define('Ext.ux.ajax.SimXhr', {
 
     getAllResponseHeaders: function () {
         var headers = [];
-        Ext.Object.each(this.responseHeaders, function (name, value) {
-            headers.push(name + ': ' + value);
-        });
+        if (Ext.isObject(this.responseHeaders)) {
+            Ext.Object.each(this.responseHeaders, function (name, value) {
+                headers.push(name + ': ' + value);
+            });
+        }
         return headers.join('\x0d\x0a');
     },
 

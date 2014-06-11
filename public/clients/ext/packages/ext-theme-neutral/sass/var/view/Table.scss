@@ -6,7 +6,7 @@
  * @var {color}
  * The color of the text in the grid cells
  */
-$grid-row-cell-color: 'none' !default;
+$grid-row-cell-color: $color !default;
 
 /**
  * @var {number}
@@ -93,7 +93,7 @@ $grid-cell-special-border-width: $grid-row-cell-border-width !default;
  * Only applies to the vertical border, since the row border color is determined by
  * {#$grid-row-cell-border-color}.
  */
-$grid-cell-special-border-color: $grid-row-cell-border-color !default;
+$grid-cell-special-border-color: right($grid-row-cell-border-color) !default;
 
 /**
  * @var {string}
@@ -114,7 +114,7 @@ $grid-cell-special-border-style: $grid-row-cell-border-style !default;
  * Only applies to the vertical border, since the selected row border color is determined by
  * {#$grid-row-cell-selected-border-color}.
  */
-$grid-cell-special-selected-border-color: $grid-row-cell-border-color !default;
+$grid-cell-special-selected-border-color: right($grid-row-cell-border-color) !default;
 
 /**
  * @var {color}
@@ -153,7 +153,7 @@ $grid-row-cell-over-background-color: #ddd !default;
  * @var {color}
  * The border-color of the hovered row
  */
-$grid-row-cell-over-border-color: $grid-row-cell-border-color !default;
+$grid-row-cell-over-border-color: top($grid-row-cell-border-color) !default;
 
 /**
  * @var {string}
@@ -177,7 +177,7 @@ $grid-row-cell-selected-background-color: #ccc !default;
  * @var {color}
  * The border-color of the selected row
  */
-$grid-row-cell-selected-border-color: $grid-row-cell-border-color !default;
+$grid-row-cell-selected-border-color: top($grid-row-cell-border-color) !default;
 
 /**
  * @var {color}
@@ -309,3 +309,7 @@ $grid-resize-marker-background-color: #0f0f0f !default;
 
 // private
 $grid-row-height: $grid-row-cell-line-height + vertical($grid-cell-inner-padding);
+// private
+$grid-row-border-color: top($grid-row-cell-border-color);
+// private
+$grid-col-border-color: right($grid-row-cell-border-color);

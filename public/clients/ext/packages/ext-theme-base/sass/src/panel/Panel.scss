@@ -20,14 +20,6 @@
     position: relative;
 }
 
-@if $include-slicer-gradient {
-    .#{$prefix}nlg .#{$prefix}panel-header-vertical {
-        .#{$prefix}frame-mc {
-            background-repeat: repeat-y;
-        }
-    }
-}
-
 .#{$prefix}panel-header-plain,
 .#{$prefix}panel-body-plain {
     border: 0;

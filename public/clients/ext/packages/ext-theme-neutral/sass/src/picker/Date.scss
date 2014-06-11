@@ -86,7 +86,7 @@ $datepicker-monthpicker-small-yearnav-height: $datepicker-monthpicker-small-item
         }
     }
 
-    .#{$prefix}btn-split-right {
+    .#{$prefix}btn-split-right:after {
         background-image: theme-background-image($datepicker-month-button-arrow-image);
         padding-right: $datepicker-month-button-arrow-width;
     }

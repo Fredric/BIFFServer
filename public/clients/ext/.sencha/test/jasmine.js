@@ -2962,6 +2962,36 @@ jasmine.Spec.prototype.removeAllSpies = function() {
         // Modification end
         this.results_.addResult(expectationResult);
     };
+    
+    // Override: check for DOM and global variable leaks
+    proto.finishCallback = function() {
+        this.checkDomLeak();
+        // TODO
+        // this.checkGlobalsLeak();
+        this.env.reporter.reportSpecResults(this);
+    };
+    
+    proto.checkDomLeak = function() {
+        var body = document.body,
+            children = body && body.childNodes || [],
+            len = children.length,
+            badNodes = [],
+            i = 0;
+
+        for (; i < len; i++) {
+            if (children[i].nodeType === 3 || !children[i].getAttribute('data-sticky')) {
+                badNodes.push(children[i]);
+            }
+        }
+
+        for (i = 0, len = badNodes.length; i < len; i++) {
+            document.body.removeChild(badNodes[i]);
+        }
+
+        if (badNodes.length) {
+            this.fail('document.body contains childNodes after spec execution');
+        }
+    };
 
     proto.execute = function(onComplete) {
         var spec = this;
@@ -3048,14 +3078,14 @@ jasmine.Spec.prototype.removeAllSpies = function() {
  * Works just like waits() and waitsFor(), except waits for the next animationFrame
  */
 function waitsForAnimation() {
+    var done = false;
     runs(function() {
-        var done = false;
         Ext.Function.requestAnimationFrame(function() {
             done = true;
         });
-        waitsFor(function() {
-            return done;
-        });
+    });
+    waitsFor(function() {
+        return done;
     });
 }
 /**
@@ -4216,7 +4246,7 @@ SenchaTestRunner.Reporter.prototype = {
             }
         }
 
-        length = blocks.length,
+        length = blocks.length;
         i = 0;
         for (; i < length; i++) {
             block = blocks[i];

@@ -5,11 +5,15 @@ Ext.define('Ext.overrides.Widget', {
 
     isComponent: true,
 
+    liquidLayout: true,
+
     // in Ext JS the rendered flag is set as soon as a component has its element.  Since
     // widgets always have an element when constructed, they are always considered to be
     // "rendered"
     rendered: true,
-    
+
+    rendering: true,
+
     cachedConfig: {
         baseCls: Ext.baseCSSPrefix + 'widget'
     },
@@ -31,6 +35,11 @@ Ext.define('Ext.overrides.Widget', {
 
     afterComponentLayout: Ext.emptyFn,
 
+    finishRender: function () {
+        this.rendering = false;
+        this.initBindable();
+    },
+
     getComponentLayout: function() {
         var me = this,
             layout = me.componentLayout;
@@ -48,7 +57,19 @@ Ext.define('Ext.overrides.Widget', {
      * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
      */
     getTdCls: function() {
-        return this.getBaseCls() + '-cell';
+        return Ext.baseCSSPrefix + this.getTdType() + '-' + (this.ui || 'default') + '-cell';
+    },
+
+    /**
+     * @private
+     * Partner method to {@link #getTdCls}.
+     *
+     * Returns the base type for the component. Defaults to return `this.xtype`, but
+     * All derived classes of {@link Ext.form.field.Text TextField} can return the type 'textfield',
+     * and all derived classes of {@link Ext.button.Button Button} can return the type 'button'
+     */
+    getTdType: function() {
+        return this.xtype;
     },
 
     /**
@@ -64,9 +85,45 @@ Ext.define('Ext.overrides.Widget', {
         return Ext.Component.prototype.getSizeModel.apply(this, arguments);
     },
 
-    onAdded: Ext.emptyFn,
+    onAdded: function (container, pos, instanced) {
+        var me = this,
+            inheritedState = me.inheritedState;
 
-    onRemoved: Ext.emptyFn,
+        me.ownerCt = container;
+
+        // The container constructed us, so it's not possible for our
+        // inheritedState to be invalid, so we only need to clear it
+        // if we've been added as an instance
+        if (inheritedState && instanced) {
+            me.invalidateInheritedState();
+        }
+
+        if (me.reference) {
+            me.fixReference();
+        }
+    },
+
+    onRemoved: function(destroying) {
+        var me = this,
+            refHolder;
+
+        if (me.reference) {
+            refHolder = me.lookupReferenceHolder();
+            if (refHolder) {
+                refHolder.clearReference(me);
+            }
+        }
+
+        if (!destroying) {
+            me.removeBindings();
+        }
+
+        if (me.inheritedState && !destroying) {
+            me.invalidateInheritedState();
+        }
+
+        me.ownerCt = me.ownerLayout = null;
+    },
 
     parseBox: function(box) {
         return Ext.Element.parseBox(box);

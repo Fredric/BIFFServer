@@ -39,6 +39,9 @@
  * @param {color} [$ui-invalid-border-color=$form-text-field-invalid-border-color]
  * The border color of the text field when the field value is invalid.
  *
+ * @param {number/list} [$ui-border-radius=$form-text-field-border-radius]
+ * The border radius of the text field
+ *
  * @param {string} [$ui-background-image=$form-text-field-background-image]
  * The background image of the text field's input element
  *
@@ -122,6 +125,7 @@
     $ui-border-color: $form-text-field-border-color,
     $ui-focus-border-color: $form-text-field-focus-border-color,
     $ui-invalid-border-color: $form-text-field-invalid-border-color,
+    $ui-border-radius: $form-text-field-border-radius,
     $ui-background-image: $form-text-field-background-image,
     $ui-padding: $form-text-field-padding,
     $ui-empty-color: $form-text-field-empty-color,
@@ -155,8 +159,8 @@
             $ui-trigger-border-color-over: $form-trigger-border-color-over;
         } @else if $ui == 'toolbar' {
             $ui-trigger-border-color-over: $form-toolbar-trigger-border-color-over;
-        } @else if $ui == 'grid' {
-            $ui-trigger-border-color-over: $grid-editor-trigger-border-color-over;
+        } @else if $ui == 'grid-cell' {
+            $ui-trigger-border-color-over: $grid-cell-field-trigger-border-color-over;
         } @else {
             $ui-trigger-border-color-over: $ui-trigger-border-color;
         }
@@ -167,8 +171,8 @@
             $ui-trigger-border-color-focus: $form-trigger-border-color-focus;
         } @else if $ui == 'toolbar' {
             $ui-trigger-border-color-over: $form-toolbar-trigger-border-color-over;
-        } @else if $ui == 'grid' {
-            $ui-trigger-border-color-over: $grid-editor-trigger-border-color-over;
+        } @else if $ui == 'grid-cell' {
+            $ui-trigger-border-color-over: $grid-cell-field-trigger-border-color-over;
         } @else {
             $ui-trigger-border-color-focus: $ui-trigger-border-color;
         }
@@ -179,8 +183,8 @@
             $ui-trigger-border-color-pressed: $form-trigger-border-color-pressed;
         } @else if $ui == 'toolbar' {
             $ui-trigger-border-color-pressed: $form-toolbar-trigger-border-color-pressed;
-        } @else if $ui == 'grid' {
-            $ui-trigger-border-color-pressed: $grid-editor-trigger-border-color-pressed;
+        } @else if $ui == 'grid-cell' {
+            $ui-trigger-border-color-pressed: $grid-cell-field-trigger-border-color-pressed;
         } @else {
             $ui-trigger-border-color-pressed: $ui-trigger-border-color;
         }
@@ -211,6 +215,9 @@
             border-width: $ui-border-width;
             border-style: $ui-border-style;
             border-color: $ui-border-color;
+            @if $ui-border-radius != 0 {
+                border-radius: $ui-border-radius;
+            }
             &.#{$prefix}form-trigger-wrap-focus {
                 border-color: $ui-focus-border-color;
             }
@@ -226,6 +233,9 @@
             border-width: $ui-border-width;
             border-style: $ui-border-style;
             border-color: $ui-border-color;
+            @if $ui-border-radius != 0 {
+                border-radius: $ui-border-radius;
+            }
             &.#{$prefix}form-text-wrap-focus {
                 border-color: $ui-focus-border-color;
             }
@@ -241,15 +251,32 @@
         color: $ui-color;
         padding: $ui-padding;
         background-color: $ui-background-color;
+        @if $ui-border-radius != 0 {
+            border-radius: $ui-border-radius;
+        }
         @if not is-null($ui-background-image) {
             background-image: theme-background-image($ui-background-image);
         }
         font: $ui-font-weight #{$ui-font-size}/#{$ui-line-height} $ui-font-family;
         min-height: $ui-height - vertical($ui-border-width);
 
+        @if $include-ie {
+            .#{$prefix}ie8 & {
+                // min-height triggers content-box sizing on IE8, so subtract padding
+                min-height: $ui-height - vertical($ui-border-width) - vertical($ui-padding);
+            }
+        }
+
         &.#{$prefix}form-textarea {
             line-height: $ui-textarea-line-height;
             min-height: $ui-textarea-body-height;
+
+            @if $include-ie {
+                .#{$prefix}ie8 & {
+                    // min-height triggers content-box sizing on IE8, so subtract padding
+                    min-height: $ui-textarea-body-height - vertical($ui-padding);
+                }
+            }
         }
 
         &.#{$prefix}form-text-file {
@@ -270,8 +297,11 @@
         }
     }
 
+    $bg-position-y: if($ui-classic-border, 0, center);
+
     .#{$prefix}form-trigger-#{$ui} {
         background: $ui-trigger-background-color theme-background-image($ui-trigger-background-image) no-repeat;
+        background-position: 0 $bg-position-y;
         width: $ui-trigger-width;
 
         @if $ui-trigger-border-width != 0 {
@@ -287,18 +317,18 @@
         }
 
         &.#{$prefix}form-trigger-over {
-            background-position: -$ui-trigger-width 0;
+            background-position: -$ui-trigger-width $bg-position-y;
             @if $ui-trigger-border-width != 0 and $ui-trigger-border-color-over != $ui-trigger-border-color {
                 border-color: $ui-trigger-border-color-over;
             }
 
             &.#{$prefix}form-trigger-focus {
-                background-position: -($ui-trigger-width * 4) 0;
+                background-position: -($ui-trigger-width * 4) $bg-position-y;
             }
         }
 
         &.#{$prefix}form-trigger-focus {
-            background-position: -($ui-trigger-width * 3) 0;
+            background-position: -($ui-trigger-width * 3) $bg-position-y;
             @if $ui-trigger-border-width != 0 and $ui-trigger-border-color-focus != $ui-trigger-border-color {
                 border-color: $ui-trigger-border-color-focus;
             }
@@ -307,9 +337,17 @@
 
     // add x-form-trigger class to increase specificity of "click" above focus/over
     .#{$prefix}form-trigger.#{$prefix}form-trigger-#{$ui}.#{$prefix}form-trigger-click {
-        background-position: -($ui-trigger-width * 2) 0;
+        background-position: -($ui-trigger-width * 2) $bg-position-y;
         @if $ui-trigger-border-width != 0 and $ui-trigger-border-color-pressed != $ui-trigger-border-color-over {
             border-color: $ui-trigger-border-color-pressed;
+        }
+    }
+
+    // Text field or subclass inside cell - calculate top/bottom padding to keep row height correct
+    @if $include-ext-grid-column-widget or $include-ext-grid-plugin-editing {
+        .#{$prefix}textfield-#{$ui}-cell > .#{$prefix}grid-cell-inner {
+            padding-top:    max(ceil(($grid-row-height - $ui-height) / 2), 0);
+            padding-bottom: max(floor(($grid-row-height - $ui-height) / 2), 0);
         }
     }
 }
@@ -334,6 +372,7 @@
         $ui-border-color: $form-toolbar-text-field-border-color,
         $ui-focus-border-color: $form-toolbar-text-field-focus-border-color,
         $ui-invalid-border-color: $form-toolbar-text-field-invalid-border-color,
+        $ui-border-radius: $form-toolbar-text-field-border-radius,
         $ui-background-image: $form-toolbar-text-field-background-image,
         $ui-padding: $form-toolbar-text-field-padding,
         $ui-empty-color: $form-toolbar-text-field-empty-color,

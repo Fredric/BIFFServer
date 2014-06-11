@@ -5,10 +5,10 @@ Ext.define('Ext.ux.form.MultiSelect', {
     
     extend: 'Ext.form.FieldContainer',
     
-    mixins: {
-        bindable: 'Ext.util.Bindable',
-        field: 'Ext.form.field.Field'    
-    },
+    mixins: [
+        'Ext.util.StoreHolder',
+        'Ext.form.field.Field'
+    ],
     
     alternateClassName: 'Ext.ux.Multiselect',
     alias: ['widget.multiselectfield', 'widget.multiselect'],
@@ -158,7 +158,6 @@ Ext.define('Ext.ux.form.MultiSelect', {
 
         me.boundList = Ext.create('Ext.view.BoundList', Ext.apply({
             anchor: 'none 100%',
-            deferInitialRefresh: false,
             border: 1,
             multiSelect: true,
             store: me.store,

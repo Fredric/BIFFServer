@@ -5,6 +5,8 @@
 .#{$prefix}menu-item {
     white-space: nowrap;
     overflow: hidden;
+    border-color: transparent;
+    border-style: solid;
 }
 
 // "Foreign" Components (such as form fields) put inside a Menu get this class.

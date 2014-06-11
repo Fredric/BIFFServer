@@ -42,11 +42,11 @@ ul.#{$prefix}tagfield-list.#{$prefix}tagfield-singleselect {
 }
 
 .#{$prefix}tagfield-item {
-    @include border-radius(6px);
+    @include border-radius(3px);
     background-color: $tag-field-item-background-color;
     border: 1px solid $tag-field-item-border-color;
     padding: 0px 1px 0px 5px !important;
-    margin: 1px 1px 1px 0;
+    margin: $tag-field-item-margin;
     cursor: default;
 }
 
@@ -62,7 +62,7 @@ ul.#{$prefix}tagfield-list.#{$prefix}tagfield-singleselect {
 }
 
 .#{$prefix}tagfield-item-text {
-    line-height: ($form-field-height - 6);
+    line-height: $tag-field-item-line-height;
     padding-right: $tag-field-item-after-padding;
 }
 
@@ -74,6 +74,26 @@ ul.#{$prefix}tagfield-list.#{$prefix}tagfield-singleselect {
     height: $tag-field-item-close-icon-height;
     top: $tag-field-item-close-icon-top;
     right: $tag-field-item-close-icon-right;
+}
+
+.#{$prefix}field:not(.#{$prefix}item-disabled) .#{$prefix}tagfield-item.selected .#{$prefix}tagfield-item-close {
+    background-position: $tag-field-item-selected-close-icon-position;
+}
+
+.#{$prefix}field:not(.#{$prefix}item-disabled) .#{$prefix}tagfield-item-close:hover {
+    background-position: $tag-field-item-close-icon-over-position;
+}
+
+.#{$prefix}field:not(.#{$prefix}item-disabled) .#{$prefix}tagfield-item.selected .#{$prefix}tagfield-item-close:hover {
+    background-position: $tag-field-item-selected-close-icon-over-position;
+}
+
+.#{$prefix}field:not(.#{$prefix}item-disabled) .#{$prefix}tagfield-item-close:active {
+    background-position: $tag-field-item-close-icon-active-position;
+}
+
+.#{$prefix}field:not(.#{$prefix}item-disabled) .#{$prefix}tagfield-item.selected .#{$prefix}tagfield-item-close:active {
+    background-position: $tag-field-item-selected-close-icon-active-position;
 }
 
 // Flip after padding and the close icon that sits in the padding to the left side in RTL mode.

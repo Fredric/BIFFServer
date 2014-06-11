@@ -103,7 +103,7 @@ Ext.define('Ext.ux.form.ItemSelector', {
             me.fromField,
             {
                 xtype: 'container',
-                margins: '0 4',
+                margin: '0 4',
                 layout: {
                     type: 'vbox',
                     pack: 'center'

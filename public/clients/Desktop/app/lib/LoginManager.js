@@ -74,7 +74,7 @@ Ext.define('BIFF.lib.LoginManager', {
     createUserFromData: function (data) {
         var session = this.getSession();
         if (!this.getUser()) {
-            this.setUser(session.createRecord('User', data));
+            this.setUser(session.createRecord('BIFF.model.User', data));
         }
     },
     isAuthenticated: function (callback, scope) {

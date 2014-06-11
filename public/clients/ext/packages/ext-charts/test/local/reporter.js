@@ -1480,7 +1480,7 @@ Test.SandBoxImpl.prototype.clearDomElements = function() {
             }
         }
     }
-}
+};
 
 Test.SandBoxImpl.prototype.clearComponents = function() {
     var me = this,
