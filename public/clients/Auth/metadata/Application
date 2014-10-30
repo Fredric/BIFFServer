@@ -1,0 +1,23 @@
+{
+    "type": "Ext.app.Application",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "controllers": [
+            "Account"
+        ],
+        "name": "Auth",
+        "requires": [
+            "Ext.window.MessageBox"
+        ],
+        "views": [
+            "MainView",
+            "LoginForm",
+            "RegisterForm"
+        ]
+    },
+    "designerId": "application"
+}

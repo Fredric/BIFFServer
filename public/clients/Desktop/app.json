@@ -111,7 +111,7 @@
         {
             "path": "app.js",
             "bundle": true,
-            "update":'full'
+            "update":''
         }
     ],
 

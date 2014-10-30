@@ -1,0 +1,113 @@
+{
+    "type": "neptunethemeresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Auth"
+    },
+    "designerId": "48cc1b2b-5a70-4e87-b275-f450dbe7084e",
+    "storage": {
+        "needsCompile": false,
+        "simple": {
+            "pkgVersion": 1,
+            "pkgPath": "../packages"
+        },
+        "nameIndex": 1,
+        "varData": {
+            "Ext.button.Button": {
+                "globalVars": [
+                    {
+                        "name": "button-default-color",
+                        "enabled": true,
+                        "value": "rgba(200,137,13,1)"
+                    }
+                ]
+            },
+            "Ext.Component": {
+                "globalVars": [
+                    {
+                        "name": "base-color",
+                        "enabled": true,
+                        "value": "rgba(245,245,245,1)"
+                    }
+                ]
+            },
+            "Ext.panel.Panel": {
+                "globalVars": [
+                    {
+                        "name": "panel-border-color",
+                        "enabled": true,
+                        "value": "rgba(221,221,221,1)"
+                    },
+                    {
+                        "name": "panel-frame-border-width",
+                        "enabled": true,
+                        "value": "1px"
+                    },
+                    {
+                        "name": "panel-frame-header-inner-border-color",
+                        "enabled": true,
+                        "value": "#ddd"
+                    },
+                    {
+                        "name": "panel-header-border-color",
+                        "enabled": true,
+                        "value": "rgba(66,66,66,1)"
+                    },
+                    {
+                        "name": "panel-header-color",
+                        "enabled": true,
+                        "value": "#666"
+                    },
+                    {
+                        "name": "panel-header-font-size",
+                        "enabled": true,
+                        "value": "16px"
+                    },
+                    {
+                        "name": "panel-header-inner-border-width",
+                        "enabled": true,
+                        "value": "1px"
+                    },
+                    {
+                        "name": "panel-header-line-height",
+                        "enabled": true,
+                        "value": "1.1em"
+                    },
+                    {
+                        "name": "panel-header-padding",
+                        "enabled": true,
+                        "value": "0px"
+                    },
+                    {
+                        "name": "panel-header-text-padding",
+                        "enabled": true,
+                        "value": "5px 10px 8px 10px"
+                    }
+                ]
+            },
+            "Ext.window.Window": {
+                "globalVars": [
+                    {
+                        "name": "window-border-color",
+                        "enabled": true,
+                        "value": "rgba(221,221,221,1)"
+                    },
+                    {
+                        "name": "window-header-color",
+                        "enabled": true,
+                        "value": "rgba(102,102,102,1)"
+                    },
+                    {
+                        "name": "window-header-line-height",
+                        "enabled": true,
+                        "value": "1.1em"
+                    }
+                ]
+            }
+        }
+    }
+}
