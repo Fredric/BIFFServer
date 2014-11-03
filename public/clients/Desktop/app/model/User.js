@@ -6,6 +6,8 @@ Ext.define('BIFF.model.User', {
         {   name: 'username'         , type: 'string'                   },
         {   name: 'email'            , type: 'string'                   },
         {   name: 'password'         , type: 'string'                   },
+        {   name: 'facebookId'         , type: 'string'                   },
+
         {   name: 'facebook'         , type: 'auto'                     }
     ],
     proxy: {

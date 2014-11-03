@@ -56,6 +56,7 @@ Ext.define('BIFF.view.login.Login', {
             xtype: 'button',
             width: 200,
             scale: 'large',
+            icon:'/images/facebook.png',
             text: 'Facebook',
             handler: function () {
                 window.location = '/auth/facebook'

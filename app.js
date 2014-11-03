@@ -49,7 +49,7 @@ app.get('/', function (req, res) {
     if (req.isAuthenticated()) {
         res.redirect('/clients/Desktop')
     } else {
-        res.redirect('/clients/build/production/Login')
+        res.redirect('/clients/Desktop/#auth/login')
     }
 });
 
