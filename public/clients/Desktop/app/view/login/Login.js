@@ -32,22 +32,34 @@ Ext.define('BIFF.view.login.Login', {
             name: 'password',
             maxLength: 60,
             inputType: 'password'
-        }
-
-    ],
-    buttons:[
+        },
         {
+            margins:'10 0 0 0',
             xtype: 'button',
+            width: 200,
+            scale: 'large',
             itemId:'login',
             formBind:true,
-            scale: 'small',
+
             text: 'Login'
         },
         {
+            margin:'10 0 0 0',
             xtype: 'button',
+            width: 200,
+            scale: 'large',
             itemId:'passreset',
-            scale: 'small',
             text: 'Forgot password'
+        },
+        {
+            margin:'10 0 0 0',
+            xtype: 'button',
+            width: 200,
+            scale: 'large',
+            text: 'Facebook',
+            handler: function () {
+                window.location = '/auth/facebook'
+            }
         }
 
     ]

@@ -7,6 +7,7 @@ Ext.define('BIFF.controller.Main', {
     },
     views: [
         'AppHeader',
+        'UserArea.tasks.Tasks',
         'UserArea.Main'
     ],
     refs: [
@@ -17,6 +18,9 @@ Ext.define('BIFF.controller.Main', {
 
 
         }
+    ],
+    stores: [
+        'Tasks'
     ],
     listen: {
         controller: {
@@ -44,5 +48,6 @@ Ext.define('BIFF.controller.Main', {
         });
         var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
         viewport.layout.setActiveItem(viewport.add(main));
+        this.getTasksStore().load();
     }
 });

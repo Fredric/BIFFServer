@@ -24,9 +24,6 @@ Ext.define('BIFF.controller.Users', {
 //        viewport.layout.setActiveItem(viewport.add(this.getUsers()));
 
 
-
-
-
         var users = this.getUsers();
         if(users){
             users.destroy();
