@@ -57,6 +57,10 @@ app.get('/success', function (req, res) {
     res.redirect('/clients/Desktop/#')
 });
 
+app.get('/success2', function (req, res) {
+    res.redirect('/clients/Desktop3')
+});
+
 app.get('/LoginLocal', function (req, res) {
     res.redirect('/clients/Desktop/#auth/login')
 });

@@ -23,15 +23,6 @@ Ext.define('BIFF.lib.LoginManager', {
     },
 
     login: function (options) {
-//        this.view.getForm().submit({
-//            url     : '/login',
-//            scope   : this,
-//            success : function (form, action) {
-//                BIFF.socket.emit('clientAuthenticate', { name: this.view.getForm().findField('username').getValue(), socketId: BIFF.socketId });
-//                Ext.History.add('#users')
-//            }
-//        });
-
         Ext.Ajax.request({
             url: '/login',
             method: 'POST',

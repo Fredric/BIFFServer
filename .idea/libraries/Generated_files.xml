@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/public/clients/Desktop2/app2.js" />
+        <item url="file://$PROJECT_DIR$/public/clients/Desktop2/_all.js" />
+        <item url="file://$PROJECT_DIR$/public/clients/Desktop2/app3.js" />
+        <item url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
+        <item url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/app2.js" />
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/_all.js" />
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/app3.js" />
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

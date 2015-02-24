@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Biff Angular app</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="resources/css/app.css">
+
+    <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+
+
+    <script src="app.js"></script>
+    <script src="services/LoginManager.js"></script>
+    <script src="controller/headerController.js"></script>
+
+
+</head>
+<body>
+
+<div ng-app="App" ng-controller="headerController as header">
+
+
+    <div class="jumbotron">
+        <h1>Biff desktop Angular app</h1>
+               <p><a class="btn btn-primary btn-lg" href="#" role="button">{{header.isLoggedIn}}</a></p>
+    </div>
+
+</div>
+
+</body>
+</html>
