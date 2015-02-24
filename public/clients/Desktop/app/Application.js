@@ -3,7 +3,7 @@ Ext.define('BIFF.Application', {
 
     extend: 'Ext.app.Application',
     requires: [
-        // 'Ext.ux.Router'
+        'Ext.layout.container.Card'
     ],
 
 

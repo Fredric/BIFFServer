@@ -6,7 +6,9 @@ Ext.define('BIFF.view.UserArea.tasks.TasksController',{
     },
 
     onAdd:function(){
-        this.view.store.add({username: '', email: '', password:''})
+        debugger
+        var rec = this.view.store.add({username: '', email: '', password:''})
+        this.view.editingPlugin.startEdit(rec[0]);
     },
     onRemove:function(){
         var selection = this.view.getSelectionModel().getSelection();

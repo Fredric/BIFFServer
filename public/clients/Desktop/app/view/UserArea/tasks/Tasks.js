@@ -4,6 +4,7 @@ Ext.define('BIFF.view.UserArea.tasks.Tasks', {
     requires: [
         'Ext.grid.plugin.RowEditing'
     ],
+    bufferedRenderer:false,
     controller: 'taskscontroller',
     plugins: [
         Ext.create('Ext.grid.plugin.RowEditing', {

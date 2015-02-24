@@ -1,6 +1,8 @@
 Ext.define('BIFF.view.Users', {
     extend: 'Ext.grid.Panel',
     xtype: 'users',
+
+
     requires: [
         'Ext.grid.plugin.RowEditing'
     ],
