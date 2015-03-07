@@ -1,27 +1,27 @@
 {
-    "name": "BIFFServer",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "start": "node app.js"
-    },
-    "dependencies": {
-        "express": "3.4.8",
-        "passport": "*",
-        "passport-local": "*",
-        "passport-facebook": "*",
-        "pass-reset": "*",
-        "util": "*",
-        "socket.io": "*",
-        "handlebars":"*",
-        "express-partials": "*",
-        "mongodb": "*",
-        "mongoskin": "*",
-        "debug": "*",
-        "nodemailer": "~0.6.0"
-    },
-    "engines": {
-        "node": "0.10.x"
-    }
-
+  "name": "BIFFServer",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.4.8",
+    "passport": "*",
+    "passport-local": "*",
+    "passport-facebook": "*",
+    "pass-reset": "*",
+    "util": "*",
+    "socket.io": "*",
+    "handlebars": "*",
+    "express-partials": "*",
+    "mongodb": "*",
+    "mongoskin": "*",
+    "debug": "*",
+    "nodemailer": "~0.6.0",
+    "traceur": "0.0.86"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
 }

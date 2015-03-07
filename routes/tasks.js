@@ -9,7 +9,6 @@ module.exports = function (app) {
     /***************** L I S T ********************/
 
     app.get('/tasks', ensureAuthenticated, function (req, res) {
-        debugger
         collection.find( { createdBy: req.user._id } ).toArray(function (err, items) {
             res.send(items);
         });
@@ -44,6 +43,8 @@ module.exports = function (app) {
 
 
     /***************** P O S T ********************/
+
+    //TODO ADD createdBy even on POST
 
     app.post('/tasks', ensureAuthenticated, function (req, res) {
         delete req.body._id;
