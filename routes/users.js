@@ -4,7 +4,7 @@
 module.exports = function (app) {
 
     var collection = global.userDb.collection('usercollection');
-    ObjectId = require('mongodb').ObjectID;
+    var ObjectId = require('mongodb').ObjectID;
 
     /***************** L I S T ********************/
 
