@@ -4,7 +4,7 @@ Ext.define('BIFF.store.Tasks',{
     'BIFF.model.Task'
     ],
     model:'BIFF.model.Task',
-    autoSync:true,
+    //autoSync:true,
     autoLoad:false
 
 })

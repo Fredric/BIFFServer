@@ -538,7 +538,7 @@ Ext.define('Ext.view.Table', {
       * @param {HTMLElement} tr The TR element for the cell.
       * @param {Number} rowIndex
       * @param {Ext.event.Event} e
-      * @param {Ext.grid.CellContext} e.position A CellContext object which defines the target cell.
+      * @param {Ext.grid.CellCittext} e.position A CellContext object which defines the target cell.
       */
 
      /**

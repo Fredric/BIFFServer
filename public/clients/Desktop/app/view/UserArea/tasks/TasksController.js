@@ -6,7 +6,6 @@ Ext.define('BIFF.view.UserArea.tasks.TasksController',{
     },
 
     onAdd:function(){
-        debugger
         var rec = this.view.store.add({username: '', email: '', password:''})
         this.view.editingPlugin.startEdit(rec[0]);
     },
@@ -15,6 +14,12 @@ Ext.define('BIFF.view.UserArea.tasks.TasksController',{
         if (selection.length !== 0){
             this.view.store.remove(selection[0])
         }
+        this.view.store.sync();
+    },
+    onSave:function(){
+
+        //this.view.store.sync();
+        this.view.store.sync();
     }
 
 });

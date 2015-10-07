@@ -48,6 +48,9 @@ module.exports = function (app) {
 
     app.post('/tasks', ensureAuthenticated, function (req, res) {
         delete req.body._id;
+
+        req.body.createdBy = req.user._id
+
         collection.insert(req.body, {safe: true}, function (err, result) {
             if (err) {
                 res.send({'error': 'An error has occurred'});

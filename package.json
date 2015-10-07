@@ -16,10 +16,12 @@
     "handlebars": "*",
     "express-partials": "*",
     "mongodb": "*",
-    "mongoskin": "*",
+    "mongoskin": "1.4.1",
     "debug": "*",
     "nodemailer": "~0.6.0",
-    "traceur": "0.0.86"
+    "traceur": "0.0.86",
+    "traceur-source-maps": "*",
+    "jsx-loader": "^0.13.1"
   },
   "engines": {
     "node": "0.10.x"

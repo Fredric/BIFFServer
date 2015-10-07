@@ -10,8 +10,6 @@ angular.module('headerController', [])
                 if(data.success === true){
                     me.isLoggedIn = data.user.username
                 }else{
-
-
                     me.isLoggedIn = 'Log in'
                 }
             }

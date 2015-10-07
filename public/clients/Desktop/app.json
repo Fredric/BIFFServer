@@ -112,6 +112,9 @@
             "path": "app.js",
             "bundle": true,
             "update":''
+        },
+        {
+            "path": "resources/fetch.js"
         }
     ],
 

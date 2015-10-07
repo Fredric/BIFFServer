@@ -49,5 +49,9 @@ Ext.define('BIFF.controller.Main', {
         var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
         viewport.layout.setActiveItem(viewport.add(main));
         this.getTasksStore().load();
+        this.getTasksStore().on('datachange', function(){
+            BIFF.socket.emit('taskschanged', {socketId: BIFF.socketId });
+        });
+
     }
 });

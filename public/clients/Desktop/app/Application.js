@@ -2,6 +2,7 @@ Ext.define('BIFF.Application', {
     name: 'BIFF',
 
     extend: 'Ext.app.Application',
+
     requires: [
         'Ext.layout.container.Card'
     ],
@@ -12,11 +13,12 @@ Ext.define('BIFF.Application', {
     ],
 
 
+
     launch: function () {
 
-
-
         var session = this.session = new Ext.data.Session();
+
+
 
         BIFF.loginManager = Ext.create('BIFF.lib.LoginManager',{
             session:session,

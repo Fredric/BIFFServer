@@ -8,7 +8,7 @@ Ext.define('BIFF.controller.Auth', {
         }
     },
     views: [
-        'login.Login',
+        'BIFF.view.login.Login',
         'login.PassReset',
         'login.PassChange',
 

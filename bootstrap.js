@@ -11,6 +11,7 @@ var express = require('express'),
 
 var app = express();
 
+require('./es6test').run();
 
 app.configure('development',function(){
     require('./oauth.js')

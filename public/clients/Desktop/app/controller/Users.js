@@ -37,6 +37,7 @@ Ext.define('BIFF.controller.Users', {
             }
         });
         var viewport = Ext.ComponentQuery.query('#bodycardpanel')[0];
+
         viewport.layout.setActiveItem(viewport.add(users));
 
         this.getUsersStore().load();

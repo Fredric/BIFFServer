@@ -131,6 +131,8 @@ Ext.define('Ext.grid.plugin.Clipboard', {
             dataIndex, destinationStartColumn,
             dataObject = {};
 
+
+
         if (destination) {
             // Create a new Context based upon the outermost View.
             // NavigationModel works on local views. TODO: remove this step when NavModel is fixed to use outermost view in locked grid.
@@ -176,14 +178,17 @@ Ext.define('Ext.grid.plugin.Clipboard', {
 
             // If we are at the end of the destination store, break the row loop.
             if (destination.rowIdx === maxRowIdx) {
-                break;
+
+
             }
 
             // Jump to next row in destination
             destination.setPosition(destination.rowIdx + 1, destinationStartColumn);
         }
     },
+    addMissingRows:function(clipRows){
 
+    },
     putTextData: function (data, format) {
         this.putCellData(data, format);
     }

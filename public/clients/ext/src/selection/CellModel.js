@@ -241,7 +241,7 @@ Ext.define('Ext.selection.CellModel', {
             pos = pos.isCellContext ? pos.clone() : new Ext.grid.CellContext(me.view).setPosition(pos);
         }
         if (!preventCheck && last) {
-            // If the position is the same, jump out & don't fire the event
+            // If the positiCell is the same, jump out & don't fire the event
             if (pos && (pos.record === last.record && pos.column === last.column && pos.view === last.view)) {
                 pos = null;
             } else {

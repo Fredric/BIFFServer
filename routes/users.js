@@ -1,6 +1,9 @@
 /*
  * GET users listing.
  */
+
+
+
 module.exports = function (app) {
 
     var collection = global.userDb.collection('usercollection');

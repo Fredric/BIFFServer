@@ -141,6 +141,7 @@ Ext.define('Ext.plugin.AbstractClipboard', {
     },
 
     init: function (comp) {
+
         var me = this;
 
         if (comp.rendered) {
@@ -355,6 +356,7 @@ Ext.define('Ext.plugin.AbstractClipboard', {
         },
 
         onCopy: function (event) {
+            console.log('oncopy')
             this.doCutCopy(event, false);
         },
 
@@ -363,6 +365,7 @@ Ext.define('Ext.plugin.AbstractClipboard', {
         },
 
         onPaste: function () {
+
             var me = this,
                 sharedData = me.shared.data,
                 source = me.getSource(),
@@ -388,7 +391,6 @@ Ext.define('Ext.plugin.AbstractClipboard', {
         pasteClipboardData: function (format) {
             var me = this,
                 area, focusEl;
-
             if (window.clipboardData && clipboardData.getData) {
                  me.doPaste(format, clipboardData.getData("text"));
             } else {
