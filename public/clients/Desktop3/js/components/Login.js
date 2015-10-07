@@ -9,25 +9,29 @@ import ModalBody    from 'react-bootstrap/lib/ModalBody.js';
 import ModalHeader  from 'react-bootstrap/lib/ModalHeader.js';
 
 let Login = React.createClass({
-
-    render() {
-        return(
-            <Modal className="" header="Login">
-                <ModalHeader>Login</ModalHeader>
-                <ModalBody>
-
-                    <Input type="text" label="Text" placeholder="User name" />
-                    <Input type="password" label="Password" placeholder="Specify password" />
-
-                    <ButtonGroup>
-                        <Button bsStyle="primary">Login</Button>
-                        <Button>Reset</Button>
-                    </ButtonGroup>
-
-                </ModalBody>
-            </Modal>
-        )
+  getInitialState() {
+    return {
+      loggedIn: true
     }
+  },
+  handleClick(event) {
+    this.setState({loggedIn: !this.state.loggedIn});
+  },
+  render() {
+    return (
+      <Modal className="" header="Login">
+        <ModalHeader>Login</ModalHeader>
+        <ModalBody>
+          <Input type="text" label="Text" placeholder="User name"/>,
+          <Input type="password" label="Password" placeholder="Specify password"/>
+          <ButtonGroup>
+            <Button bsStyle="primary" onClick={this.handleClick}>Login</Button>
+            <Button>Reset</Button>
+          </ButtonGroup>
+        </ModalBody>
+      </Modal>
+    )
+  }
 });
 
 export default Login; 
