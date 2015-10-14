@@ -1,6 +1,6 @@
-This file is part of Ext JS 5.1.0.107
+This file is part of Ext JS 6.0.1.250
 
-Copyright (c) 2011-2014 Sencha Inc
+Copyright (c) 2011-2015 Sencha Inc
 
 Contact:  http://www.sencha.com/contact
 
@@ -12,4 +12,4 @@ terms contained in a written agreement between you and Sencha.
 If you are unsure which license is appropriate for your use, please contact the sales department
 at http://www.sencha.com/contact.
 
-Version: 5.1.0.107 Build date: 2014-12-10 14:07:00 (2e9aed02ab6d3ef7b0ec406edea1e8581413381e)
+Version: 6.0.1.250 Build date: 2015-09-02 16:59:34 (22ef9ff0ebf584ff525541be37e753a703cc044b)
