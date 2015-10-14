@@ -7,8 +7,11 @@ import NavBrand     from 'react-bootstrap/lib/NavBrand';
 import NavItem      from 'react-bootstrap/lib/NavItem';
 import MenuItem     from 'react-bootstrap/lib/MenuItem';
 import NavDropdown  from 'react-bootstrap/lib/Navdropdown';
+import Dispatcher   from '../js/appDispatcher.js';
 
 require("../css/style.scss");
+
+
 
 import LoginHandler from './components/Login.js';
 
@@ -16,7 +19,6 @@ let App = React.createClass({
     render() {
         return (
             <div>
-
                 <Navbar>
                     <NavBrand>Desktop 3 (React JS)</NavBrand>
                     <Nav>
