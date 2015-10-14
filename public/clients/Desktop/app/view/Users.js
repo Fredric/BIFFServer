@@ -7,12 +7,12 @@ Ext.define('BIFF.view.Users', {
         'Ext.grid.plugin.RowEditing'
     ],
     controller: 'userscontroller',
+
     plugins: [
         Ext.create('Ext.grid.plugin.RowEditing', {
             clicksToEdit: 1
         })
     ],
-
     columns: [
         {header: 'Name', dataIndex: 'username', editor: 'textfield'},
         {header: 'Password', dataIndex: 'password', editor: 'textfield'},
