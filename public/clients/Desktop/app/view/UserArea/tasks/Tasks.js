@@ -2,7 +2,7 @@ Ext.define('BIFF.view.UserArea.tasks.Tasks', {
     extend: 'Ext.grid.Panel',
     xtype: 'tasks',
 
-
+    border:1,
     requires: [
         'Ext.grid.plugin.RowEditing',
         'Ext.grid.plugin.Clipboard',
@@ -20,11 +20,14 @@ Ext.define('BIFF.view.UserArea.tasks.Tasks', {
         'superclip'
     ],
     listeners:{
-      cellkeydown:function(a, b, cellIdx, d, e, rowIdx, g, h, event){
-          a.editingPlugin.startEditByPosition({row:rowIdx, column:cellIdx})
+      cellkeydown:function(a, b, cellIdx, record, e, rowIdx, keyEvent, h, event){
+          var key = keyEvent.getKeyName();
+
+          if(key !== 'RIGHT' && key !== 'LEFT' && key !== 'DOWN' && key !== 'UP'){
+              a.editingPlugin.startEditByPosition({row:rowIdx, column:cellIdx})
+          }
       }
     },
-
     selModel: {
         type: 'superselect',
         columnSelect: true,
