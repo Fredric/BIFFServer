@@ -11,6 +11,7 @@ Ext.define('BIFF.view.UserArea.tasks.Tasks', {
         'BIFF.lib.importing.ImportButton'
     ],
     bufferedRenderer: false,
+    columnLines:true,
     controller: 'taskscontroller',
     plugins: [
         Ext.create('Ext.grid.plugin.CellEditing', {
