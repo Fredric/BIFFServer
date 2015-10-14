@@ -1,4 +1,5 @@
-
+/public/clients/build
+/public/clients/Desktop3/build
 node_modules/
 data/db/**
 oauth.js
