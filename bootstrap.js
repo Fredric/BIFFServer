@@ -19,7 +19,8 @@ app.configure('development',function(){
 });
 
 app.configure('production',function(){
-    global.userDb = mongodb.db('mongodb://test:test@ds035488.mongolab.com:35488/heroku_app24702540/users');
+
+    global.userDb = mongodb.db(process.env.MONGOLABURI + '/users');
 });
 
 app.configure(function () {
