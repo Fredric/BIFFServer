@@ -1,6 +1,6 @@
 /public/clients/build
 /public/clients/Desktop3/build
-node_modules/
+node_modules/**
 data/db/**
 oauth.js
 .idea/**
