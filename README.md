@@ -16,5 +16,5 @@ http://localhost/client
 *Build client*
 
     cd public/client
-    sencha app build testing
+    sencha app build testing.
 

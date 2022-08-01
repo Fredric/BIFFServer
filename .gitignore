@@ -3,4 +3,5 @@
 node_modules/
 data/db/**
 oauth.js
+.idea/**
 .sass-cache/

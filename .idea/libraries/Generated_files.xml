@@ -6,11 +6,10 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/_all.js" />
       <root url="file://$PROJECT_DIR$/public/clients/Desktop2/app2.js" />
       <root url="file://$PROJECT_DIR$/public/clients/Desktop2/app3.js" />
       <root url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
-      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/services/LoginManager2.js" />
-      <root url="file://$PROJECT_DIR$/public/clients/Desktop2/_all.js" />
     </CLASSES>
     <SOURCES />
   </library>
